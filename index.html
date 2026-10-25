@@ -12,24 +12,20 @@
 
   <style>
     :root {
-      /* Fondo gris opaco y desenfocado tipo iOS */
-      --ios-bg: #8c9398;
-      --ios-glass: rgba(240, 242, 245, 0.88);
-      --ios-glass-border: rgba(255, 255, 255, 0.45);
+      --ios-bg: radial-gradient(circle at 20% 20%, #a4adb3 0%, #767d82 100%);
+      --ios-glass: rgba(240, 242, 245, 0.90);
+      --ios-glass-border: rgba(255, 255, 255, 0.5);
       
-      /* Barra lateral verde oliva */
       --sidebar-bg: #3B4738;
       --sidebar-hover: rgba(255, 255, 255, 0.08);
       --sidebar-text: #E3E9E1;
       --sidebar-muted: #95A391;
       
-      /* Tarjetas crema/marfil */
       --card-cream: #FAF8F5;
       --card-border: #EBE6DF;
       --text-title: #222521;
       --text-body: #4F554E;
       
-      /* Acentos de color */
       --dot-terracotta: #B87352;
       --dot-terracotta-bg: #F8ECE6;
       --dot-olive: #5C6E58;
@@ -47,16 +43,96 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at 20% 20%, #a4adb3 0%, #767d82 100%);
+      background: var(--ios-bg);
       color: var(--text-title);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px 16px;
+      padding: 20px 14px;
     }
 
-    /* CONTENEDOR PRINCIPAL */
+    /* PANTALLA DE ACCESO MINIMALISTA */
+    .login-wrapper {
+      width: 100%;
+      max-width: 380px;
+      background: var(--ios-glass);
+      backdrop-filter: blur(35px) saturate(180%);
+      -webkit-backdrop-filter: blur(35px) saturate(180%);
+      border: 1px solid var(--ios-glass-border);
+      border-radius: 24px;
+      box-shadow: 0 30px 70px rgba(20, 25, 30, 0.28);
+      padding: 36px 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .login-brand {
+      font-size: 30px;
+      letter-spacing: 5px;
+      font-weight: 300;
+      color: #1F281E;
+      line-height: 1;
+    }
+    .login-tag {
+      font-size: 11.5px;
+      color: #6A7467;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .form-group-login label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #555F52;
+      margin-bottom: 6px;
+    }
+
+    .login-input, .login-select {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid #D6DCD3;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 13.5px;
+      color: var(--text-title);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input:focus, .login-select:focus {
+      border-color: var(--sidebar-bg);
+      box-shadow: 0 0 0 3px rgba(59, 71, 56, 0.12);
+    }
+
+    .btn-submit-login {
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn-submit-login:hover {
+      background: #2D372B;
+    }
+
+    /* PANTALLA PRINCIPAL / APLICACIÓN */
     .app-window {
       width: 100%;
       max-width: 1240px;
@@ -68,7 +144,7 @@
       border: 1px solid var(--ios-glass-border);
       border-radius: 24px;
       box-shadow: 0 35px 80px rgba(25, 30, 35, 0.35);
-      display: flex;
+      display: none; /* Se muestra tras loguearse */
       overflow: hidden;
     }
 
@@ -110,29 +186,22 @@
 
     .nav-list {
       list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
     }
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13.5px;
       color: var(--sidebar-text);
-      cursor: pointer;
-    }
-    .nav-item.active {
       background: rgba(255, 255, 255, 0.12);
       font-weight: 600;
     }
 
-    /* PLANTA BOTÁNICA INFERIOR */
     .sidebar-footer {
       position: relative;
-      min-height: 150px;
+      min-height: 140px;
     }
     .plant-svg {
       position: absolute;
@@ -143,7 +212,7 @@
       pointer-events: none;
     }
 
-    /* ÁREA PRINCIPAL */
+    /* CONTENIDO PRINCIPAL */
     .main-viewport {
       flex: 1;
       display: flex;
@@ -152,12 +221,11 @@
       padding: 32px 36px;
     }
 
-    /* BUSCADOR Y ACCESOS SUPERIORES */
     .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       gap: 16px;
     }
     .search-input {
@@ -169,16 +237,13 @@
       color: var(--text-title);
       width: 320px;
       outline: none;
-      transition: all 0.2s;
       font-family: inherit;
+      transition: all 0.2s;
     }
     .search-input:focus {
       background: #FFFFFF;
       border-color: var(--sidebar-bg);
       box-shadow: 0 0 0 3px rgba(59, 71, 56, 0.12);
-    }
-    .search-input::placeholder {
-      color: #7D857E;
     }
 
     .user-pill {
@@ -187,25 +252,29 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .btn-login-toggle {
+    .user-meta-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #384236;
+    }
+    .btn-logout {
       background: #FFFFFF;
       border: 1px solid var(--card-border);
-      padding: 7px 15px;
+      padding: 6px 14px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--text-title);
+      color: #C04D36;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .btn-login-toggle:hover {
-      background: #F5F3EC;
+    .btn-logout:hover {
+      background: #FDF0ED;
     }
     .avatar-badge {
       width: 34px;
       height: 34px;
-      background: var(--dot-terracotta);
+      background: var(--dot-olive);
       color: #FFFFFF;
       font-size: 12px;
       font-weight: 600;
@@ -215,29 +284,28 @@
       justify-content: center;
     }
 
-    /* ENCABEZADO EDITORIAL LIMPIO */
+    /* ENCABEZADO EDITORIAL */
     .editorial-header {
       margin-bottom: 24px;
     }
     .editorial-title {
       font-family: 'Playfair Display', serif;
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 600;
       color: var(--text-title);
       letter-spacing: -0.4px;
     }
     .editorial-sub {
-      font-size: 13.5px;
+      font-size: 13px;
       color: #6C746B;
       margin-top: 4px;
     }
 
-    /* TARJETAS DE MÉTRICAS */
     .quick-stats {
       display: grid;
       grid-template-columns: repeat(2, minmax(180px, 1fr));
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
     .stat-card {
       background: var(--card-cream);
@@ -247,7 +315,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
     }
     .stat-meta {
       display: flex;
@@ -274,7 +341,7 @@
       color: #727971;
     }
 
-    /* SECCIÓN DEL FEED */
+    /* FEED */
     .feed-header {
       display: flex;
       justify-content: space-between;
@@ -284,9 +351,6 @@
     .feed-title {
       font-size: 16px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .btn-create {
       background: var(--btn-olive);
@@ -298,11 +362,8 @@
       font-weight: 600;
       cursor: pointer;
       display: none;
-      transition: background 0.2s;
     }
-    .btn-create:hover {
-      background: var(--btn-olive-hover);
-    }
+    .btn-create:hover { background: var(--btn-olive-hover); }
 
     .timeline {
       display: flex;
@@ -315,11 +376,6 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .report-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     }
     .card-top {
       display: flex;
@@ -338,7 +394,6 @@
       width: 9px;
       height: 9px;
       border-radius: 50%;
-      flex-shrink: 0;
     }
     .dot-terracotta { background: var(--dot-terracotta); }
     .dot-olive { background: var(--dot-olive); }
@@ -356,6 +411,15 @@
       font-weight: 600;
       padding: 3px 9px;
       border-radius: 12px;
+    }
+    .tag-client {
+      background: var(--dot-terracotta-bg);
+      color: var(--dot-terracotta);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 12px;
+      text-transform: capitalize;
     }
     .card-actions {
       display: flex;
@@ -377,15 +441,11 @@
       cursor: pointer;
       display: none;
     }
-    .btn-delete-card:hover {
-      background: #C04D36;
-      color: #FFFFFF;
-    }
+    .btn-delete-card:hover { background: #C04D36; color: #FFF; }
 
     .report-title {
       font-size: 16px;
       font-weight: 600;
-      color: var(--text-title);
       margin-bottom: 6px;
     }
     .report-desc {
@@ -409,13 +469,9 @@
       object-fit: cover;
       cursor: pointer;
       border: 1px solid var(--card-border);
-      transition: transform 0.2s;
-    }
-    .photo-thumb:hover {
-      transform: scale(1.02);
     }
 
-    /* MODALES */
+    /* MODAL DE PUBLICACIÓN */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -431,7 +487,7 @@
 
     .modal-box {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       background: #FFFFFF;
       border-radius: 20px;
       padding: 26px;
@@ -441,12 +497,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .modal-title {
       font-size: 17px;
       font-weight: 600;
-      color: var(--text-title);
     }
     .modal-close {
       background: none;
@@ -457,16 +512,16 @@
     }
 
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 13px;
     }
     .form-group label {
       display: block;
       font-size: 12px;
       font-weight: 600;
       color: #636D61;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
-    .form-input, .form-textarea {
+    .form-input, .form-textarea, .form-select {
       width: 100%;
       border: 1px solid #D9E0D7;
       border-radius: 10px;
@@ -476,7 +531,7 @@
       outline: none;
       background: #FAF8F5;
     }
-    .form-input:focus, .form-textarea:focus {
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
       border-color: var(--sidebar-bg);
       background: #FFFFFF;
     }
@@ -484,15 +539,10 @@
     .dropzone {
       border: 2px dashed #C5CEC3;
       border-radius: 12px;
-      padding: 20px;
+      padding: 18px;
       text-align: center;
       background: #FAF8F5;
       cursor: pointer;
-      transition: all 0.2s;
-    }
-    .dropzone.dragover {
-      border-color: var(--dot-olive);
-      background: var(--dot-olive-bg);
     }
     .preview-container {
       display: flex;
@@ -543,12 +593,19 @@
       border-radius: 12px;
     }
 
-    /* OPTIMIZACIÓN RESPONSIVA EXCLUSIVA PARA CELULARES */
+    /* MÓVILES */
     @media (max-width: 768px) {
       body {
         padding: 0;
         background: #8c9398;
-        align-items: flex-start;
+        align-items: stretch;
+      }
+      .login-wrapper {
+        max-width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        justify-content: center;
+        border: none;
       }
       .app-window {
         height: auto;
@@ -584,11 +641,10 @@
         flex-direction: column-reverse;
         align-items: stretch;
         gap: 12px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
       .search-input {
         width: 100%;
-        padding: 10px 16px;
       }
       .user-pill {
         justify-content: space-between;
@@ -596,13 +652,10 @@
       .editorial-title {
         font-size: 24px;
       }
-      .editorial-sub {
-        font-size: 12.5px;
-      }
       .quick-stats {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
       .stat-card {
         padding: 12px 14px;
@@ -615,20 +668,6 @@
       .stat-num {
         font-size: 18px;
       }
-      .stat-label {
-        font-size: 11px;
-      }
-      .report-card {
-        padding: 16px;
-      }
-      .card-top {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .card-actions {
-        width: 100%;
-        justify-content: space-between;
-      }
       .photo-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 6px;
@@ -636,17 +675,42 @@
       .photo-thumb {
         height: 85px;
       }
-      .modal-box {
-        padding: 20px 16px;
-      }
     }
   </style>
 </head>
 <body>
 
-  <div class="app-window">
+  <!-- 1. PANTALLA INICIAL DE INICIO DE SESIÓN -->
+  <div class="login-wrapper" id="login-screen">
+    <div>
+      <div class="login-brand">DIEGO</div>
+      <div class="login-tag">Portal de Clientes & Obra</div>
+    </div>
+
+    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();">
+      <div class="form-group-login">
+        <label>Cuenta de Usuario</label>
+        <select id="login-user" class="login-select">
+          <option value="admin">Administrador (Arquitecta / Admin)</option>
+          <option value="cliente1">Cliente 1</option>
+          <option value="cliente2">Cliente 2</option>
+          <option value="cliente3">Cliente 3</option>
+          <option value="cliente4">Cliente 4</option>
+        </select>
+      </div>
+
+      <div class="form-group-login">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" class="login-input" placeholder="••••" required>
+      </div>
+
+      <button type="submit" class="btn-submit-login">Ingresar al Portal</button>
+    </form>
+  </div>
+
+  <!-- 2. VENTANA PRINCIPAL DE INFORMES -->
+  <div class="app-window" id="app-screen">
     
-    <!-- BARRA LATERAL VERDE -->
     <aside class="sidebar">
       <div>
         <div class="brand-section">
@@ -655,13 +719,12 @@
         </div>
 
         <ul class="nav-list">
-          <li class="nav-item active">
+          <li class="nav-item">
             <span>⌂</span> Inicio
           </li>
         </ul>
       </div>
 
-      <!-- PLANTA BOTÁNICA -->
       <div class="sidebar-footer">
         <svg class="plant-svg" viewBox="0 0 100 160" fill="none" stroke="#DCE5D8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M 45 160 Q 48 100 40 20" />
@@ -675,39 +738,36 @@
       </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-viewport">
       
-      <!-- ENCABEZADO SUPERIOR CON BUSCADOR ACTIVO -->
       <div class="top-header">
         <input 
           type="text" 
           id="search-input" 
           class="search-input" 
-          placeholder="🔍 Buscar por versión, título o fecha..." 
+          placeholder="🔍 Buscar en mis informes..." 
           oninput="applySearchFilter()"
         >
         
         <div class="user-pill">
-          <button class="btn-login-toggle" id="btn-auth-toggle" onclick="handleAuthAction()">Iniciar sesión (Admin)</button>
-          <div class="avatar-badge" id="user-avatar">VI</div>
+          <span class="user-meta-name" id="user-display-label">Usuario</span>
+          <button class="btn-logout" onclick="handleLogout()">Salir</button>
+          <div class="avatar-badge" id="user-avatar">CL</div>
         </div>
       </div>
 
-      <!-- TÍTULO EDITORIAL -->
       <div class="editorial-header">
-        <h1 class="editorial-title">Seguimiento de Obra</h1>
-        <p class="editorial-sub">Registro continuo de avances y novedades en tiempo real.</p>
+        <h1 class="editorial-title" id="feed-main-title">Seguimiento de Obra</h1>
+        <p class="editorial-sub" id="feed-main-subtitle">Registro continuo de novedades y avances en tiempo real.</p>
       </div>
 
-      <!-- TARJETAS DE MÉTRICAS -->
       <div class="quick-stats">
         <div class="stat-card">
           <div class="stat-meta">
             <div class="stat-icon" style="background: var(--dot-terracotta-bg); color: var(--dot-terracotta);">📅</div>
             <div>
               <div class="stat-num" id="stat-count">0</div>
-              <div class="stat-label">informes publicados</div>
+              <div class="stat-label">informes disponibles</div>
             </div>
           </div>
           <span style="color:#B87352;">→</span>
@@ -718,62 +778,50 @@
             <div class="stat-icon" style="background: var(--dot-olive-bg); color: var(--dot-olive);">✔</div>
             <div>
               <div class="stat-num">Activo</div>
-              <div class="stat-label">sincronización en vivo</div>
+              <div class="stat-label">canal en vivo</div>
             </div>
           </div>
           <span style="color:#5C6E58;">→</span>
         </div>
       </div>
 
-      <!-- FEED DE INFORMES -->
       <div class="feed-header">
         <div class="feed-title">
-          <span>🏗️ Registro de Avances y Bitácora</span>
+          <span>🏗️ Bitácora de Novedades</span>
         </div>
         <button class="btn-create" id="btn-new-report" onclick="openReportModal()">+ Nuevo Informe</button>
       </div>
 
       <div class="timeline" id="changelog-feed">
         <div style="text-align: center; padding: 40px; color: #727971;">
-          Cargando informes de obra...
+          Cargando informes...
         </div>
       </div>
 
     </main>
   </div>
 
-  <!-- MODAL DE INICIO DE SESIÓN -->
-  <div class="modal-overlay" id="login-modal">
-    <div class="modal-box" style="max-width: 360px;">
-      <div class="modal-header">
-        <span class="modal-title">Acceso de Administrador</span>
-        <button class="modal-close" onclick="closeLoginModal()">✕</button>
-      </div>
-      <div class="form-group">
-        <label>Usuario</label>
-        <input type="text" id="login-user" class="form-input" placeholder="admin">
-      </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="login-pass" class="form-input" placeholder="••••">
-      </div>
-      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
-        <button class="btn-login-toggle" onclick="closeLoginModal()">Cancelar</button>
-        <button class="btn-create" style="display:inline-block;" onclick="attemptLogin()">Ingresar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL PARA NUEVO INFORME -->
+  <!-- MODAL DE PUBLICACIÓN (SÓLO ADMIN) -->
   <div class="modal-overlay" id="report-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <span class="modal-title">Redactar Informe de Obra</span>
+        <span class="modal-title">Redactar Informe</span>
         <button class="modal-close" onclick="closeReportModal()">✕</button>
       </div>
 
       <div class="form-group">
-        <label>Versión o Día (Ej: v1.0.4 o Día 14)</label>
+        <label>Asignar Destinatario (Cliente)</label>
+        <select id="rep-target" class="form-select">
+          <option value="todos">Todos los Clientes (General)</option>
+          <option value="cliente1">Cliente 1</option>
+          <option value="cliente2">Cliente 2</option>
+          <option value="cliente3">Cliente 3</option>
+          <option value="cliente4">Cliente 4</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Versión o Identificador (Ej: v1.0.4 o Día 14)</label>
         <input type="text" id="rep-version" class="form-input" placeholder="v1.0.4">
       </div>
 
@@ -788,23 +836,23 @@
       </div>
 
       <div class="form-group">
-        <label>Detalle Técnico de la Arquitecta</label>
+        <label>Detalle Técnico</label>
         <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Observaciones técnicas detalladas..."></textarea>
       </div>
 
       <div class="form-group">
         <label>Fotos de la Obra (Arrastrar o Clic)</label>
         <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-          <div style="font-size: 13px; color: #535C50; font-weight: 500;">📷 Arrastra las fotos aquí o pulsa para seleccionar</div>
-          <div style="font-size: 11px; color: #8C968A; margin-top: 4px;">Optimización automática de imágenes</div>
+          <div style="font-size: 13px; color: #535C50; font-weight: 500;">📷 Arrastra fotos aquí o pulsa para seleccionar</div>
+          <div style="font-size: 11px; color: #8C968A; margin-top: 4px;">Optimización local automática</div>
         </div>
         <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
         <div class="preview-container" id="preview-list"></div>
       </div>
 
       <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-        <button class="btn-login-toggle" onclick="closeReportModal()">Cancelar</button>
-        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar al Instante</button>
+        <button class="btn-logout" style="color:#555;" onclick="closeReportModal()">Cancelar</button>
+        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar</button>
       </div>
     </div>
   </div>
@@ -819,67 +867,69 @@
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    let isAdmin = localStorage.getItem('diego_admin') === 'true';
+    let activeUser = localStorage.getItem('diego_active_user') || null;
     let uploadedImagesBase64 = [];
     let allReports = [];
 
-    // CONTROL DE AUTENTICACIÓN
-    function updateAuthStateUI() {
-      const authBtn = document.getElementById('btn-auth-toggle');
-      const createBtn = document.getElementById('btn-new-report');
-      const avatar = document.getElementById('user-avatar');
-      const deleteButtons = document.querySelectorAll('.btn-delete-card');
-
-      if (isAdmin) {
-        authBtn.innerText = "Cerrar sesión (Admin)";
-        authBtn.style.color = "#C04D36";
-        createBtn.style.display = "inline-block";
-        avatar.innerText = "AD";
-        avatar.style.background = "var(--dot-olive)";
-        deleteButtons.forEach(btn => btn.style.display = "inline-block");
-      } else {
-        authBtn.innerText = "Iniciar sesión (Admin)";
-        authBtn.style.color = "var(--text-title)";
-        createBtn.style.display = "none";
-        avatar.innerText = "VI";
-        avatar.style.background = "var(--dot-terracotta)";
-        deleteButtons.forEach(btn => btn.style.display = "none");
-      }
-    }
-
-    function handleAuthAction() {
-      if (isAdmin) {
-        if (confirm("¿Deseas cerrar la sesión de administrador?")) {
-          isAdmin = false;
-          localStorage.removeItem('diego_admin');
-          updateAuthStateUI();
-        }
-      } else {
-        document.getElementById('login-modal').classList.add('open');
-      }
-    }
-
-    function closeLoginModal() {
-      document.getElementById('login-modal').classList.remove('open');
-      document.getElementById('login-user').value = '';
-      document.getElementById('login-pass').value = '';
-    }
-
-    function attemptLogin() {
+    // GESTIÓN DE SESIÓN
+    function handleLogin() {
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
 
-      if (user === "admin" && pass === "1234") {
-        isAdmin = true;
-        localStorage.setItem('diego_admin', 'true');
-        closeLoginModal();
-        updateAuthStateUI();
-      } else {
-        alert("Credenciales incorrectas. Acceso denegado.");
+      if (pass !== "1234") {
+        alert("Contraseña incorrecta.");
+        return;
+      }
+
+      activeUser = user;
+      localStorage.setItem('diego_active_user', user);
+      document.getElementById('login-pass').value = '';
+      initAppView();
+    }
+
+    function handleLogout() {
+      if (confirm("¿Deseas cerrar tu sesión?")) {
+        activeUser = null;
+        localStorage.removeItem('diego_active_user');
+        document.getElementById('app-screen').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
       }
     }
 
-    // CARGAR Y FILTRAR INFORMES
+    function initAppView() {
+      if (!activeUser) {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-screen').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'flex';
+
+      const userDisplay = document.getElementById('user-display-label');
+      const avatar = document.getElementById('user-avatar');
+      const createBtn = document.getElementById('btn-new-report');
+      const subTitle = document.getElementById('feed-main-subtitle');
+
+      if (activeUser === 'admin') {
+        userDisplay.innerText = "Administrador";
+        avatar.innerText = "AD";
+        avatar.style.background = "var(--dot-olive)";
+        createBtn.style.display = "inline-block";
+        subTitle.innerText = "Panel central de administración — Todos los informes y clientes.";
+      } else {
+        const clientFormatted = activeUser.replace('cliente', 'Cliente ');
+        userDisplay.innerText = clientFormatted;
+        avatar.innerText = activeUser.replace('cliente', 'C');
+        avatar.style.background = "var(--dot-terracotta)";
+        createBtn.style.display = "none";
+        subTitle.innerText = `Informes y seguimiento exclusivos para ${clientFormatted}.`;
+      }
+
+      loadReports();
+    }
+
+    // CARGAR Y FILTRAR INFORMES SEGÚN ROL
     async function loadReports() {
       const feed = document.getElementById('changelog-feed');
       const { data, error } = await supabaseClient
@@ -892,7 +942,16 @@
         return;
       }
 
-      allReports = data || [];
+      // Si es cliente, solo ve los suyos o los marcados para 'todos'
+      if (activeUser === 'admin') {
+        allReports = data || [];
+      } else {
+        allReports = (data || []).filter(item => {
+          const dest = (item.destinatario || 'todos').toLowerCase();
+          return dest === 'todos' || dest === activeUser;
+        });
+      }
+
       document.getElementById('stat-count').innerText = allReports.length;
       applySearchFilter();
     }
@@ -910,15 +969,13 @@
         const resumen = (item.resumen || '').toLowerCase();
         const detalles = (item.detalles || '').toLowerCase();
         const fase = (item.fase || '').toLowerCase();
-        const fechaStr = new Date(item.created_at).toLocaleDateString([], {
-          month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        }).toLowerCase();
+        const dest = (item.destinatario || '').toLowerCase();
 
         return version.includes(query) ||
                resumen.includes(query) ||
                detalles.includes(query) ||
                fase.includes(query) ||
-               fechaStr.includes(query);
+               dest.includes(query);
       });
 
       renderReports(filtered);
@@ -927,7 +984,7 @@
     function renderReports(items) {
       const feed = document.getElementById('changelog-feed');
       if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#727971;">No se encontraron informes coincidentes.</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#727971;">No hay informes publicados en tu apartado por el momento.</div>`;
         return;
       }
 
@@ -937,6 +994,13 @@
         });
 
         const dotClass = index % 2 === 0 ? 'dot-terracotta' : 'dot-olive';
+        const destLabel = (item.destinatario && item.destinatario !== 'todos') 
+          ? `<span class="tag-client">${item.destinatario.replace('cliente', 'Cliente ')}</span>` 
+          : `<span class="tag-client" style="background:#EBEFEA; color:#4E5A4D;">General</span>`;
+
+        const deleteBtn = (activeUser === 'admin') 
+          ? `<button class="btn-delete-card" style="display:inline-block;" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>` 
+          : '';
 
         const fotosHtml = (item.imagenes && item.imagenes.length > 0)
           ? `<div class="photo-grid">
@@ -951,10 +1015,11 @@
                 <span class="dot ${dotClass}"></span>
                 <span class="tag-version">${item.version}</span>
                 <span class="tag-phase">${item.fase || 'General'}</span>
+                ${activeUser === 'admin' ? destLabel : ''}
               </div>
               <div class="card-actions">
                 <span class="card-date">${fecha}</span>
-                <button class="btn-delete-card" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>
+                ${deleteBtn}
               </div>
             </div>
             <div class="report-title">${item.resumen}</div>
@@ -963,16 +1028,11 @@
           </div>
         `;
       }).join('');
-
-      updateAuthStateUI();
     }
 
-    // ELIMINAR INFORME
+    // ELIMINAR
     async function deleteReport(id) {
-      if (!isAdmin) {
-        alert("Únicamente el administrador puede eliminar informes.");
-        return;
-      }
+      if (activeUser !== 'admin') return;
       if (!confirm("¿Deseas eliminar este informe definitivamente?")) return;
 
       const { error } = await supabaseClient
@@ -987,18 +1047,15 @@
       }
     }
 
-    // ARRASTRE Y COMPRESIÓN DE IMÁGENES
+    // ARRASTRE Y COMPRESIÓN
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('file-input');
 
-    dropzone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropzone.classList.add('dragover');
-    });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = 'var(--dot-olive)'; });
+    dropzone.addEventListener('dragleave', () => dropzone.style.borderColor = '#C5CEC3');
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
-      dropzone.classList.remove('dragover');
+      dropzone.style.borderColor = '#C5CEC3';
       handleFiles(e.dataTransfer.files);
     });
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
@@ -1014,19 +1071,16 @@
             const MAX_WIDTH = 1200;
             let width = img.width;
             let height = img.height;
-
             if (width > MAX_WIDTH) {
               height *= MAX_WIDTH / width;
               width = MAX_WIDTH;
             }
-
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            const compressed = canvas.toDataURL('image/jpeg', 0.75);
-            uploadedImagesBase64.push(compressed);
+            uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.75));
             renderPreviews();
           };
           img.src = event.target.result;
@@ -1050,20 +1104,18 @@
       renderPreviews();
     }
 
-    // PUBLICAR NUEVO INFORME
+    // PUBLICAR
     async function submitReport() {
-      if (!isAdmin) {
-        alert("Únicamente el administrador tiene permiso para subir informes.");
-        return;
-      }
+      if (activeUser !== 'admin') return;
 
+      const destinatario = document.getElementById('rep-target').value;
       const version = document.getElementById('rep-version').value.trim();
       const fase = document.getElementById('rep-phase').value.trim() || 'General';
       const resumen = document.getElementById('rep-title').value.trim();
       const detalles = document.getElementById('rep-desc').value.trim();
 
       if (!version || !resumen) {
-        alert("Por favor completa al menos la Versión y el Título.");
+        alert("Completa al menos la versión y el título del informe.");
         return;
       }
 
@@ -1077,12 +1129,13 @@
           version,
           fase,
           autor: 'Arquitecta (Admin)',
+          destinatario,
           resumen,
           detalles,
           imagenes: uploadedImagesBase64
         }]);
 
-      saveBtn.innerText = "Publicar al Instante";
+      saveBtn.innerText = "Publicar";
       saveBtn.disabled = false;
 
       if (error) {
@@ -1099,7 +1152,6 @@
       }
     }
 
-    // MODALES Y LIGHTBOX
     function openReportModal() { document.getElementById('report-modal').classList.add('open'); }
     function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
     function openLightbox(url) {
@@ -1113,15 +1165,14 @@
       supabaseClient
         .channel('public:changelog_updates')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'changelog_updates' }, () => {
-          loadReports();
+          if (activeUser) loadReports();
         })
         .subscribe();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      loadReports();
+      initAppView();
       setupRealtime();
-      updateAuthStateUI();
     });
   </script>
 </body>
