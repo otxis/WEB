@@ -3,37 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Seguimiento de Obra</title>
+  <title>DIEGO — Portal de Seguimiento de Obra</title>
   
+  <!-- Tipografías: Playfair Display (editorial) e Inter (interfaz) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      /* 1. PALETA DE COLORES SOLICITADA */
-      /* Fondo general de la página: Blanco Arena */
-      --bg-sand: #F5F1E8;
-      --bg-sand-gradient: radial-gradient(circle at 50% 0%, #FAF7F0 0%, #ECE6D8 100%);
+      /* Fondo gris opaco y desenfocado tipo iOS */
+      --ios-bg: #8c9398;
+      --ios-glass: rgba(240, 242, 245, 0.82);
+      --ios-glass-border: rgba(255, 255, 255, 0.45);
       
-      /* Contorno y marco posterior: Verde pastel oscuro */
-      --green-dark-bg: #1F2D24;
-      --green-frame-border: #3A4E40;
-      --green-accent: #486551;
-      --green-accent-hover: #557760;
-
-      /* 3 Tonos Beige para los mensajes */
-      --beige-tone-1: #FAF5EB; /* Fondo principal de la tarjeta */
-      --beige-tone-2: #EFE3D0; /* Fondo de etiquetas, chips y zonas destacadas */
-      --beige-tone-3: #DBC8B0; /* Bordes y divisores finos del mensaje */
-
-      /* Textos con contraste ergonómico */
-      --text-dark: #222923;
-      --text-muted-dark: #636E65;
-      --text-light: #F4EFE6;
-      --danger-color: #B23B3B;
-      --danger-bg: #FBEBEB;
+      /* Barra lateral verde oliva terrosa */
+      --sidebar-bg: #3B4738;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --sidebar-text: #E3E9E1;
+      --sidebar-muted: #95A391;
+      
+      /* Tarjetas crema/marfil */
+      --card-cream: #FAF8F5;
+      --card-border: #EBE6DF;
+      --text-title: #222521;
+      --text-body: #4F554E;
+      
+      /* Puntos de color y acentos de diseño */
+      --dot-terracotta: #B87352;
+      --dot-terracotta-bg: #F8ECE6;
+      --dot-olive: #5C6E58;
+      --dot-olive-bg: #EDF2EC;
+      --btn-olive: #435240;
+      --btn-olive-hover: #333F31;
     }
 
     * {
@@ -44,238 +47,356 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-      background: var(--bg-sand-gradient);
-      color: var(--text-dark);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #a4adb3 0%, #767d82 100%);
+      color: var(--text-title);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-
-    /* BARRA SUPERIOR */
-    .macos-menu-bar {
-      height: 38px;
-      background: rgba(31, 45, 36, 0.95);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--green-frame-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 18px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-light);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .menu-left, .menu-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .apple-icon {
-      font-size: 15px;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
-      border-radius: 12px;
-      background: rgba(85, 119, 96, 0.3);
-      border: 1px solid rgba(132, 175, 145, 0.4);
-      color: #A3D4B1;
-      font-size: 11px;
-    }
-    .pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #73C991;
-      box-shadow: 0 0 6px #73C991;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
-    /* CONTENEDOR PRINCIPAL CON FONDO VERDE PASTEL OSCURO */
-    .desktop-container {
-      flex: 1;
-      padding: 24px 16px;
-      display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
+      padding: 24px 16px;
     }
 
-    .window-frame {
+    /* CONTENEDOR PRINCIPAL TIPO SISTEMA DIEG0 */
+    .app-window {
       width: 100%;
-      max-width: 900px;
-      background: var(--green-dark-bg);
-      border: 1px solid var(--green-frame-border);
-      border-radius: 18px;
-      box-shadow: 0 20px 50px rgba(18, 28, 22, 0.35);
+      max-width: 1240px;
+      height: 90vh;
+      min-height: 680px;
+      background: var(--ios-glass);
+      backdrop-filter: blur(35px) saturate(180%);
+      -webkit-backdrop-filter: blur(35px) saturate(180%);
+      border: 1px solid var(--ios-glass-border);
+      border-radius: 24px;
+      box-shadow: 0 35px 80px rgba(25, 30, 35, 0.35);
+      display: flex;
       overflow: hidden;
+    }
+
+    /* BARRA LATERAL VERDE */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 20px;
+      position: relative;
+      flex-shrink: 0;
     }
 
-    /* BARRA DE TÍTULO (SIN LOS 3 PUNTOS Y SIN LA PALABRA CHANGELOG) */
-    .window-header {
-      height: 56px;
-      background: rgba(0, 0, 0, 0.15);
-      border-bottom: 1px solid var(--green-frame-border);
+    .brand-section {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .brand-title {
+      font-size: 26px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      border-left: 2px solid #FFFFFF;
+      padding-left: 10px;
+      line-height: 1;
+    }
+    .brand-subtitle {
+      font-size: 8px;
+      letter-spacing: 1.2px;
+      color: var(--sidebar-muted);
+      margin-top: 8px;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: var(--sidebar-text);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.12);
+      font-weight: 600;
+    }
+    .nav-item:hover:not(.active) {
+      background: var(--sidebar-hover);
+    }
+
+    /* PLANTA VECTORIAL Y LEMA INFERIOR */
+    .sidebar-footer {
+      position: relative;
+      padding-top: 20px;
+      z-index: 2;
+    }
+    .plant-svg {
+      position: absolute;
+      bottom: 60px;
+      left: -10px;
+      width: 170px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .motto-text {
+      font-size: 9px;
+      letter-spacing: 2px;
+      line-height: 1.8;
+      color: var(--sidebar-muted);
+      text-transform: uppercase;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 16px;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    .main-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 32px 36px;
+    }
+
+    /* BARRA SUPERIOR CON USUARIO Y ESTADO */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .search-mock {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #6E7570;
+      width: 260px;
+    }
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-login-toggle {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      padding: 7px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-title);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+    }
+    .btn-login-toggle:hover {
+      background: #F5F3EC;
+    }
+    .avatar-badge {
+      width: 34px;
+      height: 34px;
+      background: var(--dot-terracotta);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SALUDO EDITORIAL */
+    .editorial-header {
+      margin-bottom: 26px;
+    }
+    .editorial-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 400;
+      color: var(--text-title);
+      letter-spacing: -0.5px;
+    }
+    .editorial-sub {
+      font-size: 14px;
+      color: #6C746B;
+      margin-top: 4px;
+    }
+
+    /* RESUMEN DE ESTADÍSTICAS RÁPIDAS (ESTILO IMAGEN) */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card-cream);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+    }
+    .stat-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .stat-num {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-title);
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #727971;
     }
 
-    .window-title {
-      font-size: 14px;
+    /* SECCIÓN DE INFORMES */
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .feed-title {
+      font-size: 16px;
       font-weight: 600;
-      color: var(--text-light);
       display: flex;
       align-items: center;
       gap: 8px;
-      letter-spacing: 0.3px;
     }
-
-    .btn-action {
-      background: var(--green-accent);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #FAF6EF;
+    .btn-create {
+      background: var(--btn-olive);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
       font-size: 12.5px;
       font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 8px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
+      display: none; /* Solo visible para admin */
+      transition: background 0.2s;
     }
-    .btn-action:hover {
-      background: var(--green-accent-hover);
-      transform: translateY(-1px);
+    .btn-create:hover {
+      background: var(--btn-olive-hover);
     }
 
-    /* ZONA DEL FEED */
-    .window-body {
-      padding: 24px;
-      max-height: calc(100vh - 160px);
-      overflow-y: auto;
-    }
-
+    /* TARJETA DE CADA INFORME */
     .timeline {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
-
-    /* TARJETA DEL MENSAJE (3 TONOS BEIGE) */
-    .timeline-card {
-      background: var(--beige-tone-1); /* Tono 1 */
-      border: 1px solid var(--beige-tone-3); /* Tono 3 */
-      border-radius: 14px;
+    .report-card {
+      background: var(--card-cream);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .timeline-card:hover {
+    .report-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     }
-
     .card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
-      gap: 10px;
-      flex-wrap: wrap;
     }
-
-    .card-tags {
+    .version-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-terracotta { background: var(--dot-terracotta); }
+    .dot-olive { background: var(--dot-olive); }
 
-    .badge-version {
-      background: var(--beige-tone-2); /* Tono 2 */
-      color: var(--text-dark);
-      border: 1px solid var(--beige-tone-3);
-      padding: 3px 9px;
-      border-radius: 6px;
+    .tag-version {
       font-size: 12px;
       font-weight: 700;
       font-family: monospace;
+      color: var(--text-title);
     }
-    .badge-phase {
-      background: rgba(72, 101, 81, 0.12);
-      color: #2D4333;
-      border: 1px solid rgba(72, 101, 81, 0.25);
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 11.5px;
+    .tag-phase {
+      background: var(--dot-olive-bg);
+      color: var(--dot-olive);
+      font-size: 11px;
       font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 12px;
     }
-
-    .card-controls {
+    .card-actions {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-left: auto;
     }
-
     .card-date {
-      color: var(--text-muted-dark);
       font-size: 12px;
+      color: #8A9289;
     }
-
-    /* BOTÓN DE ELIMINAR */
-    .btn-delete {
-      background: var(--danger-bg);
-      color: var(--danger-color);
-      border: 1px solid rgba(178, 59, 59, 0.25);
+    .btn-delete-card {
+      background: #FDF0ED;
+      color: #C04D36;
+      border: 1px solid #F5D3CA;
       border-radius: 6px;
       padding: 4px 8px;
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.2s;
+      display: none; /* Solo visible para admin */
     }
-    .btn-delete:hover {
-      background: var(--danger-color);
-      color: #ffffff;
+    .btn-delete-card:hover {
+      background: #C04D36;
+      color: #FFFFFF;
     }
 
-    .card-title {
+    .report-title {
       font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--text-dark);
+      font-weight: 600;
+      color: var(--text-title);
+      margin-bottom: 6px;
     }
-
-    .card-desc {
-      font-size: 14px;
-      color: #38423A;
+    .report-desc {
+      font-size: 13.5px;
+      color: var(--text-body);
       line-height: 1.6;
       white-space: pre-line;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
-    /* FOTOS SUBIDAS */
+    /* GALERÍA DE FOTOS */
     .photo-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -285,43 +406,38 @@
     .photo-thumb {
       width: 100%;
       height: 110px;
-      border-radius: 8px;
+      border-radius: 10px;
       object-fit: cover;
       cursor: pointer;
-      border: 1px solid var(--beige-tone-3);
+      border: 1px solid var(--card-border);
       transition: transform 0.2s;
     }
     .photo-thumb:hover {
-      transform: scale(1.03);
+      transform: scale(1.02);
     }
 
-    /* MODAL PARA SUBIR INFORME CON DRAG & DROP */
+    /* MODALES ESTILO CRISTAL */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(18, 28, 22, 0.7);
-      backdrop-filter: blur(6px);
+      background: rgba(40, 48, 42, 0.45);
+      backdrop-filter: blur(12px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      z-index: 500;
       padding: 16px;
     }
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
 
     .modal-box {
       width: 100%;
-      max-width: 540px;
-      background: var(--green-dark-bg);
-      border: 1px solid var(--green-frame-border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-      color: var(--text-light);
+      max-width: 500px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
     }
-
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -329,18 +445,17 @@
       margin-bottom: 18px;
     }
     .modal-title {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
+      color: var(--text-title);
     }
-    .close-modal-btn {
+    .modal-close {
       background: none;
       border: none;
-      color: var(--text-light);
       font-size: 18px;
       cursor: pointer;
-      opacity: 0.7;
+      color: #8A9289;
     }
-    .close-modal-btn:hover { opacity: 1; }
 
     .form-group {
       margin-bottom: 14px;
@@ -348,191 +463,304 @@
     .form-group label {
       display: block;
       font-size: 12px;
-      color: #A3B5A7;
+      font-weight: 600;
+      color: #636D61;
       margin-bottom: 6px;
-      font-weight: 500;
     }
     .form-input, .form-textarea {
       width: 100%;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid var(--green-frame-border);
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-size: 13px;
-      color: #FAF5EB;
-      outline: none;
+      border: 1px solid #D9E0D7;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13.5px;
       font-family: inherit;
+      outline: none;
+      background: #FAF8F5;
     }
     .form-input:focus, .form-textarea:focus {
-      border-color: #72967C;
-      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--sidebar-bg);
+      background: #FFFFFF;
     }
 
-    /* ZONA DRAG & DROP PARA SUBIR FOTOS */
+    /* ZONA DRAG & DROP */
     .dropzone {
-      border: 2px dashed #4E6855;
-      border-radius: 10px;
+      border: 2px dashed #C5CEC3;
+      border-radius: 12px;
       padding: 20px;
       text-align: center;
-      background: rgba(0, 0, 0, 0.15);
+      background: #FAF8F5;
       cursor: pointer;
       transition: all 0.2s;
     }
     .dropzone.dragover {
-      border-color: #8EB99B;
-      background: rgba(72, 101, 81, 0.25);
+      border-color: var(--dot-olive);
+      background: var(--dot-olive-bg);
     }
-    .dropzone-text {
-      font-size: 13px;
-      color: #D3E0D6;
-    }
-    .dropzone-hint {
-      font-size: 11px;
-      color: #8C9F91;
-      margin-top: 4px;
-    }
-
     .preview-container {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-top: 10px;
     }
-    .preview-thumb-wrap {
+    .preview-wrap {
       position: relative;
       width: 60px;
       height: 60px;
     }
-    .preview-thumb {
+    .preview-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid var(--green-frame-border);
+      border-radius: 8px;
     }
-    .remove-thumb {
+    .preview-remove {
       position: absolute;
-      top: -5px;
-      right: -5px;
-      background: var(--danger-color);
-      color: white;
+      top: -4px;
+      right: -4px;
+      background: #C04D36;
+      color: #fff;
       border: none;
       border-radius: 50%;
       width: 18px;
       height: 18px;
       font-size: 10px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    /* LIGHTBOX VISOR */
+    /* LIGHTBOX */
     .lightbox {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 300;
+      z-index: 600;
       cursor: zoom-out;
     }
     .lightbox.open { display: flex; }
     .lightbox img {
       max-width: 90vw;
       max-height: 85vh;
-      border-radius: 8px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .app-window {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        border-radius: 0;
+      }
+      .sidebar {
+        width: 100%;
+        padding: 20px;
+      }
+      .plant-svg { display: none; }
+      .main-viewport { padding: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR -->
-  <div class="macos-menu-bar">
-    <div class="menu-left">
-      <span class="apple-icon"></span>
-      <span>Portal Obra</span>
-    </div>
-    <div class="menu-right">
-      <div class="status-badge">
-        <span class="pulse-dot"></span>
-        <span>En Vivo</span>
-      </div>
-      <span id="clock-display">12:00 PM</span>
-    </div>
-  </div>
-
-  <!-- CONTENEDOR PRINCIPAL -->
-  <div class="desktop-container">
-    <div class="window-frame">
-      <div class="window-header">
-        <div class="window-title">
-          <span>🏗️ Registro Diario de Obra</span>
+  <div class="app-window">
+    
+    <!-- BARRA LATERAL VERDE TIPO DIEGO CON PLANTA VECTORIAL -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand-section">
+          <div class="brand-title">DIEGO</div>
+          <div class="brand-subtitle">Daily Intelligent Electronic Graphic Organizer</div>
         </div>
-        <button class="btn-action" onclick="openReportModal()">+ Nuevo Informe</button>
+
+        <ul class="nav-list">
+          <li class="nav-item active">
+            <span>⌂</span> Inicio
+          </li>
+          <li class="nav-item">
+            <span>📅</span> Mi agenda
+          </li>
+          <li class="nav-item">
+            <span>📁</span> Proyectos
+          </li>
+          <li class="nav-item">
+            <span>☑</span> Tareas
+          </li>
+          <li class="nav-item">
+            <span>📝</span> Notas
+          </li>
+          <li class="nav-item">
+            <span>📄</span> Documentos
+          </li>
+        </ul>
       </div>
 
-      <div class="window-body">
-        <div class="timeline" id="changelog-feed">
-          <div style="text-align: center; padding: 40px; color: #8A9E8F;">
-            Cargando informes...
+      <!-- ILUSTRACIÓN BOTÁNICA VECTORIAL EXTRAÍDA DEL DISEÑO -->
+      <div class="sidebar-footer">
+        <svg class="plant-svg" viewBox="0 0 100 160" fill="none" stroke="#DCE5D8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Tallo central -->
+          <path d="M 45 160 Q 48 100 40 20" />
+          <!-- Hojas curvadas estilo botánico -->
+          <path d="M 44 135 C 20 130 10 110 25 105 C 38 102 44 125 44 135 Z" />
+          <path d="M 44 115 C 65 110 80 90 65 85 C 50 82 43 105 44 115 Z" />
+          <path d="M 42 90 C 18 85 8 65 24 60 C 36 57 42 80 42 90 Z" />
+          <path d="M 42 70 C 62 65 74 45 60 40 C 47 38 41 60 42 70 Z" />
+          <path d="M 40 45 C 22 40 18 25 30 20 C 38 18 40 35 40 45 Z" />
+          <path d="M 40 25 C 45 10 55 5 40 0 C 35 10 38 20 40 25 Z" />
+        </svg>
+
+        <div class="motto-text">
+          IDEAS<br>
+          ESPACIOS<br>
+          PERSONAS<br>
+          UN MEJOR MAÑANA
+        </div>
+      </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main-viewport">
+      
+      <!-- ENCABEZADO SUPERIOR -->
+      <div class="top-header">
+        <div class="search-mock">🔍 Buscar en DIEGO</div>
+        
+        <div class="user-pill">
+          <button class="btn-login-toggle" id="btn-auth-toggle" onclick="handleAuthAction()">Iniciar sesión (Admin)</button>
+          <div class="avatar-badge" id="user-avatar">VI</div>
+        </div>
+      </div>
+
+      <!-- SALUDO EDITORIAL -->
+      <div class="editorial-header">
+        <h1 class="editorial-title" id="greeting-text">Buenos días, Gina</h1>
+        <p class="editorial-sub">Tu día, con claridad — Registro continuo de obra y avances.</p>
+      </div>
+
+      <!-- TARJETAS DE MÉTRICAS -->
+      <div class="quick-stats">
+        <div class="stat-card">
+          <div class="stat-meta">
+            <div class="stat-icon" style="background: var(--dot-terracotta-bg); color: var(--dot-terracotta);">📅</div>
+            <div>
+              <div class="stat-num" id="stat-count">0</div>
+              <div class="stat-label">informes publicados</div>
+            </div>
           </div>
+          <span style="color:#B87352;">→</span>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-meta">
+            <div class="stat-icon" style="background: var(--dot-olive-bg); color: var(--dot-olive);">✔</div>
+            <div>
+              <div class="stat-num">Activo</div>
+              <div class="stat-label">sincronización en vivo</div>
+            </div>
+          </div>
+          <span style="color:#5C6E58;">→</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-meta">
+            <div class="stat-icon" style="background: #FAF0E4; color: #A06D3B;">📁</div>
+            <div>
+              <div class="stat-num">Obra</div>
+              <div class="stat-label">proyecto central</div>
+            </div>
+          </div>
+          <span style="color:#A06D3B;">→</span>
+        </div>
+      </div>
+
+      <!-- FEED DE INFORMES -->
+      <div class="feed-header">
+        <div class="feed-title">
+          <span>🏗️ Registro de Avances y Bitácora</span>
+        </div>
+        <button class="btn-create" id="btn-new-report" onclick="openReportModal()">+ Nuevo Informe</button>
+      </div>
+
+      <div class="timeline" id="changelog-feed">
+        <div style="text-align: center; padding: 40px; color: #727971;">
+          Cargando informes de obra...
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL DE INICIO DE SESIÓN -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal-box" style="max-width: 360px;">
+      <div class="modal-header">
+        <span class="modal-title">Acceso de Administrador</span>
+        <button class="modal-close" onclick="closeLoginModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="login-user" class="form-input" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" class="form-input" placeholder="••••">
+      </div>
+      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+        <button class="btn-login-toggle" onclick="closeLoginModal()">Cancelar</button>
+        <button class="btn-create" style="display:inline-block;" onclick="attemptLogin()">Ingresar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DE PUBLICACIÓN -->
+  <!-- MODAL PARA NUEVO INFORME (SOLO ADMIN) -->
   <div class="modal-overlay" id="report-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <span class="modal-title">Publicar Informe Técnico</span>
-        <button class="close-modal-btn" onclick="closeReportModal()">✕</button>
+        <span class="modal-title">Redactar Informe de Obra</span>
+        <button class="modal-close" onclick="closeReportModal()">✕</button>
       </div>
-      
+
       <div class="form-group">
-        <label>Versión del Reporte</label>
-        <input type="text" id="rep-version" class="form-input" placeholder="v1.0.4 o Día 15">
+        <label>Versión o Día (Ej: v1.0.4 o Día 14)</label>
+        <input type="text" id="rep-version" class="form-input" placeholder="v1.0.4">
       </div>
-      
+
       <div class="form-group">
         <label>Fase de Obra</label>
-        <input type="text" id="rep-phase" class="form-input" placeholder="Cimentación, Estructura, Acabados...">
+        <input type="text" id="rep-phase" class="form-input" placeholder="Cimentación, Estructuras, Acabados...">
       </div>
 
       <div class="form-group">
         <label>Título o Resumen Breve</label>
-        <input type="text" id="rep-title" class="form-input" placeholder="Avance de obra y fraguado...">
+        <input type="text" id="rep-title" class="form-input" placeholder="Fundición de placas nivel 2...">
       </div>
 
       <div class="form-group">
         <label>Detalle Técnico de la Arquitecta</label>
-        <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Escribe aquí las observaciones..."></textarea>
+        <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Observaciones técnicas detalladas..."></textarea>
       </div>
 
-      <!-- ZONA DE CARGA DE FOTOS POR ARRASTRE -->
       <div class="form-group">
-        <label>Fotos y Evidencias de la Obra</label>
+        <label>Fotos de la Obra (Arrastrar o Clic)</label>
         <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-          <div class="dropzone-text">📷 Arrastra tus fotos aquí o haz clic para subir</div>
-          <div class="dropzone-hint">Compatible con fotos tomadas desde celular o computadora</div>
+          <div style="font-size: 13px; color: #535C50; font-weight: 500;">📷 Arrastra las fotos aquí o pulsa para seleccionar</div>
+          <div style="font-size: 11px; color: #8C968A; margin-top: 4px;">Optimización automática de imágenes</div>
         </div>
         <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
         <div class="preview-container" id="preview-list"></div>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
-        <button class="btn-action" style="background: rgba(255,255,255,0.1);" onclick="closeReportModal()">Cancelar</button>
-        <button class="btn-action" id="btn-save-report" onclick="submitReport()">Publicar al Instante</button>
+      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
+        <button class="btn-login-toggle" onclick="closeReportModal()">Cancelar</button>
+        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar al Instante</button>
       </div>
     </div>
   </div>
 
   <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" src="" alt="Ampliación">
+    <img id="lightbox-img" src="" alt="Vista previa">
   </div>
 
   <script>
@@ -540,17 +768,67 @@
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+    let isAdmin = localStorage.getItem('diego_admin') === 'true';
     let uploadedImagesBase64 = [];
 
-    // Reloj
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock-display').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    // CONTROL DE AUTENTICACIÓN
+    function updateAuthStateUI() {
+      const authBtn = document.getElementById('btn-auth-toggle');
+      const createBtn = document.getElementById('btn-new-report');
+      const avatar = document.getElementById('user-avatar');
+      const deleteButtons = document.querySelectorAll('.btn-delete-card');
 
-    // Cargar y mostrar informes
+      if (isAdmin) {
+        authBtn.innerText = "Cerrar sesión (Admin)";
+        authBtn.style.color = "#C04D36";
+        createBtn.style.display = "inline-block";
+        avatar.innerText = "AD";
+        avatar.style.background = "var(--dot-olive)";
+        deleteButtons.forEach(btn => btn.style.display = "inline-block");
+      } else {
+        authBtn.innerText = "Iniciar sesión (Admin)";
+        authBtn.style.color = "var(--text-title)";
+        createBtn.style.display = "none";
+        avatar.innerText = "VI";
+        avatar.style.background = "var(--dot-terracotta)";
+        deleteButtons.forEach(btn => btn.style.display = "none");
+      }
+    }
+
+    function handleAuthAction() {
+      if (isAdmin) {
+        if (confirm("¿Deseas cerrar la sesión de administrador?")) {
+          isAdmin = false;
+          localStorage.removeItem('diego_admin');
+          updateAuthStateUI();
+        }
+      } else {
+        document.getElementById('login-modal').classList.add('open');
+      }
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.remove('open');
+      document.getElementById('login-user').value = '';
+      document.getElementById('login-pass').value = '';
+    }
+
+    function attemptLogin() {
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+
+      if (user === "admin" && pass === "1234") {
+        isAdmin = true;
+        localStorage.setItem('diego_admin', 'true');
+        closeLoginModal();
+        updateAuthStateUI();
+        alert("Sesión iniciada con permisos de administrador.");
+      } else {
+        alert("Credenciales incorrectas. Acceso denegado.");
+      }
+    }
+
+    // CARGAR INFORMES DESDE SUPABASE
     async function loadReports() {
       const feed = document.getElementById('changelog-feed');
       const { data, error } = await supabaseClient
@@ -559,24 +837,28 @@
         .order('created_at', { ascending: false });
 
       if (error) {
-        feed.innerHTML = `<div style="text-align:center; padding:30px; color:#ff9999;">Error al conectar: ${error.message}</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:30px; color:#C04D36;">Error de sincronización: ${error.message}</div>`;
         return;
       }
 
+      document.getElementById('stat-count').innerText = data ? data.length : 0;
       renderReports(data);
     }
 
     function renderReports(items) {
       const feed = document.getElementById('changelog-feed');
       if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#A3B5A7;">No hay informes publicados todavía. ¡Crea uno con el botón de arriba!</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#727971;">No hay informes publicados en la bitácora aún.</div>`;
         return;
       }
 
-      feed.innerHTML = items.map(item => {
+      feed.innerHTML = items.map((item, index) => {
         const fecha = new Date(item.created_at).toLocaleDateString([], {
           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
+
+        // Alternancia de puntos de color (terracota / verde oliva) según el diseño
+        const dotClass = index % 2 === 0 ? 'dot-terracotta' : 'dot-olive';
 
         const fotosHtml = (item.imagenes && item.imagenes.length > 0)
           ? `<div class="photo-grid">
@@ -585,29 +867,35 @@
           : '';
 
         return `
-          <div class="timeline-card">
+          <div class="report-card">
             <div class="card-top">
-              <div class="card-tags">
-                <span class="badge-version">${item.version}</span>
-                <span class="badge-phase">${item.fase || 'General'}</span>
+              <div class="version-group">
+                <span class="dot ${dotClass}"></span>
+                <span class="tag-version">${item.version}</span>
+                <span class="tag-phase">${item.fase || 'General'}</span>
               </div>
-              <div class="card-controls">
+              <div class="card-actions">
                 <span class="card-date">${fecha}</span>
-                <button class="btn-delete" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>
+                <button class="btn-delete-card" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>
               </div>
             </div>
-            <div class="card-title">${item.resumen}</div>
-            <div class="card-desc">${item.detalles || ''}</div>
+            <div class="report-title">${item.resumen}</div>
+            <div class="report-desc">${item.detalles || ''}</div>
             ${fotosHtml}
           </div>
         `;
       }).join('');
+
+      updateAuthStateUI();
     }
 
-    // ELIMINAR INFORME
+    // ELIMINAR INFORME (SOLO ADMIN)
     async function deleteReport(id) {
-      const confirmar = confirm("¿Deseas eliminar este informe técnico definitivamente?");
-      if (!confirmar) return;
+      if (!isAdmin) {
+        alert("Únicamente el administrador puede eliminar informes.");
+        return;
+      }
+      if (!confirm("¿Deseas eliminar este informe definitivamente?")) return;
 
       const { error } = await supabaseClient
         .from('changelog_updates')
@@ -615,13 +903,13 @@
         .eq('id', id);
 
       if (error) {
-        alert("Error al eliminar: " + error.message + "\n(Verifica haber ejecutado la política de eliminación en Supabase)");
+        alert("Error al eliminar: " + error.message);
       } else {
         loadReports();
       }
     }
 
-    // GESTIÓN DE ARRASTRE Y COMPRESIÓN DE IMÁGENES
+    // GESTIÓN DE SUBIDA Y ARRASTRE DE FOTOS
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('file-input');
 
@@ -629,22 +917,17 @@
       e.preventDefault();
       dropzone.classList.add('dragover');
     });
-
     dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
       handleFiles(e.dataTransfer.files);
     });
-
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
     function handleFiles(files) {
       Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) return;
-        
-        // Comprimir imagen localmente usando un canvas para subida rápida y fluida
         const reader = new FileReader();
         reader.onload = (event) => {
           const img = new Image();
@@ -663,10 +946,9 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            
-            // Calidad optimizada WebP/JPEG
-            const compressedData = canvas.toDataURL('image/jpeg', 0.75);
-            uploadedImagesBase64.push(compressedData);
+
+            const compressed = canvas.toDataURL('image/jpeg', 0.75);
+            uploadedImagesBase64.push(compressed);
             renderPreviews();
           };
           img.src = event.target.result;
@@ -677,33 +959,38 @@
 
     function renderPreviews() {
       const list = document.getElementById('preview-list');
-      list.innerHTML = uploadedImagesBase64.map((data, index) => `
-        <div class="preview-thumb-wrap">
-          <img src="${data}" class="preview-thumb">
-          <button class="remove-thumb" onclick="removeImage(${index})">✕</button>
+      list.innerHTML = uploadedImagesBase64.map((data, idx) => `
+        <div class="preview-wrap">
+          <img src="${data}">
+          <button class="preview-remove" onclick="removeImage(${idx})">✕</button>
         </div>
       `).join('');
     }
 
-    function removeImage(index) {
-      uploadedImagesBase64.splice(index, 1);
+    function removeImage(idx) {
+      uploadedImagesBase64.splice(idx, 1);
       renderPreviews();
     }
 
-    // GUARDAR NUEVO REPORTE
+    // PUBLICAR NUEVO INFORME
     async function submitReport() {
+      if (!isAdmin) {
+        alert("Únicamente el administrador tiene permiso para subir informes.");
+        return;
+      }
+
       const version = document.getElementById('rep-version').value.trim();
       const fase = document.getElementById('rep-phase').value.trim() || 'General';
       const resumen = document.getElementById('rep-title').value.trim();
       const detalles = document.getElementById('rep-desc').value.trim();
-      
+
       if (!version || !resumen) {
-        alert("Indica la Versión y el Título del reporte.");
+        alert("Por favor completa al menos la Versión y el Título.");
         return;
       }
 
       const saveBtn = document.getElementById('btn-save-report');
-      saveBtn.innerText = "Publicando...";
+      saveBtn.innerText = "Guardando...";
       saveBtn.disabled = true;
 
       const { error } = await supabaseClient
@@ -711,7 +998,7 @@
         .insert([{
           version,
           fase,
-          autor: 'Arquitecta',
+          autor: 'Arquitecta (Admin)',
           resumen,
           detalles,
           imagenes: uploadedImagesBase64
@@ -734,6 +1021,15 @@
       }
     }
 
+    // MODALES Y LIGHTBOX
+    function openReportModal() { document.getElementById('report-modal').classList.add('open'); }
+    function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
+    function openLightbox(url) {
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
     // TIEMPO REAL
     function setupRealtime() {
       supabaseClient
@@ -744,17 +1040,10 @@
         .subscribe();
     }
 
-    function openReportModal() { document.getElementById('report-modal').classList.add('open'); }
-    function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
-    function openLightbox(url) {
-      document.getElementById('lightbox-img').src = url;
-      document.getElementById('lightbox').classList.add('open');
-    }
-    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
-
     window.addEventListener('DOMContentLoaded', () => {
       loadReports();
       setupRealtime();
+      updateAuthStateUI();
     });
   </script>
 </body>
