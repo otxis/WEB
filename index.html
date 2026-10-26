@@ -2,9 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DIEGO — Portal de Seguimiento de Obra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DIEGO — Seguimiento de Obra</title>
   
+  <!-- Icono de la página (Favicon y Apple Touch Icon para iPhone) -->
+  <link rel="icon" type="image/jpeg" href="gato.jpg">
+  <link rel="apple-touch-icon" href="gato.jpg">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -12,26 +16,34 @@
 
   <style>
     :root {
-      --ios-bg: radial-gradient(circle at 20% 20%, #a4adb3 0%, #767d82 100%);
-      --ios-glass: rgba(240, 242, 245, 0.90);
-      --ios-glass-border: rgba(255, 255, 255, 0.5);
+      /* Entorno gris suave con alto contraste iOS */
+      --ios-bg: radial-gradient(circle at 30% 20%, #b8c1c8 0%, #858e96 100%);
+      --ios-glass: rgba(246, 247, 249, 0.86);
+      --ios-glass-border: rgba(255, 255, 255, 0.65);
       
-      --sidebar-bg: #3B4738;
-      --sidebar-hover: rgba(255, 255, 255, 0.08);
-      --sidebar-text: #E3E9E1;
-      --sidebar-muted: #95A391;
+      /* Paleta Verde Pastel Oscuro / Salvia Suave */
+      --sidebar-bg: #4A5A46;
+      --sidebar-text: #EDF2EC;
+      --sidebar-muted: #B0BFA9;
       
-      --card-cream: #FAF8F5;
-      --card-border: #EBE6DF;
-      --text-title: #222521;
-      --text-body: #4F554E;
+      /* Burbujas de mensaje en verde pastel suave (como la barra) */
+      --msg-pastel-green: #DCE6D8;
+      --msg-pastel-border: #C4D4BE;
+      --msg-inner-cream: #F5F8F3;
       
-      --dot-terracotta: #B87352;
-      --dot-terracotta-bg: #F8ECE6;
-      --dot-olive: #5C6E58;
-      --dot-olive-bg: #EDF2EC;
-      --btn-olive: #435240;
-      --btn-olive-hover: #333F31;
+      /* Textos suaves (sin tonos negros agresivos) */
+      --text-title: #2C352B;
+      --text-body: #465244;
+      --text-muted: #6E7D6B;
+      
+      /* Acentos pasteles */
+      --dot-terracotta: #C88A6B;
+      --dot-terracotta-bg: #F7EAE4;
+      --dot-olive: #687D63;
+      --dot-olive-bg: #E5EFE2;
+      --btn-olive: #556850;
+      --danger-soft: #B95C50;
+      --danger-bg: #F9E8E6;
     }
 
     * {
@@ -39,6 +51,10 @@
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -49,19 +65,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px 14px;
+      padding: 20px 16px;
     }
 
-    /* PANTALLA DE ACCESO MINIMALISTA */
+    /* 1. PANTALLA DE INICIO DE SESIÓN CENTRADA (PC Y MÓVIL IDÉNTICOS TIPO iPHONE) */
     .login-wrapper {
       width: 100%;
-      max-width: 380px;
-      background: var(--ios-glass);
-      backdrop-filter: blur(35px) saturate(180%);
-      -webkit-backdrop-filter: blur(35px) saturate(180%);
-      border: 1px solid var(--ios-glass-border);
-      border-radius: 24px;
-      box-shadow: 0 30px 70px rgba(20, 25, 30, 0.28);
+      max-width: 390px;
+      background: rgba(250, 251, 252, 0.88);
+      backdrop-filter: blur(40px) saturate(190%);
+      -webkit-backdrop-filter: blur(40px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 26px;
+      box-shadow: 0 30px 70px rgba(35, 42, 48, 0.28);
       padding: 36px 28px;
       text-align: center;
       display: flex;
@@ -69,19 +85,31 @@
       gap: 20px;
     }
 
+    .login-avatar-top {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      margin: 0 auto 4px;
+      object-fit: cover;
+      border: 2px solid var(--msg-pastel-border);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      background: #1C211B;
+    }
+
     .login-brand {
       font-size: 30px;
       letter-spacing: 5px;
       font-weight: 300;
-      color: #1F281E;
+      color: var(--text-title);
       line-height: 1;
     }
     .login-tag {
-      font-size: 11.5px;
-      color: #6A7467;
+      font-size: 9.5px;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.3px;
       margin-top: 6px;
+      line-height: 1.4;
     }
 
     .login-form {
@@ -95,44 +123,39 @@
       display: block;
       font-size: 11.5px;
       font-weight: 600;
-      color: #555F52;
+      color: var(--text-body);
       margin-bottom: 6px;
     }
 
-    .login-input, .login-select {
+    .login-input {
       width: 100%;
       background: #FFFFFF;
-      border: 1px solid #D6DCD3;
-      border-radius: 12px;
-      padding: 11px 14px;
-      font-size: 13.5px;
+      border: 1px solid #D5DFD2;
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 14px;
       color: var(--text-title);
       outline: none;
       font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .login-input:focus, .login-select:focus {
+    .login-input:focus {
       border-color: var(--sidebar-bg);
-      box-shadow: 0 0 0 3px rgba(59, 71, 56, 0.12);
+      box-shadow: 0 0 0 3px rgba(74, 90, 70, 0.14);
     }
 
     .btn-submit-login {
       background: var(--sidebar-bg);
       color: #FFFFFF;
       border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 13.5px;
+      border-radius: 14px;
+      padding: 13px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.2s;
-    }
-    .btn-submit-login:hover {
-      background: #2D372B;
+      margin-top: 6px;
     }
 
-    /* PANTALLA PRINCIPAL / APLICACIÓN */
+    /* 2. VENTANA PRINCIPAL */
     .app-window {
       width: 100%;
       max-width: 1240px;
@@ -142,15 +165,16 @@
       backdrop-filter: blur(35px) saturate(180%);
       -webkit-backdrop-filter: blur(35px) saturate(180%);
       border: 1px solid var(--ios-glass-border);
-      border-radius: 24px;
-      box-shadow: 0 35px 80px rgba(25, 30, 35, 0.35);
-      display: none; /* Se muestra tras loguearse */
+      border-radius: 26px;
+      box-shadow: 0 35px 80px rgba(30, 36, 42, 0.30);
+      display: none;
       overflow: hidden;
+      position: relative;
     }
 
-    /* BARRA LATERAL VERDE */
+    /* BARRA LATERAL VERDE PASTEL (ESCRITORIO Y DESPLEGABLE MÓVIL) */
     .sidebar {
-      width: 250px;
+      width: 255px;
       background: var(--sidebar-bg);
       color: var(--sidebar-text);
       display: flex;
@@ -159,12 +183,13 @@
       padding: 28px 20px;
       position: relative;
       flex-shrink: 0;
+      z-index: 40;
     }
 
     .brand-section {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 20px;
-      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
     }
     .brand-title {
       font-size: 26px;
@@ -176,12 +201,12 @@
       line-height: 1;
     }
     .brand-subtitle {
-      font-size: 8px;
+      font-size: 8.5px;
       letter-spacing: 1.2px;
       color: var(--sidebar-muted);
       margin-top: 8px;
       text-transform: uppercase;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .nav-list {
@@ -191,34 +216,64 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
       font-size: 13.5px;
       color: var(--sidebar-text);
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.14);
       font-weight: 600;
+      cursor: pointer;
     }
 
     .sidebar-footer {
       position: relative;
-      min-height: 140px;
+      min-height: 150px;
     }
     .plant-svg {
       position: absolute;
       bottom: 0;
-      left: -10px;
-      width: 160px;
-      opacity: 0.18;
+      left: -8px;
+      width: 155px;
+      opacity: 0.25;
       pointer-events: none;
     }
 
-    /* CONTENIDO PRINCIPAL */
+    /* BOTÓN HAMBURGUESA MÓVIL (OCULTO EN PC) */
+    .mobile-menu-btn {
+      display: none;
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 43, 34, 0.45);
+      backdrop-filter: blur(6px);
+      z-index: 35;
+    }
+    .drawer-backdrop.open {
+      display: block;
+    }
+
+    /* CONTENIDO PRINCIPAL CON SCROLL SUAVE */
     .main-viewport {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      padding: 32px 36px;
+      scroll-behavior: smooth;
+      padding: 30px 34px;
     }
 
     .top-header {
@@ -226,11 +281,19 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 22px;
-      gap: 16px;
+      gap: 14px;
     }
+
+    .header-left-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
     .search-input {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.80);
+      border: 1px solid rgba(74, 90, 70, 0.16);
       padding: 9px 18px;
       border-radius: 20px;
       font-size: 13px;
@@ -238,55 +301,49 @@
       width: 320px;
       outline: none;
       font-family: inherit;
-      transition: all 0.2s;
     }
     .search-input:focus {
       background: #FFFFFF;
       border-color: var(--sidebar-bg);
-      box-shadow: 0 0 0 3px rgba(59, 71, 56, 0.12);
     }
 
+    /* PERFIL, NOMBRE EN MAYÚSCULA GRANDE Y BOTÓN SALIR AL LADO */
     .user-pill {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-shrink: 0;
     }
     .user-meta-name {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #384236;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-title);
+    }
+    .avatar-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--sidebar-bg);
+      background: #1C211B;
+      flex-shrink: 0;
     }
     .btn-logout {
-      background: #FFFFFF;
-      border: 1px solid var(--card-border);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #C04D36;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-    .btn-logout:hover {
-      background: #FDF0ED;
-    }
-    .avatar-badge {
-      width: 34px;
-      height: 34px;
-      background: var(--dot-olive);
-      color: #FFFFFF;
+      background: var(--danger-bg);
+      border: 1px solid rgba(185, 92, 80, 0.28);
+      padding: 7px 13px;
+      border-radius: 18px;
       font-size: 12px;
       font-weight: 600;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--danger-soft);
+      cursor: pointer;
     }
 
-    /* ENCABEZADO EDITORIAL */
+    /* ENCABEZADO */
     .editorial-header {
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
     .editorial-title {
       font-family: 'Playfair Display', serif;
@@ -297,21 +354,22 @@
     }
     .editorial-sub {
       font-size: 13px;
-      color: #6C746B;
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
+    /* ESTADÍSTICAS */
     .quick-stats {
       display: grid;
-      grid-template-columns: repeat(2, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 26px;
+      grid-template-columns: repeat(2, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
     }
     .stat-card {
-      background: var(--card-cream);
-      border: 1px solid var(--card-border);
+      background: var(--msg-inner-cream);
+      border: 1px solid var(--msg-pastel-border);
       border-radius: 16px;
-      padding: 16px 20px;
+      padding: 15px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -319,29 +377,29 @@
     .stat-meta {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
     .stat-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
     }
     .stat-num {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--text-title);
       line-height: 1.1;
     }
     .stat-label {
-      font-size: 12px;
-      color: #727971;
+      font-size: 11.5px;
+      color: var(--text-muted);
     }
 
-    /* FEED */
+    /* CABECERA DE SEGUIMIENTO DE OBRA */
     .feed-header {
       display: flex;
       justify-content: space-between;
@@ -350,33 +408,38 @@
     }
     .feed-title {
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
+      color: var(--text-title);
     }
     .btn-create {
       background: var(--btn-olive);
       color: #FFFFFF;
       border: none;
-      padding: 8px 16px;
+      padding: 9px 16px;
       border-radius: 20px;
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       display: none;
     }
-    .btn-create:hover { background: var(--btn-olive-hover); }
 
+    /* INFORMES ESTILO MENSAJE DE TEXTO EN VERDE PASTEL */
     .timeline {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
+      padding-bottom: 24px;
     }
+
     .report-card {
-      background: var(--card-cream);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
+      background: var(--msg-pastel-green);
+      border: 1px solid var(--msg-pastel-border);
+      border-radius: 20px 20px 20px 6px; /* Burbuja estilo mensaje de texto */
       padding: 20px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 6px 18px rgba(55, 70, 52, 0.06);
+      position: relative;
     }
+
     .card-top {
       display: flex;
       align-items: center;
@@ -388,7 +451,8 @@
     .version-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .dot {
       width: 9px;
@@ -402,80 +466,201 @@
       font-size: 12px;
       font-weight: 700;
       font-family: monospace;
+      background: var(--msg-inner-cream);
+      padding: 3px 8px;
+      border-radius: 8px;
       color: var(--text-title);
     }
     .tag-phase {
-      background: var(--dot-olive-bg);
-      color: var(--dot-olive);
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
       font-size: 11px;
       font-weight: 600;
-      padding: 3px 9px;
+      padding: 3px 10px;
       border-radius: 12px;
     }
     .tag-client {
       background: var(--dot-terracotta-bg);
-      color: var(--dot-terracotta);
+      color: #8C563C;
       font-size: 11px;
       font-weight: 600;
-      padding: 3px 9px;
+      padding: 3px 10px;
       border-radius: 12px;
-      text-transform: capitalize;
     }
+
     .card-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .card-date {
-      font-size: 12px;
-      color: #8A9289;
+      font-size: 11.5px;
+      color: var(--text-body);
+      font-weight: 500;
     }
     .btn-delete-card {
-      background: #FDF0ED;
-      color: #C04D36;
-      border: 1px solid #F5D3CA;
-      border-radius: 6px;
-      padding: 4px 8px;
+      background: var(--danger-bg);
+      color: var(--danger-soft);
+      border: 1px solid rgba(185, 92, 80, 0.3);
+      border-radius: 8px;
+      padding: 4px 9px;
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      display: none;
     }
-    .btn-delete-card:hover { background: #C04D36; color: #FFF; }
 
     .report-title {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--text-title);
       margin-bottom: 6px;
     }
     .report-desc {
-      font-size: 13.5px;
+      font-size: 14px;
       color: var(--text-body);
       line-height: 1.6;
       white-space: pre-line;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.55);
+      padding: 12px 14px;
+      border-radius: 12px;
     }
 
     .photo-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
-      margin-top: 10px;
+      margin-bottom: 14px;
     }
     .photo-thumb {
       width: 100%;
-      height: 110px;
-      border-radius: 10px;
+      height: 115px;
+      border-radius: 12px;
       object-fit: cover;
       cursor: pointer;
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.7);
     }
 
-    /* MODAL DE PUBLICACIÓN */
+    /* ZONA DE INTERACCIÓN: BOTÓN GRANDE "VISTO" Y BOTÓN "COMENTARIO" */
+    .interaction-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(74, 90, 70, 0.14);
+      flex-wrap: wrap;
+    }
+
+    .btn-visto {
+      flex: 1;
+      min-width: 150px;
+      background: var(--msg-inner-cream);
+      color: var(--text-title);
+      border: 1.5px solid var(--sidebar-bg);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-visto.active-visto {
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
+    }
+
+    .btn-comment-toggle {
+      background: var(--msg-inner-cream);
+      color: var(--text-title);
+      border: 1px solid var(--msg-pastel-border);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .visto-list-badge {
+      width: 100%;
+      font-size: 11.5px;
+      color: var(--text-body);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* CAJA DESPLEGABLE DE COMENTARIOS */
+    .comments-section {
+      display: none;
+      margin-top: 12px;
+      background: var(--msg-inner-cream);
+      border: 1px solid var(--msg-pastel-border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .comments-section.open {
+      display: block;
+    }
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .comment-item {
+      background: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      border: 1px solid #E5ECE2;
+    }
+    .comment-author {
+      font-weight: 700;
+      color: var(--sidebar-bg);
+      margin-right: 6px;
+    }
+    .comment-time {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      float: right;
+    }
+    .comment-form {
+      display: flex;
+      gap: 8px;
+    }
+    .comment-input {
+      flex: 1;
+      border: 1px solid #CFD9CC;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+    .btn-send-comment {
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* MODALES */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(40, 48, 42, 0.45);
+      background: rgba(45, 54, 44, 0.45);
       backdrop-filter: blur(12px);
       display: none;
       align-items: center;
@@ -487,11 +672,13 @@
 
     .modal-box {
       width: 100%;
-      max-width: 520px;
-      background: #FFFFFF;
-      border-radius: 20px;
-      padding: 26px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      background: #FAFBF9;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .modal-header {
       display: flex;
@@ -501,47 +688,41 @@
     }
     .modal-title {
       font-size: 17px;
-      font-weight: 600;
+      font-weight: 700;
     }
     .modal-close {
       background: none;
       border: none;
       font-size: 18px;
       cursor: pointer;
-      color: #8A9289;
+      color: var(--text-muted);
     }
 
-    .form-group {
-      margin-bottom: 13px;
-    }
+    .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
       font-size: 12px;
       font-weight: 600;
-      color: #636D61;
+      color: var(--text-body);
       margin-bottom: 5px;
     }
     .form-input, .form-textarea, .form-select {
       width: 100%;
-      border: 1px solid #D9E0D7;
+      border: 1px solid #D5DFD2;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 10px 13px;
       font-size: 13.5px;
       font-family: inherit;
       outline: none;
-      background: #FAF8F5;
-    }
-    .form-input:focus, .form-textarea:focus, .form-select:focus {
-      border-color: var(--sidebar-bg);
       background: #FFFFFF;
     }
 
     .dropzone {
-      border: 2px dashed #C5CEC3;
+      border: 2px dashed #B8C7B4;
       border-radius: 12px;
-      padding: 18px;
+      padding: 16px;
       text-align: center;
-      background: #FAF8F5;
+      background: var(--msg-inner-cream);
       cursor: pointer;
     }
     .preview-container {
@@ -552,8 +733,8 @@
     }
     .preview-wrap {
       position: relative;
-      width: 60px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
     }
     .preview-wrap img {
       width: 100%;
@@ -565,7 +746,7 @@
       position: absolute;
       top: -4px;
       right: -4px;
-      background: #C04D36;
+      background: var(--danger-soft);
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -578,140 +759,191 @@
     .lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(30, 36, 30, 0.88);
       backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 600;
-      cursor: zoom-out;
     }
     .lightbox.open { display: flex; }
     .lightbox img {
-      max-width: 90vw;
+      max-width: 92vw;
       max-height: 85vh;
-      border-radius: 12px;
+      border-radius: 14px;
     }
 
-    /* MÓVILES */
+    /* ESTÉTICA MÓVIL TIPO iOS CON DESENFOQUES Y MENÚ DESPLEGABLE VERDE CON PLANTA */
     @media (max-width: 768px) {
       body {
-        padding: 0;
-        background: #8c9398;
-        align-items: stretch;
-      }
-      .login-wrapper {
-        max-width: 100%;
-        min-height: 100vh;
-        border-radius: 0;
+        padding: 14px;
+        background: radial-gradient(circle at 50% 20%, #c2cbd2 0%, #838d96 100%);
+        align-items: center;
         justify-content: center;
-        border: none;
       }
+
+      /* El cuadro de inicio de sesión se mantiene flotante en el centro con contraste tipo iPhone */
+      .login-wrapper {
+        max-width: 360px;
+        min-height: auto;
+        border-radius: 26px;
+        padding: 32px 24px;
+        box-shadow: 0 25px 60px rgba(25, 32, 38, 0.35);
+      }
+
+      /* Ventana principal en el móvil con estilo cristal iOS */
       .app-window {
-        height: auto;
-        min-height: 100vh;
-        border-radius: 0;
-        border: none;
-        box-shadow: none;
+        width: 100%;
+        height: 94vh;
+        min-height: 94vh;
+        border-radius: 24px;
         flex-direction: column;
       }
+
+      /* Menú lateral verde pastel convertido en cajón desplegable superior izquierdo con su planta y significado */
       .sidebar {
-        width: 100%;
-        padding: 14px 18px;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 265px;
+        height: 100vh;
+        padding: 28px 20px;
+        transition: left 0.25s ease;
+        box-shadow: 15px 0 40px rgba(0, 0, 0, 0.25);
       }
-      .brand-section {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
-      .brand-title {
-        font-size: 20px;
-        letter-spacing: 3px;
+      .sidebar.open {
+        left: 0;
       }
       .brand-subtitle, .nav-list, .sidebar-footer {
-        display: none;
+        display: block;
       }
+
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+
       .main-viewport {
-        padding: 18px 14px;
+        padding: 16px 14px;
       }
+
+      /* Cabecera en móvil: Menú izquierda | Nombre Mayúscula + Foto Gato + Botón Salir juntos a la derecha */
       .top-header {
-        flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 12px;
-        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
       }
-      .search-input {
-        width: 100%;
+      .header-left-group {
+        order: 1;
+        flex: 0 0 auto;
       }
       .user-pill {
-        justify-content: space-between;
+        order: 2;
+        margin-left: auto;
+        gap: 8px;
       }
+      .user-meta-name {
+        font-size: 14px;
+      }
+      .avatar-img {
+        width: 34px;
+        height: 34px;
+      }
+      .btn-logout {
+        padding: 6px 11px;
+        font-size: 11.5px;
+      }
+      .search-input {
+        order: 3;
+        width: 100%;
+        padding: 10px 15px;
+      }
+
+      /* Encabezado móvil con el significado de DIEGO visible */
       .editorial-title {
-        font-size: 24px;
+        font-size: 23px;
       }
+      .editorial-sub {
+        font-size: 12px;
+      }
+
       .quick-stats {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
         margin-bottom: 18px;
       }
       .stat-card {
-        padding: 12px 14px;
+        padding: 12px;
       }
       .stat-icon {
         width: 32px;
         height: 32px;
-        font-size: 14px;
       }
       .stat-num {
-        font-size: 18px;
+        font-size: 17px;
+      }
+
+      .report-card {
+        padding: 16px;
       }
       .photo-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
       }
       .photo-thumb {
-        height: 85px;
+        height: 105px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. PANTALLA INICIAL DE INICIO DE SESIÓN -->
+  <!-- 1. PANTALLA INICIAL DE INICIO DE SESIÓN (MISMO CUADRO FLOTANTE EN PC Y TELÉFONO) -->
   <div class="login-wrapper" id="login-screen">
     <div>
+      <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="login-avatar-top" alt="Icono DIEGO">
       <div class="login-brand">DIEGO</div>
-      <div class="login-tag">Portal de Clientes & Obra</div>
+      <div class="login-tag">Daily Intelligent Electronic Graphic Organizer</div>
     </div>
 
-    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();">
+    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
       <div class="form-group-login">
-        <label>Cuenta de Usuario</label>
-        <select id="login-user" class="login-select">
-          <option value="admin">Administrador (Arquitecta / Admin)</option>
-          <option value="cliente1">Cliente 1</option>
-          <option value="cliente2">Cliente 2</option>
-          <option value="cliente3">Cliente 3</option>
-          <option value="cliente4">Cliente 4</option>
-        </select>
+        <label for="login-user">Usuario</label>
+        <input 
+          type="text" 
+          id="login-user" 
+          name="username" 
+          autocomplete="username" 
+          class="login-input" 
+          placeholder="Ej: Admin, Cliente1..." 
+          required
+        >
       </div>
 
       <div class="form-group-login">
-        <label>Contraseña</label>
-        <input type="password" id="login-pass" class="login-input" placeholder="••••" required>
+        <label for="login-pass">Contraseña</label>
+        <input 
+          type="password" 
+          id="login-pass" 
+          name="password" 
+          autocomplete="current-password" 
+          class="login-input" 
+          placeholder="••••" 
+          required
+        >
       </div>
 
-      <button type="submit" class="btn-submit-login">Ingresar al Portal</button>
+      <button type="submit" class="btn-submit-login">Iniciar Sesión</button>
     </form>
   </div>
 
-  <!-- 2. VENTANA PRINCIPAL DE INFORMES -->
+  <!-- 2. VENTANA PRINCIPAL -->
   <div class="app-window" id="app-screen">
     
-    <aside class="sidebar">
+    <!-- FONDO OSCURO AL ABRIR MENÚ EN EL CELULAR -->
+    <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleMobileDrawer()"></div>
+
+    <!-- BARRA LATERAL VERDE PASTEL CON SIGNIFICADO DE DIEGO Y PLANTA -->
+    <aside class="sidebar" id="sidebar-menu">
       <div>
         <div class="brand-section">
           <div class="brand-title">DIEGO</div>
@@ -719,14 +951,14 @@
         </div>
 
         <ul class="nav-list">
-          <li class="nav-item">
+          <li class="nav-item" onclick="closeMobileDrawer()">
             <span>⌂</span> Inicio
           </li>
         </ul>
       </div>
 
       <div class="sidebar-footer">
-        <svg class="plant-svg" viewBox="0 0 100 160" fill="none" stroke="#DCE5D8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="plant-svg" viewBox="0 0 100 160" fill="none" stroke="#EDF2EC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M 45 160 Q 48 100 40 20" />
           <path d="M 44 135 C 20 130 10 110 25 105 C 38 102 44 125 44 135 Z" />
           <path d="M 44 115 C 65 110 80 90 65 85 C 50 82 43 105 44 115 Z" />
@@ -738,27 +970,32 @@
       </div>
     </aside>
 
+    <!-- ÁREA PRINCIPAL -->
     <main class="main-viewport">
       
       <div class="top-header">
+        <div class="header-left-group">
+          <button class="mobile-menu-btn" onclick="toggleMobileDrawer()" title="Menú">☰</button>
+        </div>
+
         <input 
           type="text" 
           id="search-input" 
           class="search-input" 
-          placeholder="🔍 Buscar en mis informes..." 
+          placeholder="🔍 Buscar por versión, título o fecha..." 
           oninput="applySearchFilter()"
         >
         
         <div class="user-pill">
-          <span class="user-meta-name" id="user-display-label">Usuario</span>
+          <span class="user-meta-name" id="user-display-label">ADMIN</span>
+          <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Perfil">
           <button class="btn-logout" onclick="handleLogout()">Salir</button>
-          <div class="avatar-badge" id="user-avatar">CL</div>
         </div>
       </div>
 
       <div class="editorial-header">
-        <h1 class="editorial-title" id="feed-main-title">Seguimiento de Obra</h1>
-        <p class="editorial-sub" id="feed-main-subtitle">Registro continuo de novedades y avances en tiempo real.</p>
+        <h1 class="editorial-title">DIEGO — Seguimiento de Obra</h1>
+        <p class="editorial-sub" id="feed-main-subtitle">Daily Intelligent Electronic Graphic Organizer</p>
       </div>
 
       <div class="quick-stats">
@@ -767,61 +1004,62 @@
             <div class="stat-icon" style="background: var(--dot-terracotta-bg); color: var(--dot-terracotta);">📅</div>
             <div>
               <div class="stat-num" id="stat-count">0</div>
-              <div class="stat-label">informes disponibles</div>
+              <div class="stat-label">informes activos</div>
             </div>
           </div>
-          <span style="color:#B87352;">→</span>
+          <span style="color:var(--dot-terracotta);">→</span>
         </div>
 
         <div class="stat-card">
           <div class="stat-meta">
             <div class="stat-icon" style="background: var(--dot-olive-bg); color: var(--dot-olive);">✔</div>
             <div>
-              <div class="stat-num">Activo</div>
-              <div class="stat-label">canal en vivo</div>
+              <div class="stat-num">En Vivo</div>
+              <div class="stat-label">sincronización</div>
             </div>
           </div>
-          <span style="color:#5C6E58;">→</span>
+          <span style="color:var(--dot-olive);">→</span>
         </div>
       </div>
 
+      <!-- SECCIÓN DE INFORMES -->
       <div class="feed-header">
         <div class="feed-title">
-          <span>🏗️ Bitácora de Novedades</span>
+          <span>🏗️ Seguimiento de Obra</span>
         </div>
         <button class="btn-create" id="btn-new-report" onclick="openReportModal()">+ Nuevo Informe</button>
       </div>
 
       <div class="timeline" id="changelog-feed">
-        <div style="text-align: center; padding: 40px; color: #727971;">
-          Cargando informes...
+        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+          Cargando mensajes de obra...
         </div>
       </div>
 
     </main>
   </div>
 
-  <!-- MODAL DE PUBLICACIÓN (SÓLO ADMIN) -->
+  <!-- MODAL DE PUBLICACIÓN (SOLO ADMIN) -->
   <div class="modal-overlay" id="report-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <span class="modal-title">Redactar Informe</span>
+        <span class="modal-title">Nuevo Informe de Obra</span>
         <button class="modal-close" onclick="closeReportModal()">✕</button>
       </div>
 
       <div class="form-group">
-        <label>Asignar Destinatario (Cliente)</label>
+        <label>Destinatario</label>
         <select id="rep-target" class="form-select">
-          <option value="todos">Todos los Clientes (General)</option>
-          <option value="cliente1">Cliente 1</option>
-          <option value="cliente2">Cliente 2</option>
-          <option value="cliente3">Cliente 3</option>
-          <option value="cliente4">Cliente 4</option>
+          <option value="todos">Todos los Clientes</option>
+          <option value="Cliente1">Cliente1</option>
+          <option value="Cliente2">Cliente2</option>
+          <option value="Cliente3">Cliente3</option>
+          <option value="Cliente4">Cliente4</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Versión o Identificador (Ej: v1.0.4 o Día 14)</label>
+        <label>Versión o Día (Ej: v1.0.4 o Día 15)</label>
         <input type="text" id="rep-version" class="form-input" placeholder="v1.0.4">
       </div>
 
@@ -831,73 +1069,108 @@
       </div>
 
       <div class="form-group">
-        <label>Título o Resumen Breve</label>
-        <input type="text" id="rep-title" class="form-input" placeholder="Fundición de placas nivel 2...">
+        <label>Título del Informe</label>
+        <input type="text" id="rep-title" class="form-input" placeholder="Avance de mampostería y acabados...">
       </div>
 
       <div class="form-group">
-        <label>Detalle Técnico</label>
-        <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Observaciones técnicas detalladas..."></textarea>
+        <label>Mensaje / Detalle Técnico</label>
+        <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Escribe las observaciones detalladas..."></textarea>
       </div>
 
       <div class="form-group">
-        <label>Fotos de la Obra (Arrastrar o Clic)</label>
+        <label>Fotos Adjuntas (Arrastrar o pulsar)</label>
         <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-          <div style="font-size: 13px; color: #535C50; font-weight: 500;">📷 Arrastra fotos aquí o pulsa para seleccionar</div>
-          <div style="font-size: 11px; color: #8C968A; margin-top: 4px;">Optimización local automática</div>
+          <div style="font-size: 13px; color: var(--text-body); font-weight: 600;">📷 Subir fotos desde el teléfono o PC</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Compresión ligera instantánea</div>
         </div>
         <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
         <div class="preview-container" id="preview-list"></div>
       </div>
 
-      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-        <button class="btn-logout" style="color:#555;" onclick="closeReportModal()">Cancelar</button>
-        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar</button>
+      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeReportModal()">Cancelar</button>
+        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar Informe</button>
       </div>
     </div>
   </div>
 
-  <!-- LIGHTBOX -->
+  <!-- VISOR DE FOTOS -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" src="" alt="Vista previa">
+    <img id="lightbox-img" src="" alt="Vista ampliada">
   </div>
 
   <script>
+    // Respaldo SVG idéntico a la imagen del gato verde oliva sobre fondo oscuro
+    const CAT_FALLBACK_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#0B0D0A"/>
+        <path d="M 35 135 L 35 72 Q 35 65 42 72 L 54 84 L 74 84 L 86 72 Q 93 65 93 72 L 93 95 L 105 95 Q 130 95 148 118 Q 165 138 175 130 Q 186 120 180 96 Q 173 75 153 82 Q 136 88 142 106 Q 145 114 137 116 Q 128 116 126 102 Q 123 72 154 66 Q 186 62 192 98 Q 196 135 168 145 Q 140 152 115 145 L 48 145 Q 35 145 35 135 Z" fill="#78825D"/>
+        <path d="M 46 98 Q 52 106 58 98" stroke="#0B0D0A" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M 70 98 Q 76 106 82 98" stroke="#0B0D0A" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    `);
+
     const SUPABASE_URL = "https://euagegivizyfweymdiaa.supabase.co";
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // Usuarios permitidos exactamente sin espacios y con mayúscula inicial
+    const VALID_ACCOUNTS = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
 
     let activeUser = localStorage.getItem('diego_active_user') || null;
     let uploadedImagesBase64 = [];
     let allReports = [];
 
-    // GESTIÓN DE SESIÓN
+    // Autocompletar último usuario guardado en el dispositivo
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('diego_saved_username');
+      if (savedUser) {
+        document.getElementById('login-user').value = savedUser;
+      }
+      initAppView();
+      setupRealtime();
+    });
+
+    // MENÚ DESPLEGABLE EN MÓVIL
+    function toggleMobileDrawer() {
+      document.getElementById('sidebar-menu').classList.toggle('open');
+      document.getElementById('drawer-backdrop').classList.toggle('open');
+    }
+    function closeMobileDrawer() {
+      document.getElementById('sidebar-menu').classList.remove('open');
+      document.getElementById('drawer-backdrop').classList.remove('open');
+    }
+
+    // INICIO DE SESIÓN ESCRITO (SIN LISTA DE CUENTAS)
     function handleLogin() {
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
 
-      if (pass !== "1234") {
-        alert("Contraseña incorrecta.");
+      if (!VALID_ACCOUNTS.includes(user) || pass !== "1234") {
+        alert("Usuario o contraseña incorrectos. Recuerda escribir la inicial en mayúscula y sin espacios.");
         return;
       }
 
       activeUser = user;
       localStorage.setItem('diego_active_user', user);
+      localStorage.setItem('diego_saved_username', user);
       document.getElementById('login-pass').value = '';
       initAppView();
     }
 
     function handleLogout() {
-      if (confirm("¿Deseas cerrar tu sesión?")) {
+      if (confirm("¿Deseas salir de tu cuenta?")) {
         activeUser = null;
         localStorage.removeItem('diego_active_user');
+        closeMobileDrawer();
         document.getElementById('app-screen').style.display = 'none';
         document.getElementById('login-screen').style.display = 'flex';
       }
     }
 
     function initAppView() {
-      if (!activeUser) {
+      if (!activeUser || !VALID_ACCOUNTS.includes(activeUser)) {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
         return;
@@ -907,29 +1180,24 @@
       document.getElementById('app-screen').style.display = 'flex';
 
       const userDisplay = document.getElementById('user-display-label');
-      const avatar = document.getElementById('user-avatar');
       const createBtn = document.getElementById('btn-new-report');
       const subTitle = document.getElementById('feed-main-subtitle');
 
-      if (activeUser === 'admin') {
-        userDisplay.innerText = "Administrador";
-        avatar.innerText = "AD";
-        avatar.style.background = "var(--dot-olive)";
+      // Nombre en mayúscula y más grande
+      userDisplay.innerText = activeUser.toUpperCase();
+
+      if (activeUser === 'Admin') {
         createBtn.style.display = "inline-block";
-        subTitle.innerText = "Panel central de administración — Todos los informes y clientes.";
+        subTitle.innerText = "Daily Intelligent Electronic Graphic Organizer — Panel Administrador";
       } else {
-        const clientFormatted = activeUser.replace('cliente', 'Cliente ');
-        userDisplay.innerText = clientFormatted;
-        avatar.innerText = activeUser.replace('cliente', 'C');
-        avatar.style.background = "var(--dot-terracotta)";
         createBtn.style.display = "none";
-        subTitle.innerText = `Informes y seguimiento exclusivos para ${clientFormatted}.`;
+        subTitle.innerText = `Daily Intelligent Electronic Graphic Organizer — Espacio de ${activeUser}`;
       }
 
       loadReports();
     }
 
-    // CARGAR Y FILTRAR INFORMES SEGÚN ROL
+    // CARGAR INFORMES
     async function loadReports() {
       const feed = document.getElementById('changelog-feed');
       const { data, error } = await supabaseClient
@@ -938,17 +1206,16 @@
         .order('created_at', { ascending: false });
 
       if (error) {
-        feed.innerHTML = `<div style="text-align:center; padding:30px; color:#C04D36;">Error de sincronización: ${error.message}</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--danger-soft);">Error de conexión: ${error.message}</div>`;
         return;
       }
 
-      // Si es cliente, solo ve los suyos o los marcados para 'todos'
-      if (activeUser === 'admin') {
+      if (activeUser === 'Admin') {
         allReports = data || [];
       } else {
         allReports = (data || []).filter(item => {
           const dest = (item.destinatario || 'todos').toLowerCase();
-          return dest === 'todos' || dest === activeUser;
+          return dest === 'todos' || dest === activeUser.toLowerCase();
         });
       }
 
@@ -958,7 +1225,6 @@
 
     function applySearchFilter() {
       const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
-      
       if (!query) {
         renderReports(allReports);
         return;
@@ -969,13 +1235,13 @@
         const resumen = (item.resumen || '').toLowerCase();
         const detalles = (item.detalles || '').toLowerCase();
         const fase = (item.fase || '').toLowerCase();
-        const dest = (item.destinatario || '').toLowerCase();
+        const fechaStr = new Date(item.created_at).toLocaleDateString().toLowerCase();
 
         return version.includes(query) ||
                resumen.includes(query) ||
                detalles.includes(query) ||
                fase.includes(query) ||
-               dest.includes(query);
+               fechaStr.includes(query);
       });
 
       renderReports(filtered);
@@ -984,7 +1250,7 @@
     function renderReports(items) {
       const feed = document.getElementById('changelog-feed');
       if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#727971;">No hay informes publicados en tu apartado por el momento.</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No hay informes registrados en este apartado.</div>`;
         return;
       }
 
@@ -994,12 +1260,12 @@
         });
 
         const dotClass = index % 2 === 0 ? 'dot-terracotta' : 'dot-olive';
-        const destLabel = (item.destinatario && item.destinatario !== 'todos') 
-          ? `<span class="tag-client">${item.destinatario.replace('cliente', 'Cliente ')}</span>` 
-          : `<span class="tag-client" style="background:#EBEFEA; color:#4E5A4D;">General</span>`;
+        const destLabel = (item.destinatario && item.destinatario !== 'todos')
+          ? `<span class="tag-client">${item.destinatario}</span>`
+          : `<span class="tag-client">Todos</span>`;
 
-        const deleteBtn = (activeUser === 'admin') 
-          ? `<button class="btn-delete-card" style="display:inline-block;" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>` 
+        const deleteBtn = (activeUser === 'Admin')
+          ? `<button class="btn-delete-card" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>`
           : '';
 
         const fotosHtml = (item.imagenes && item.imagenes.length > 0)
@@ -1008,6 +1274,25 @@
              </div>`
           : '';
 
+        // Estado de VISTO
+        const vistosArr = Array.isArray(item.vistos) ? item.vistos : [];
+        const yaVisto = vistosArr.includes(activeUser);
+        const vistoTexto = vistosArr.length > 0
+          ? `✔ Visto por: ${vistosArr.join(', ')}`
+          : `Aún sin confirmar lectura`;
+
+        // Comentarios
+        const comentariosArr = Array.isArray(item.comentarios) ? item.comentarios : [];
+        const commentsHtml = comentariosArr.length > 0
+          ? comentariosArr.map(c => `
+              <div class="comment-item">
+                <span class="comment-author">${c.autor}:</span>
+                <span>${c.texto}</span>
+                <span class="comment-time">${c.fecha || ''}</span>
+              </div>
+            `).join('')
+          : `<div style="font-size:12px; color:var(--text-muted);">Sin comentarios todavía.</div>`;
+
         return `
           <div class="report-card">
             <div class="card-top">
@@ -1015,25 +1300,110 @@
                 <span class="dot ${dotClass}"></span>
                 <span class="tag-version">${item.version}</span>
                 <span class="tag-phase">${item.fase || 'General'}</span>
-                ${activeUser === 'admin' ? destLabel : ''}
+                ${activeUser === 'Admin' ? destLabel : ''}
               </div>
               <div class="card-actions">
                 <span class="card-date">${fecha}</span>
                 ${deleteBtn}
               </div>
             </div>
+
             <div class="report-title">${item.resumen}</div>
             <div class="report-desc">${item.detalles || ''}</div>
             ${fotosHtml}
+
+            <div class="interaction-bar">
+              <button class="btn-visto ${yaVisto ? 'active-visto' : ''}" onclick="toggleVisto('${item.id}')">
+                ${yaVisto ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
+              </button>
+
+              <button class="btn-comment-toggle" onclick="toggleCommentBox('${item.id}')">
+                💬 Comentario (${comentariosArr.length})
+              </button>
+
+              <div class="visto-list-badge">${vistoTexto}</div>
+            </div>
+
+            <div class="comments-section" id="comments-box-${item.id}">
+              <div class="comment-list">
+                ${commentsHtml}
+              </div>
+              <div class="comment-form">
+                <input type="text" id="comment-input-${item.id}" class="comment-input" placeholder="Escribe un comentario...">
+                <button class="btn-send-comment" onclick="sendComment('${item.id}')">Enviar</button>
+              </div>
+            </div>
           </div>
         `;
       }).join('');
     }
 
-    // ELIMINAR
+    // MARCAR COMO VISTO
+    async function toggleVisto(reportId) {
+      const report = allReports.find(r => r.id === reportId);
+      if (!report) return;
+
+      let vistosActuales = Array.isArray(report.vistos) ? [...report.vistos] : [];
+      if (vistosActuales.includes(activeUser)) {
+        vistosActuales = vistosActuales.filter(u => u !== activeUser);
+      } else {
+        vistosActuales.push(activeUser);
+      }
+
+      const { error } = await supabaseClient
+        .from('changelog_updates')
+        .update({ vistos: vistosActuales })
+        .eq('id', reportId);
+
+      if (error) {
+        alert("No se pudo actualizar el estado VISTO: " + error.message);
+      } else {
+        loadReports();
+      }
+    }
+
+    // MOSTRAR / OCULTAR CAJA DE COMENTARIO
+    function toggleCommentBox(reportId) {
+      const box = document.getElementById(`comments-box-${reportId}`);
+      if (box) box.classList.toggle('open');
+    }
+
+    // ENVIAR COMENTARIO
+    async function sendComment(reportId) {
+      const input = document.getElementById(`comment-input-${reportId}`);
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      const report = allReports.find(r => r.id === reportId);
+      if (!report) return;
+
+      const comentariosActuales = Array.isArray(report.comentarios) ? [...report.comentarios] : [];
+      const ahora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      comentariosActuales.push({
+        autor: activeUser,
+        texto,
+        fecha: ahora
+      });
+
+      input.value = '';
+
+      const { error } = await supabaseClient
+        .from('changelog_updates')
+        .update({ comentarios: comentariosActuales })
+        .eq('id', reportId);
+
+      if (error) {
+        alert("No se pudo enviar el comentario: " + error.message);
+      } else {
+        loadReports();
+      }
+    }
+
+    // ELIMINAR INFORME
     async function deleteReport(id) {
-      if (activeUser !== 'admin') return;
-      if (!confirm("¿Deseas eliminar este informe definitivamente?")) return;
+      if (activeUser !== 'Admin') return;
+      if (!confirm("¿Eliminar este informe definitivamente?")) return;
 
       const { error } = await supabaseClient
         .from('changelog_updates')
@@ -1047,15 +1417,13 @@
       }
     }
 
-    // ARRASTRE Y COMPRESIÓN
+    // SUBIDA DE FOTOS
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('file-input');
 
-    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = 'var(--dot-olive)'; });
-    dropzone.addEventListener('dragleave', () => dropzone.style.borderColor = '#C5CEC3');
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); });
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
-      dropzone.style.borderColor = '#C5CEC3';
       handleFiles(e.dataTransfer.files);
     });
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
@@ -1104,9 +1472,9 @@
       renderPreviews();
     }
 
-    // PUBLICAR
+    // PUBLICAR INFORME
     async function submitReport() {
-      if (activeUser !== 'admin') return;
+      if (activeUser !== 'Admin') return;
 
       const destinatario = document.getElementById('rep-target').value;
       const version = document.getElementById('rep-version').value.trim();
@@ -1115,12 +1483,12 @@
       const detalles = document.getElementById('rep-desc').value.trim();
 
       if (!version || !resumen) {
-        alert("Completa al menos la versión y el título del informe.");
+        alert("Completa al menos la versión y el título.");
         return;
       }
 
       const saveBtn = document.getElementById('btn-save-report');
-      saveBtn.innerText = "Guardando...";
+      saveBtn.innerText = "Publicando...";
       saveBtn.disabled = true;
 
       const { error } = await supabaseClient
@@ -1128,14 +1496,16 @@
         .insert([{
           version,
           fase,
-          autor: 'Arquitecta (Admin)',
+          autor: 'Admin',
           destinatario,
           resumen,
           detalles,
-          imagenes: uploadedImagesBase64
+          imagenes: uploadedImagesBase64,
+          vistos: [],
+          comentarios: []
         }]);
 
-      saveBtn.innerText = "Publicar";
+      saveBtn.innerText = "Publicar Informe";
       saveBtn.disabled = false;
 
       if (error) {
@@ -1160,7 +1530,6 @@
     }
     function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
-    // TIEMPO REAL
     function setupRealtime() {
       supabaseClient
         .channel('public:changelog_updates')
@@ -1169,11 +1538,6 @@
         })
         .subscribe();
     }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initAppView();
-      setupRealtime();
-    });
   </script>
 </body>
 </html>
