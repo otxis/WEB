@@ -3,47 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DIEGO — Seguimiento de Obra</title>
+  <title>DIEGO — Seguimiento de Obra Privada</title>
   
-  <!-- Icono de la página (Favicon y Apple Touch Icon para iPhone) -->
   <link rel="icon" type="image/jpeg" href="gato.jpg">
   <link rel="apple-touch-icon" href="gato.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      /* Entorno gris suave con alto contraste iOS */
       --ios-bg: radial-gradient(circle at 30% 20%, #b8c1c8 0%, #858e96 100%);
-      --ios-glass: rgba(246, 247, 249, 0.86);
+      --ios-glass: rgba(246, 247, 249, 0.88);
       --ios-glass-border: rgba(255, 255, 255, 0.65);
       
-      /* Paleta Verde Pastel Oscuro / Salvia Suave */
       --sidebar-bg: #4A5A46;
       --sidebar-text: #EDF2EC;
       --sidebar-muted: #B0BFA9;
       
-      /* Burbujas de mensaje en verde pastel suave (como la barra) */
       --msg-pastel-green: #DCE6D8;
       --msg-pastel-border: #C4D4BE;
       --msg-inner-cream: #F5F8F3;
       
-      /* Textos suaves (sin tonos negros agresivos) */
       --text-title: #2C352B;
       --text-body: #465244;
       --text-muted: #6E7D6B;
       
-      /* Acentos pasteles */
       --dot-terracotta: #C88A6B;
       --dot-terracotta-bg: #F7EAE4;
       --dot-olive: #687D63;
       --dot-olive-bg: #E5EFE2;
       --btn-olive: #556850;
-      --danger-soft: #B95C50;
-      --danger-bg: #F9E8E6;
+      --btn-olive-hover: #40503D;
+
+      --status-ok: #487A5B;
+      --status-ok-bg: #E5EFE8;
+      --status-warn: #B8823B;
+      --status-warn-bg: #FDF3E7;
+      --status-danger: #B95C50;
+      --status-danger-bg: #F9E8E6;
     }
 
     * {
@@ -68,11 +68,11 @@
       padding: 20px 16px;
     }
 
-    /* 1. PANTALLA DE INICIO DE SESIÓN CENTRADA (PC Y MÓVIL IDÉNTICOS TIPO iPHONE) */
+    /* PANTALLA DE ACCESO MINIMALISTA */
     .login-wrapper {
       width: 100%;
       max-width: 390px;
-      background: rgba(250, 251, 252, 0.88);
+      background: rgba(250, 251, 252, 0.90);
       backdrop-filter: blur(40px) saturate(190%);
       -webkit-backdrop-filter: blur(40px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.75);
@@ -97,7 +97,7 @@
     }
 
     .login-brand {
-      font-size: 30px;
+      font-size: 32px;
       letter-spacing: 5px;
       font-weight: 300;
       color: var(--text-title);
@@ -153,14 +153,18 @@
       font-weight: 600;
       cursor: pointer;
       margin-top: 6px;
+      transition: background 0.2s;
+    }
+    .btn-submit-login:hover {
+      background: var(--btn-olive-hover);
     }
 
-    /* 2. VENTANA PRINCIPAL */
+    /* ENTORNO PRINCIPAL */
     .app-window {
       width: 100%;
-      max-width: 1240px;
-      height: 90vh;
-      min-height: 680px;
+      max-width: 1280px;
+      height: 92vh;
+      min-height: 720px;
       background: var(--ios-glass);
       backdrop-filter: blur(35px) saturate(180%);
       -webkit-backdrop-filter: blur(35px) saturate(180%);
@@ -172,15 +176,15 @@
       position: relative;
     }
 
-    /* BARRA LATERAL VERDE PASTEL (ESCRITORIO Y DESPLEGABLE MÓVIL) */
+    /* BARRA LATERAL MULTITENANT */
     .sidebar {
-      width: 255px;
+      width: 260px;
       background: var(--sidebar-bg);
       color: var(--sidebar-text);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 28px 20px;
+      padding: 26px 20px;
       position: relative;
       flex-shrink: 0;
       z-index: 40;
@@ -189,7 +193,7 @@
     .brand-section {
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       padding-bottom: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
     .brand-title {
       font-size: 26px;
@@ -211,34 +215,42 @@
 
     .nav-list {
       list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .nav-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 11px 14px;
+      padding: 10px 14px;
       border-radius: 12px;
       font-size: 13.5px;
       color: var(--sidebar-text);
-      background: rgba(255, 255, 255, 0.14);
-      font-weight: 600;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.16);
+      font-weight: 600;
+    }
+    .nav-item:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .sidebar-footer {
       position: relative;
-      min-height: 150px;
+      min-height: 130px;
     }
     .plant-svg {
       position: absolute;
       bottom: 0;
       left: -8px;
-      width: 155px;
-      opacity: 0.25;
+      width: 145px;
+      opacity: 0.22;
       pointer-events: none;
     }
 
-    /* BOTÓN HAMBURGUESA MÓVIL (OCULTO EN PC) */
     .mobile-menu-btn {
       display: none;
       background: var(--sidebar-bg);
@@ -251,7 +263,6 @@
       cursor: pointer;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
     }
 
     .drawer-backdrop {
@@ -262,216 +273,255 @@
       backdrop-filter: blur(6px);
       z-index: 35;
     }
-    .drawer-backdrop.open {
-      display: block;
-    }
+    .drawer-backdrop.open { display: block; }
 
-    /* CONTENIDO PRINCIPAL CON SCROLL SUAVE */
+    /* ÁREA PRINCIPAL */
     .main-viewport {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       scroll-behavior: smooth;
-      padding: 30px 34px;
+      padding: 26px 32px;
     }
 
+    /* TOP HEADER */
     .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       gap: 14px;
+      flex-wrap: wrap;
     }
 
-    .header-left-group {
+    .project-selector-wrap {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex: 1;
     }
-
-    .search-input {
-      background: rgba(255, 255, 255, 0.80);
-      border: 1px solid rgba(74, 90, 70, 0.16);
-      padding: 9px 18px;
-      border-radius: 20px;
-      font-size: 13px;
+    .project-selector {
+      background: #FFFFFF;
+      border: 1px solid #CFD8CC;
       color: var(--text-title);
-      width: 320px;
+      padding: 8px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
       outline: none;
       font-family: inherit;
     }
-    .search-input:focus {
-      background: #FFFFFF;
-      border-color: var(--sidebar-bg);
-    }
 
-    /* PERFIL, NOMBRE EN MAYÚSCULA GRANDE Y BOTÓN SALIR AL LADO */
     .user-pill {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-shrink: 0;
+      margin-left: auto;
     }
     .user-meta-name {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--text-title);
     }
     .avatar-img {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--sidebar-bg);
       background: #1C211B;
-      flex-shrink: 0;
     }
     .btn-logout {
-      background: var(--danger-bg);
+      background: var(--status-danger-bg);
       border: 1px solid rgba(185, 92, 80, 0.28);
-      padding: 7px 13px;
-      border-radius: 18px;
-      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--danger-soft);
+      color: var(--status-danger);
       cursor: pointer;
     }
 
-    /* ENCABEZADO */
-    .editorial-header {
-      margin-bottom: 22px;
-    }
-    .editorial-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 32px;
-      font-weight: 600;
-      color: var(--text-title);
-      letter-spacing: -0.4px;
-    }
-    .editorial-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* ESTADÍSTICAS */
-    .quick-stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(170px, 1fr));
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
+    /* MÓDULO A: CABECERA EJECUTIVA */
+    .dashboard-header-card {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
-      border-radius: 16px;
-      padding: 15px 18px;
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    }
+    .project-main-meta {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 14px;
+      flex-wrap: wrap;
     }
-    .stat-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .stat-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-    }
-    .stat-num {
-      font-size: 20px;
+    .project-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
       font-weight: 700;
       color: var(--text-title);
-      line-height: 1.1;
     }
-    .stat-label {
-      font-size: 11.5px;
+    .project-subtitle {
+      font-size: 12.5px;
       color: var(--text-muted);
+      margin-top: 3px;
     }
 
-    /* CABECERA DE SEGUIMIENTO DE OBRA */
-    .feed-header {
+    .health-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .health-badge.en_tiempo { background: var(--status-ok-bg); color: var(--status-ok); border: 1px solid rgba(72, 122, 91, 0.3); }
+    .health-badge.atencion { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid rgba(184, 130, 59, 0.3); }
+    .health-badge.retraso { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(185, 92, 80, 0.3); }
+
+    .dual-progress-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid #E2EADF;
+      padding: 16px;
+      border-radius: 16px;
+    }
+    .progress-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .progress-meta-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .bar-shell {
+      height: 10px;
+      background: #E0E7DC;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill-planned { height: 100%; background: #96A893; border-radius: 6px; transition: width 0.4s; }
+    .bar-fill-actual { height: 100%; background: var(--sidebar-bg); border-radius: 6px; transition: width 0.4s; }
+
+    .milestone-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-body);
+      border-top: 1px solid #E6ECE2;
+      padding-top: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* MÓDULOS DE CONTENIDO Y PESTAÑAS */
+    .module-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #DCE4D8;
+      padding-bottom: 8px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: var(--text-title);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .module-section { display: none; }
+    .module-section.active-module { display: block; }
+
+    /* MÓDULO B: FEED DE INFORMES */
+    .feed-controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    .feed-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-title);
+    .search-feed {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #D5DFD2;
+      border-radius: 18px;
+      padding: 8px 16px;
+      font-size: 13px;
+      width: 280px;
+      outline: none;
     }
-    .btn-create {
+    .btn-action-primary {
       background: var(--btn-olive);
       color: #FFFFFF;
       border: none;
-      padding: 9px 16px;
-      border-radius: 20px;
-      font-size: 12.5px;
+      padding: 9px 18px;
+      border-radius: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      display: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    /* INFORMES ESTILO MENSAJE DE TEXTO EN VERDE PASTEL */
     .timeline {
       display: flex;
       flex-direction: column;
       gap: 18px;
-      padding-bottom: 24px;
     }
 
     .report-card {
       background: var(--msg-pastel-green);
       border: 1px solid var(--msg-pastel-border);
-      border-radius: 20px 20px 20px 6px; /* Burbuja estilo mensaje de texto */
+      border-radius: 20px 20px 20px 6px;
       padding: 20px;
-      box-shadow: 0 6px 18px rgba(55, 70, 52, 0.06);
-      position: relative;
+      box-shadow: 0 4px 16px rgba(55, 70, 52, 0.05);
     }
-
     .card-top {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .version-group {
-      display: flex;
       align-items: center;
+      margin-bottom: 12px;
       gap: 8px;
       flex-wrap: wrap;
     }
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-    }
-    .dot-terracotta { background: var(--dot-terracotta); }
-    .dot-olive { background: var(--dot-olive); }
-
-    .tag-version {
-      font-size: 12px;
+    .tag-day {
+      font-size: 11.5px;
       font-weight: 700;
-      font-family: monospace;
       background: var(--msg-inner-cream);
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 8px;
-      color: var(--text-title);
+      font-family: monospace;
     }
-    .tag-phase {
+    .tag-category {
       background: var(--sidebar-bg);
       color: #FFFFFF;
       font-size: 11px;
@@ -479,51 +529,26 @@
       padding: 3px 10px;
       border-radius: 12px;
     }
-    .tag-client {
-      background: var(--dot-terracotta-bg);
-      color: #8C563C;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 12px;
-    }
-
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
     .card-date {
       font-size: 11.5px;
       color: var(--text-body);
-      font-weight: 500;
-    }
-    .btn-delete-card {
-      background: var(--danger-bg);
-      color: var(--danger-soft);
-      border: 1px solid rgba(185, 92, 80, 0.3);
-      border-radius: 8px;
-      padding: 4px 9px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
     }
 
     .report-title {
-      font-size: 16.5px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-title);
       margin-bottom: 6px;
     }
     .report-desc {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-body);
       line-height: 1.6;
       white-space: pre-line;
-      margin-bottom: 14px;
       background: rgba(255, 255, 255, 0.55);
       padding: 12px 14px;
       border-radius: 12px;
+      margin-bottom: 14px;
     }
 
     .photo-grid {
@@ -541,122 +566,195 @@
       border: 1px solid rgba(255, 255, 255, 0.7);
     }
 
-    /* ZONA DE INTERACCIÓN: BOTÓN GRANDE "VISTO" Y BOTÓN "COMENTARIO" */
     .interaction-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding-top: 12px;
+      gap: 10px;
       border-top: 1px solid rgba(74, 90, 70, 0.14);
+      padding-top: 12px;
       flex-wrap: wrap;
     }
 
-    .btn-visto {
-      flex: 1;
-      min-width: 150px;
+    .btn-seen {
       background: var(--msg-inner-cream);
-      color: var(--text-title);
       border: 1.5px solid var(--sidebar-bg);
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-size: 13px;
+      color: var(--text-title);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+    }
+    .btn-seen.active {
+      background: var(--sidebar-bg);
+      color: #FFFFFF;
+    }
+    .btn-approve {
+      background: var(--status-ok-bg);
+      border: 1px solid var(--status-ok);
+      color: var(--status-ok);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-approve.active {
+      background: var(--status-ok);
+      color: #FFFFFF;
+    }
+    .btn-comment-toggle {
+      background: var(--msg-inner-cream);
+      border: 1px solid var(--msg-pastel-border);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* MÓDULO C: GALERÍA Y SLIDER ANTES / DESPUÉS */
+    .slider-box {
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 1px solid var(--msg-pastel-border);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .slider-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .ba-slider-container {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      border-radius: 12px;
+      overflow: hidden;
+      user-select: none;
+    }
+    .ba-image-before, .ba-image-after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .ba-image-after-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 50%;
+      overflow: hidden;
+      border-right: 2px solid #FFFFFF;
+    }
+    .ba-slider-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 4px;
+      background: #FFFFFF;
+      cursor: ew-resize;
+    }
+    .ba-slider-handle::after {
+      content: '↔';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      color: var(--text-title);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-    }
-    .btn-visto.active-visto {
-      background: var(--sidebar-bg);
-      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    .btn-comment-toggle {
-      background: var(--msg-inner-cream);
-      color: var(--text-title);
-      border: 1px solid var(--msg-pastel-border);
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .visto-list-badge {
-      width: 100%;
-      font-size: 11.5px;
-      color: var(--text-body);
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    /* CAJA DESPLEGABLE DE COMENTARIOS */
-    .comments-section {
-      display: none;
-      margin-top: 12px;
-      background: var(--msg-inner-cream);
-      border: 1px solid var(--msg-pastel-border);
-      border-radius: 14px;
-      padding: 12px;
-    }
-    .comments-section.open {
-      display: block;
-    }
-    .comment-list {
+    /* MÓDULO D: AUDITORÍA (AUDIT TRAIL) */
+    .audit-timeline {
+      position: relative;
+      padding-left: 24px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 10px;
-      max-height: 180px;
-      overflow-y: auto;
+      gap: 18px;
     }
-    .comment-item {
+    .audit-timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: #CFD9CB;
+    }
+    .audit-entry {
+      position: relative;
       background: #FFFFFF;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      border: 1px solid #E5ECE2;
+      border: 1px solid var(--msg-pastel-border);
+      border-radius: 12px;
+      padding: 14px 18px;
     }
-    .comment-author {
-      font-weight: 700;
-      color: var(--sidebar-bg);
-      margin-right: 6px;
-    }
-    .comment-time {
-      font-size: 10.5px;
-      color: var(--text-muted);
-      float: right;
-    }
-    .comment-form {
-      display: flex;
-      gap: 8px;
-    }
-    .comment-input {
-      flex: 1;
-      border: 1px solid #CFD9CC;
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 13px;
-      outline: none;
-      font-family: inherit;
-    }
-    .btn-send-comment {
+    .audit-entry::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
       background: var(--sidebar-bg);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 8px 14px;
+      border: 2px solid #FFFFFF;
+    }
+    .audit-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .audit-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-title);
+    }
+    .audit-desc {
       font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
+      color: var(--text-body);
+      margin-top: 4px;
     }
 
-    /* MODALES */
+    /* MÓDULO E: CENTRO DOCUMENTAL */
+    .docs-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #FFFFFF;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--msg-pastel-border);
+    }
+    .docs-table th, .docs-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      text-align: left;
+      border-bottom: 1px solid #E6ECE2;
+    }
+    .docs-table th {
+      background: var(--msg-inner-cream);
+      font-weight: 700;
+      color: var(--text-body);
+    }
+
+    /* FORMULARIOS Y MODALES */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -672,11 +770,11 @@
 
     .modal-box {
       width: 100%;
-      max-width: 500px;
+      max-width: 540px;
       background: #FAFBF9;
       border-radius: 22px;
       padding: 24px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -686,19 +784,10 @@
       align-items: center;
       margin-bottom: 16px;
     }
-    .modal-title {
-      font-size: 17px;
-      font-weight: 700;
-    }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
+    .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
 
-    .form-group { margin-bottom: 12px; }
+    .form-group { margin-bottom: 13px; }
     .form-group label {
       display: block;
       font-size: 12px;
@@ -742,162 +831,43 @@
       object-fit: cover;
       border-radius: 8px;
     }
-    .preview-remove {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--danger-soft);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      font-size: 10px;
-      cursor: pointer;
-    }
 
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(30, 36, 30, 0.88);
-      backdrop-filter: blur(10px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 600;
-    }
-    .lightbox.open { display: flex; }
-    .lightbox img {
-      max-width: 92vw;
-      max-height: 85vh;
-      border-radius: 14px;
-    }
-
-    /* ESTÉTICA MÓVIL TIPO iOS CON DESENFOQUES Y MENÚ DESPLEGABLE VERDE CON PLANTA */
-    @media (max-width: 768px) {
-      body {
-        padding: 14px;
-        background: radial-gradient(circle at 50% 20%, #c2cbd2 0%, #838d96 100%);
-        align-items: center;
-        justify-content: center;
+    /* REPORTE FORMAL IMPRIMIBLE */
+    @media print {
+      body { background: #FFFFFF; padding: 0; color: #000; }
+      .app-window, .sidebar, .top-header, .module-tabs, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
+        display: none !important;
       }
-
-      /* El cuadro de inicio de sesión se mantiene flotante en el centro con contraste tipo iPhone */
-      .login-wrapper {
-        max-width: 360px;
-        min-height: auto;
-        border-radius: 26px;
-        padding: 32px 24px;
-        box-shadow: 0 25px 60px rgba(25, 32, 38, 0.35);
+      #print-report-template {
+        display: block !important;
       }
+    }
+    #print-report-template { display: none; }
 
-      /* Ventana principal en el móvil con estilo cristal iOS */
-      .app-window {
-        width: 100%;
-        height: 94vh;
-        min-height: 94vh;
-        border-radius: 24px;
-        flex-direction: column;
-      }
-
-      /* Menú lateral verde pastel convertido en cajón desplegable superior izquierdo con su planta y significado */
+    /* RESPONSIVIDAD MÓVIL */
+    @media (max-width: 820px) {
+      body { padding: 10px; }
+      .app-window { height: 96vh; border-radius: 20px; }
       .sidebar {
         position: fixed;
         top: 0;
         left: -280px;
-        width: 265px;
+        width: 270px;
         height: 100vh;
-        padding: 28px 20px;
         transition: left 0.25s ease;
-        box-shadow: 15px 0 40px rgba(0, 0, 0, 0.25);
       }
-      .sidebar.open {
-        left: 0;
-      }
-      .brand-subtitle, .nav-list, .sidebar-footer {
-        display: block;
-      }
-
-      .mobile-menu-btn {
-        display: inline-flex;
-      }
-
-      .main-viewport {
-        padding: 16px 14px;
-      }
-
-      /* Cabecera en móvil: Menú izquierda | Nombre Mayúscula + Foto Gato + Botón Salir juntos a la derecha */
-      .top-header {
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 16px;
-      }
-      .header-left-group {
-        order: 1;
-        flex: 0 0 auto;
-      }
-      .user-pill {
-        order: 2;
-        margin-left: auto;
-        gap: 8px;
-      }
-      .user-meta-name {
-        font-size: 14px;
-      }
-      .avatar-img {
-        width: 34px;
-        height: 34px;
-      }
-      .btn-logout {
-        padding: 6px 11px;
-        font-size: 11.5px;
-      }
-      .search-input {
-        order: 3;
-        width: 100%;
-        padding: 10px 15px;
-      }
-
-      /* Encabezado móvil con el significado de DIEGO visible */
-      .editorial-title {
-        font-size: 23px;
-      }
-      .editorial-sub {
-        font-size: 12px;
-      }
-
-      .quick-stats {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 18px;
-      }
-      .stat-card {
-        padding: 12px;
-      }
-      .stat-icon {
-        width: 32px;
-        height: 32px;
-      }
-      .stat-num {
-        font-size: 17px;
-      }
-
-      .report-card {
-        padding: 16px;
-      }
-      .photo-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      .photo-thumb {
-        height: 105px;
-      }
+      .sidebar.open { left: 0; }
+      .mobile-menu-btn { display: inline-flex; }
+      .main-viewport { padding: 18px 14px; }
+      .dual-progress-container { grid-template-columns: 1fr; gap: 10px; }
+      .ba-slider-container { height: 240px; }
+      .search-feed { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. PANTALLA INICIAL DE INICIO DE SESIÓN (MISMO CUADRO FLOTANTE EN PC Y TELÉFONO) -->
+  <!-- 1. PANTALLA INICIAL DE ACCESO -->
   <div class="login-wrapper" id="login-screen">
     <div>
       <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="login-avatar-top" alt="Icono DIEGO">
@@ -905,54 +875,45 @@
       <div class="login-tag">Daily Intelligent Electronic Graphic Organizer</div>
     </div>
 
-    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
+    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();">
       <div class="form-group-login">
-        <label for="login-user">Usuario</label>
-        <input 
-          type="text" 
-          id="login-user" 
-          name="username" 
-          autocomplete="username" 
-          class="login-input" 
-          placeholder="Ej: Admin, Cliente1..." 
-          required
-        >
+        <label for="login-user">Identificador de Acceso</label>
+        <input type="text" id="login-user" class="login-input" placeholder="Ej: Admin, Cliente1, Cliente2..." required>
       </div>
 
       <div class="form-group-login">
         <label for="login-pass">Contraseña</label>
-        <input 
-          type="password" 
-          id="login-pass" 
-          name="password" 
-          autocomplete="current-password" 
-          class="login-input" 
-          placeholder="••••" 
-          required
-        >
+        <input type="password" id="login-pass" class="login-input" placeholder="••••" required>
       </div>
 
-      <button type="submit" class="btn-submit-login">Iniciar Sesión</button>
+      <button type="submit" class="btn-submit-login">Ingresar a la Plataforma</button>
     </form>
   </div>
 
-  <!-- 2. VENTANA PRINCIPAL -->
+  <!-- 2. VENTANA PRINCIPAL MULTITENANT -->
   <div class="app-window" id="app-screen">
-    
-    <!-- FONDO OSCURO AL ABRIR MENÚ EN EL CELULAR -->
-    <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleMobileDrawer()"></div>
+    <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL VERDE PASTEL CON SIGNIFICADO DE DIEGO Y PLANTA -->
-    <aside class="sidebar" id="sidebar-menu">
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar" id="sidebar">
       <div>
         <div class="brand-section">
           <div class="brand-title">DIEGO</div>
-          <div class="brand-subtitle">Daily Intelligent Electronic Graphic Organizer</div>
+          <div class="brand-subtitle">Private Construction Tracker</div>
         </div>
 
         <ul class="nav-list">
-          <li class="nav-item" onclick="closeMobileDrawer()">
-            <span>⌂</span> Inicio
+          <li class="nav-item active" onclick="switchModule('feed')">
+            <span>🏗️</span> Informes de Obra
+          </li>
+          <li class="nav-item" onclick="switchModule('gallery')">
+            <span>📷</span> Galería & Comparativa
+          </li>
+          <li class="nav-item" onclick="switchModule('audit')">
+            <span>⏱️</span> Trazabilidad (Auditoría)
+          </li>
+          <li class="nav-item" onclick="switchModule('docs')">
+            <span>📁</span> Centro Documental
           </li>
         </ul>
       </div>
@@ -965,143 +926,296 @@
           <path d="M 42 90 C 18 85 8 65 24 60 C 36 57 42 80 42 90 Z" />
           <path d="M 42 70 C 62 65 74 45 60 40 C 47 38 41 60 42 70 Z" />
           <path d="M 40 45 C 22 40 18 25 30 20 C 38 18 40 35 40 45 Z" />
-          <path d="M 40 25 C 45 10 55 5 40 0 C 35 10 38 20 40 25 Z" />
         </svg>
       </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-viewport">
       
+      <!-- TOP BAR -->
       <div class="top-header">
-        <div class="header-left-group">
-          <button class="mobile-menu-btn" onclick="toggleMobileDrawer()" title="Menú">☰</button>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+        <div class="project-selector-wrap" id="admin-project-selector" style="display:none;">
+          <label style="font-size:12px; font-weight:700; color:var(--text-body);">PROYECTO:</label>
+          <select id="active-project-dropdown" class="project-selector" onchange="changeActiveProject(this.value)">
+            <!-- Poblado dinámicamente -->
+          </select>
         </div>
 
-        <input 
-          type="text" 
-          id="search-input" 
-          class="search-input" 
-          placeholder="🔍 Buscar por versión, título o fecha..." 
-          oninput="applySearchFilter()"
-        >
-        
         <div class="user-pill">
-          <span class="user-meta-name" id="user-display-label">ADMIN</span>
+          <button class="btn-action-primary" style="padding:6px 12px; font-size:11.5px;" onclick="printExecutiveReport()">🖨️ Exportar PDF</button>
+          <span class="user-meta-name" id="user-display-tag">USUARIO</span>
           <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Perfil">
           <button class="btn-logout" onclick="handleLogout()">Salir</button>
         </div>
       </div>
 
-      <div class="editorial-header">
-        <h1 class="editorial-title">DIEGO — Seguimiento de Obra</h1>
-        <p class="editorial-sub" id="feed-main-subtitle">Daily Intelligent Electronic Graphic Organizer</p>
-      </div>
+      <!-- MÓDULO A: CABECERA EJECUTIVA -->
+      <div class="dashboard-header-card">
+        <div class="project-main-meta">
+          <div>
+            <h1 class="project-title" id="dash-project-name">Cargando proyecto...</h1>
+            <p class="project-subtitle" id="dash-project-desc">Aislamiento Multitenant Activo</p>
+          </div>
+          <div id="dash-health-badge" class="health-badge en_tiempo">En Tiempo</div>
+        </div>
 
-      <div class="quick-stats">
-        <div class="stat-card">
-          <div class="stat-meta">
-            <div class="stat-icon" style="background: var(--dot-terracotta-bg); color: var(--dot-terracotta);">📅</div>
-            <div>
-              <div class="stat-num" id="stat-count">0</div>
-              <div class="stat-label">informes activos</div>
+        <div class="dual-progress-container">
+          <div class="progress-col">
+            <div class="progress-meta-text">
+              <span>Avance Planificado</span>
+              <span id="label-planned">0%</span>
+            </div>
+            <div class="bar-shell">
+              <div class="bar-fill-planned" id="bar-planned" style="width: 0%;"></div>
             </div>
           </div>
-          <span style="color:var(--dot-terracotta);">→</span>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-meta">
-            <div class="stat-icon" style="background: var(--dot-olive-bg); color: var(--dot-olive);">✔</div>
-            <div>
-              <div class="stat-num">En Vivo</div>
-              <div class="stat-label">sincronización</div>
+          <div class="progress-col">
+            <div class="progress-meta-text">
+              <span>Avance Real Ejecutado</span>
+              <span id="label-actual">0%</span>
+            </div>
+            <div class="bar-shell">
+              <div class="bar-fill-actual" id="bar-actual" style="width: 0%;"></div>
             </div>
           </div>
-          <span style="color:var(--dot-olive);">→</span>
+        </div>
+
+        <div class="milestone-strip">
+          <div><strong>Fase Actual:</strong> <span id="dash-phase">Estructura</span></div>
+          <div><strong>Próximo Hito:</strong> <span id="dash-milestone-date">Pendiente</span></div>
         </div>
       </div>
 
-      <!-- SECCIÓN DE INFORMES -->
-      <div class="feed-header">
-        <div class="feed-title">
-          <span>🏗️ Seguimiento de Obra</span>
-        </div>
-        <button class="btn-create" id="btn-new-report" onclick="openReportModal()">+ Nuevo Informe</button>
+      <!-- PESTAÑAS MÓDULOS -->
+      <div class="module-tabs">
+        <button class="tab-btn active" id="tab-btn-feed" onclick="switchModule('feed')">Informes Diarios</button>
+        <button class="tab-btn" id="tab-btn-gallery" onclick="switchModule('gallery')">Galería & Antes/Después</button>
+        <button class="tab-btn" id="tab-btn-audit" onclick="switchModule('audit')">Bitácora de Decisiones</button>
+        <button class="tab-btn" id="tab-btn-docs" onclick="switchModule('docs')">Centro Documental</button>
       </div>
 
-      <div class="timeline" id="changelog-feed">
-        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
-          Cargando mensajes de obra...
+      <!-- SECCIÓN FEED -->
+      <section class="module-section active-module" id="sec-feed">
+        <div class="feed-controls">
+          <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Filtrar informes por título, fase o día..." oninput="filterReports()">
+          <button class="btn-action-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Redactar Informe</button>
         </div>
-      </div>
+
+        <div class="timeline" id="feed-timeline">
+          <div style="text-align:center; padding:30px; color:var(--text-muted);">Sincronizando informes...</div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN GALERÍA Y SLIDER -->
+      <section class="module-section" id="sec-gallery">
+        <div class="slider-box">
+          <div class="slider-title">Comparativa de Terreno: Evolución Antes vs. Después</div>
+          <div class="ba-slider-container" id="ba-slider">
+            <img src="https://images.unsplash.com/photo-1541888946425-d0fbb1861593?auto=format&fit=crop&w=1200&q=80" class="ba-image-before" alt="Antes">
+            <div class="ba-image-after-wrap" id="ba-after-wrap">
+              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" class="ba-image-after" alt="Después">
+            </div>
+            <div class="ba-slider-handle" id="ba-handle"></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px; font-weight:700;">Evidencias de Obra por Zona</div>
+        <div class="photo-grid" id="gallery-grid">
+          <!-- Poblado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN TRAZABILIDAD (AUDIT TRAIL) -->
+      <section class="module-section" id="sec-audit">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <h3 style="font-size:16px;">Trazabilidad Formal de Modificaciones y Aprobaciones</h3>
+          <button class="btn-action-primary" id="btn-add-audit" style="display:none;" onclick="openAuditModal()">+ Registrar Modificación</button>
+        </div>
+        <div class="audit-timeline" id="audit-list">
+          <!-- Poblado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN CENTRO DOCUMENTAL -->
+      <section class="module-section" id="sec-docs">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="font-size:16px;">Planos Vigentes, Licencias y Minutas de Reunión</h3>
+          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openDocModal()">+ Subir Documento</button>
+        </div>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Categoría</th>
+              <th>Versión</th>
+              <th>Fecha</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="docs-table-body">
+            <!-- Poblado dinámicamente -->
+          </tbody>
+        </table>
+      </section>
 
     </main>
   </div>
 
-  <!-- MODAL DE PUBLICACIÓN (SOLO ADMIN) -->
-  <div class="modal-overlay" id="report-modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <span class="modal-title">Nuevo Informe de Obra</span>
-        <button class="modal-close" onclick="closeReportModal()">✕</button>
+  <!-- PLANTILLA IMPRIMIBLE / EXPORTACIÓN FORMAL EN PDF -->
+  <div id="print-report-template" style="padding:40px; font-family:'Inter', sans-serif;">
+    <div style="border-bottom:2px solid #333; padding-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1 style="font-size:24px; margin:0;">DIEGO — REPORTE EJECUTIVO DE OBRA</h1>
+        <p style="font-size:12px; color:#555; margin:4px 0 0;">Plataforma de Auditoría y Trazabilidad de Construcción</p>
       </div>
-
-      <div class="form-group">
-        <label>Destinatario</label>
-        <select id="rep-target" class="form-select">
-          <option value="todos">Todos los Clientes</option>
-          <option value="Cliente1">Cliente1</option>
-          <option value="Cliente2">Cliente2</option>
-          <option value="Cliente3">Cliente3</option>
-          <option value="Cliente4">Cliente4</option>
-        </select>
+      <div style="text-align:right;">
+        <p style="font-size:12px; margin:0;" id="print-date"></p>
+        <p style="font-size:12px; font-weight:bold; margin:2px 0 0;" id="print-project-code"></p>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Versión o Día (Ej: v1.0.4 o Día 15)</label>
-        <input type="text" id="rep-version" class="form-input" placeholder="v1.0.4">
+    <div style="margin:24px 0; background:#f7f7f7; padding:16px; border-radius:8px;">
+      <h2 style="font-size:18px; margin:0 0 6px;" id="print-project-name"></h2>
+      <p style="font-size:13px; margin:0;" id="print-project-client"></p>
+      <div style="display:flex; gap:30px; margin-top:12px; font-size:13px;">
+        <span id="print-planned"></span>
+        <span id="print-actual"></span>
+        <span id="print-phase"></span>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Fase de Obra</label>
-        <input type="text" id="rep-phase" class="form-input" placeholder="Cimentación, Estructuras, Acabados...">
+    <h3 style="font-size:16px; margin:20px 0 10px; border-bottom:1px solid #ddd; padding-bottom:6px;">Últimos Informes de Terreno</h3>
+    <div id="print-reports-body"></div>
+
+    <div style="margin-top:50px; display:flex; justify-content:space-between;">
+      <div style="border-top:1px solid #777; width:220px; text-align:center; padding-top:6px; font-size:12px;">
+        Arquitectura & Dirección de Obra
       </div>
-
-      <div class="form-group">
-        <label>Título del Informe</label>
-        <input type="text" id="rep-title" class="form-input" placeholder="Avance de mampostería y acabados...">
-      </div>
-
-      <div class="form-group">
-        <label>Mensaje / Detalle Técnico</label>
-        <textarea id="rep-desc" class="form-textarea" rows="4" placeholder="Escribe las observaciones detalladas..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Fotos Adjuntas (Arrastrar o pulsar)</label>
-        <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-          <div style="font-size: 13px; color: var(--text-body); font-weight: 600;">📷 Subir fotos desde el teléfono o PC</div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Compresión ligera instantánea</div>
-        </div>
-        <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
-        <div class="preview-container" id="preview-list"></div>
-      </div>
-
-      <div style="display:flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeReportModal()">Cancelar</button>
-        <button class="btn-create" style="display:inline-block;" id="btn-save-report" onclick="submitReport()">Publicar Informe</button>
+      <div style="border-top:1px solid #777; width:220px; text-align:center; padding-top:6px; font-size:12px;">
+        Propietario / Cliente
       </div>
     </div>
   </div>
 
-  <!-- VISOR DE FOTOS -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" src="" alt="Vista ampliada">
+  <!-- MODAL: REDACTAR INFORME (ADMIN) -->
+  <div class="modal-overlay" id="modal-report">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Redactar Informe de Avance</h3>
+        <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Etiqueta de Hito / Día (Ej: Día 24, Semana 5)</label>
+        <input type="text" id="form-rep-day" class="form-input" placeholder="Día 24" required>
+      </div>
+      <div class="form-group">
+        <label>Categoría Técnica</label>
+        <select id="form-rep-cat" class="form-select">
+          <option value="Estructuras">Estructuras</option>
+          <option value="Cimentación">Cimentación</option>
+          <option value="Mampostería">Mampostería</option>
+          <option value="Instalaciones Eléctricas / Hidráulicas">Instalaciones Eléctricas / Hidráulicas</option>
+          <option value="Acabados y Fachada">Acabados y Fachada</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Título del Resumen</label>
+        <input type="text" id="form-rep-title" class="form-input" placeholder="Vaciado de columnas y fraguado nivel 2" required>
+      </div>
+      <div class="form-group">
+        <label>Descripción Técnica Pormenorizada</label>
+        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Observaciones técnicas detalladas para el cliente..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fotografías de Obra (Compresión automática)</label>
+        <div class="dropzone" onclick="document.getElementById('rep-files').click()">
+          <div style="font-size:13px; font-weight:600;">📷 Arrastra o pulsa para cargar fotos</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Optimización WebP/JPEG ligera</div>
+        </div>
+        <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
+        <div class="preview-container" id="rep-img-previews"></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-report')">Cancelar</button>
+        <button class="btn-action-primary" onclick="submitDailyReport()">Publicar Informe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR AUDITORÍA (ADMIN) -->
+  <div class="modal-overlay" id="modal-audit">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Registrar Evento de Trazabilidad</h3>
+        <button class="modal-close" onclick="closeModal('modal-audit')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Acción</label>
+        <select id="form-aud-type" class="form-select">
+          <option value="cambio_fecha">Ajuste de Cronograma / Fecha</option>
+          <option value="ajuste_especificacion">Modificación de Especificación o Material</option>
+          <option value="aprobacion_hito">Aprobación Formal de Hito</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Descripción del Evento</label>
+        <textarea id="form-aud-desc" class="form-textarea" rows="3" placeholder="Razón del cambio o acuerdo establecido..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Valor Anterior (Opcional)</label>
+        <input type="text" id="form-aud-prev" class="form-input" placeholder="Ej: Fecha entrega 15 Octubre">
+      </div>
+      <div class="form-group">
+        <label>Nuevo Valor Acordado</label>
+        <input type="text" id="form-aud-new" class="form-input" placeholder="Ej: Nueva fecha 25 Octubre">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-audit')">Cancelar</button>
+        <button class="btn-action-primary" onclick="submitAuditEntry()">Guardar Registro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUBIR DOCUMENTO (ADMIN) -->
+  <div class="modal-overlay" id="modal-doc">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Subir Documentación Oficial</h3>
+        <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Nombre del Archivo / Documento</label>
+        <input type="text" id="form-doc-title" class="form-input" placeholder="Plano Estructural Rev 2.1" required>
+      </div>
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="form-doc-cat" class="form-select">
+          <option value="plano">Plano Técnico</option>
+          <option value="licencia">Licencia de Construcción</option>
+          <option value="minuta">Minuta / Acta de Reunión</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Versión</label>
+        <input type="text" id="form-doc-ver" class="form-input" placeholder="v2.1" value="v1.0">
+      </div>
+      <div class="form-group">
+        <label>URL / Enlace del Documento PDF</label>
+        <input type="url" id="form-doc-url" class="form-input" placeholder="https://ejemplo.com/plano.pdf" required>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-doc')">Cancelar</button>
+        <button class="btn-action-primary" onclick="submitDocument()">Registrar Documento</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Respaldo SVG idéntico a la imagen del gato verde oliva sobre fondo oscuro
+    // Respaldo visual vectorial SVG del felino verde salvia
     const CAT_FALLBACK_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#0B0D0A"/>
@@ -1111,66 +1225,26 @@
       </svg>
     `);
 
+    // Conexión Supabase
     const SUPABASE_URL = "https://euagegivizyfweymdiaa.supabase.co";
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // Usuarios permitidos exactamente sin espacios y con mayúscula inicial
-    const VALID_ACCOUNTS = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
-
+    // Estado Global de la Sesión
     let activeUser = localStorage.getItem('diego_active_user') || null;
+    let allProjects = [];
+    let currentProject = null;
+    let currentReports = [];
     let uploadedImagesBase64 = [];
-    let allReports = [];
 
-    // Autocompletar último usuario guardado en el dispositivo
+    // Inicialización
     window.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('diego_saved_username');
-      if (savedUser) {
-        document.getElementById('login-user').value = savedUser;
-      }
-      initAppView();
-      setupRealtime();
+      initSession();
+      initBeforeAfterSlider();
     });
 
-    // MENÚ DESPLEGABLE EN MÓVIL
-    function toggleMobileDrawer() {
-      document.getElementById('sidebar-menu').classList.toggle('open');
-      document.getElementById('drawer-backdrop').classList.toggle('open');
-    }
-    function closeMobileDrawer() {
-      document.getElementById('sidebar-menu').classList.remove('open');
-      document.getElementById('drawer-backdrop').classList.remove('open');
-    }
-
-    // INICIO DE SESIÓN ESCRITO (SIN LISTA DE CUENTAS)
-    function handleLogin() {
-      const user = document.getElementById('login-user').value.trim();
-      const pass = document.getElementById('login-pass').value.trim();
-
-      if (!VALID_ACCOUNTS.includes(user) || pass !== "1234") {
-        alert("Usuario o contraseña incorrectos. Recuerda escribir la inicial en mayúscula y sin espacios.");
-        return;
-      }
-
-      activeUser = user;
-      localStorage.setItem('diego_active_user', user);
-      localStorage.setItem('diego_saved_username', user);
-      document.getElementById('login-pass').value = '';
-      initAppView();
-    }
-
-    function handleLogout() {
-      if (confirm("¿Deseas salir de tu cuenta?")) {
-        activeUser = null;
-        localStorage.removeItem('diego_active_user');
-        closeMobileDrawer();
-        document.getElementById('app-screen').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'flex';
-      }
-    }
-
-    function initAppView() {
-      if (!activeUser || !VALID_ACCOUNTS.includes(activeUser)) {
+    function initSession() {
+      if (!activeUser) {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
         return;
@@ -1178,159 +1252,189 @@
 
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display = 'flex';
+      document.getElementById('user-display-tag').innerText = activeUser.toUpperCase();
 
-      const userDisplay = document.getElementById('user-display-label');
-      const createBtn = document.getElementById('btn-new-report');
-      const subTitle = document.getElementById('feed-main-subtitle');
-
-      // Nombre en mayúscula y más grande
-      userDisplay.innerText = activeUser.toUpperCase();
-
-      if (activeUser === 'Admin') {
-        createBtn.style.display = "inline-block";
-        subTitle.innerText = "Daily Intelligent Electronic Graphic Organizer — Panel Administrador";
-      } else {
-        createBtn.style.display = "none";
-        subTitle.innerText = `Daily Intelligent Electronic Graphic Organizer — Espacio de ${activeUser}`;
-      }
-
-      loadReports();
+      loadProjects();
     }
 
-    // CARGAR INFORMES
-    async function loadReports() {
-      const feed = document.getElementById('changelog-feed');
-      const { data, error } = await supabaseClient
-        .from('changelog_updates')
-        .select('*')
-        .order('created_at', { ascending: false });
+    function handleLogin() {
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
 
+      const validUsers = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
+      if (!validUsers.includes(user) || pass !== "1234") {
+        alert("Credenciales incorrectas. Utilice Admin o Cliente1..4 con contraseña 1234.");
+        return;
+      }
+
+      activeUser = user;
+      localStorage.setItem('diego_active_user', user);
+      document.getElementById('login-pass').value = '';
+      initSession();
+    }
+
+    function handleLogout() {
+      if (confirm("¿Desea cerrar la sesión activa?")) {
+        activeUser = null;
+        localStorage.removeItem('diego_active_user');
+        document.getElementById('app-screen').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
+      }
+    }
+
+    // CARGA MULTITENANT DE PROYECTOS
+    async function loadProjects() {
+      const { data, error } = await supabaseClient.from('projects').select('*').order('created_at', { ascending: true });
       if (error) {
-        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--danger-soft);">Error de conexión: ${error.message}</div>`;
+        console.error("Error al cargar proyectos:", error);
         return;
       }
+
+      allProjects = data || [];
 
       if (activeUser === 'Admin') {
-        allReports = data || [];
+        document.getElementById('admin-project-selector').style.display = 'flex';
+        document.getElementById('btn-create-report').style.display = 'inline-flex';
+        document.getElementById('btn-add-audit').style.display = 'inline-flex';
+        document.getElementById('btn-add-doc').style.display = 'inline-flex';
+
+        const dropdown = document.getElementById('active-project-dropdown');
+        dropdown.innerHTML = allProjects.map(p => `<option value="${p.id}">${p.name} (${p.code})</option>`).join('');
+
+        currentProject = allProjects[0] || null;
       } else {
-        allReports = (data || []).filter(item => {
-          const dest = (item.destinatario || 'todos').toLowerCase();
-          return dest === 'todos' || dest === activeUser.toLowerCase();
-        });
+        document.getElementById('admin-project-selector').style.display = 'none';
+        document.getElementById('btn-create-report').style.display = 'none';
+        document.getElementById('btn-add-audit').style.display = 'none';
+        document.getElementById('btn-add-doc').style.display = 'none';
+
+        // Aislamiento: El cliente sólo accede a su propio código de proyecto
+        currentProject = allProjects.find(p => p.code.toLowerCase() === activeUser.toLowerCase()) || null;
       }
 
-      document.getElementById('stat-count').innerText = allReports.length;
-      applySearchFilter();
+      renderHeaderDashboard();
+      loadActiveProjectData();
+      setupRealtimeSubscriptions();
     }
 
-    function applySearchFilter() {
-      const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
-      if (!query) {
-        renderReports(allReports);
-        return;
-      }
-
-      const filtered = allReports.filter(item => {
-        const version = (item.version || '').toLowerCase();
-        const resumen = (item.resumen || '').toLowerCase();
-        const detalles = (item.detalles || '').toLowerCase();
-        const fase = (item.fase || '').toLowerCase();
-        const fechaStr = new Date(item.created_at).toLocaleDateString().toLowerCase();
-
-        return version.includes(query) ||
-               resumen.includes(query) ||
-               detalles.includes(query) ||
-               fase.includes(query) ||
-               fechaStr.includes(query);
-      });
-
-      renderReports(filtered);
+    function changeActiveProject(projectId) {
+      currentProject = allProjects.find(p => p.id === projectId) || null;
+      renderHeaderDashboard();
+      loadActiveProjectData();
     }
 
+    // MÓDULO A: RENDERIZAR CABECERA
+    function renderHeaderDashboard() {
+      if (!currentProject) return;
+
+      document.getElementById('dash-project-name').innerText = currentProject.name;
+      document.getElementById('dash-project-desc').innerText = `Propietario: ${currentProject.client_name} — ${currentProject.address || 'Ubicación reservada'}`;
+
+      const badge = document.getElementById('dash-health-badge');
+      badge.className = `health-badge ${currentProject.status}`;
+      badge.innerText = currentProject.status === 'en_tiempo' ? 'En Tiempo' : (currentProject.status === 'atencion' ? 'Atención Requerida' : 'Retraso Crítico');
+
+      const planned = Number(currentProject.planned_progress || 0);
+      const actual = Number(currentProject.actual_progress || 0);
+
+      document.getElementById('label-planned').innerText = `${planned.toFixed(1)}%`;
+      document.getElementById('label-actual').innerText = `${actual.toFixed(1)}%`;
+
+      document.getElementById('bar-planned').style.width = `${Math.min(planned, 100)}%`;
+      document.getElementById('bar-actual').style.width = `${Math.min(actual, 100)}%`;
+
+      document.getElementById('dash-phase').innerText = currentProject.current_phase || 'En Ejecución';
+      document.getElementById('dash-milestone-date').innerText = currentProject.next_milestone_date 
+        ? new Date(currentProject.next_milestone_date).toLocaleDateString()
+        : 'Por definir';
+    }
+
+    // CARGA DE DATOS DEL PROYECTO SELECCIONADO
+    async function loadActiveProjectData() {
+      if (!currentProject) return;
+
+      // 1. Cargar Informes con sus imágenes
+      const { data: reports } = await supabaseClient
+        .from('daily_reports')
+        .select(`*, report_images(*)`)
+        .eq('project_id', currentProject.id)
+        .order('report_date', { ascending: false });
+
+      currentReports = reports || [];
+      renderReports(currentReports);
+      renderGallery(currentReports);
+
+      // 2. Cargar Auditoría
+      const { data: audits } = await supabaseClient
+        .from('project_audit_logs')
+        .select('*')
+        .eq('project_id', currentProject.id)
+        .order('log_date', { ascending: false });
+      renderAudit(audits || []);
+
+      // 3. Cargar Documentación
+      const { data: docs } = await supabaseClient
+        .from('project_documents')
+        .select('*')
+        .eq('project_id', currentProject.id)
+        .order('uploaded_at', { ascending: false });
+      renderDocuments(docs || []);
+    }
+
+    // MÓDULO B: INFORMES DE AVANCE
     function renderReports(items) {
-      const feed = document.getElementById('changelog-feed');
+      const feed = document.getElementById('feed-timeline');
       if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No hay informes registrados en este apartado.</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No hay reportes de avance registrados para este proyecto.</div>`;
         return;
       }
 
-      feed.innerHTML = items.map((item, index) => {
-        const fecha = new Date(item.created_at).toLocaleDateString([], {
-          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+      feed.innerHTML = items.map(rep => {
+        const fecha = new Date(rep.report_date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+        const visto = rep.client_seen_at ? `✔ Visto por el cliente el ${new Date(rep.client_seen_at).toLocaleDateString()}` : 'No confirmado aún';
+        const aprobado = rep.status === 'aprobado';
 
-        const dotClass = index % 2 === 0 ? 'dot-terracotta' : 'dot-olive';
-        const destLabel = (item.destinatario && item.destinatario !== 'todos')
-          ? `<span class="tag-client">${item.destinatario}</span>`
-          : `<span class="tag-client">Todos</span>`;
-
-        const deleteBtn = (activeUser === 'Admin')
-          ? `<button class="btn-delete-card" onclick="deleteReport('${item.id}')">🗑️ Eliminar</button>`
-          : '';
-
-        const fotosHtml = (item.imagenes && item.imagenes.length > 0)
+        const fotosHtml = (rep.report_images && rep.report_images.length > 0)
           ? `<div class="photo-grid">
-              ${item.imagenes.map(url => `<img src="${url}" class="photo-thumb" onclick="openLightbox('${url}')" onerror="this.style.display='none'">`).join('')}
+              ${rep.report_images.map(img => `<img src="${img.image_url}" class="photo-thumb" onclick="openFullscreenImg('${img.image_url}')">`).join('')}
              </div>`
           : '';
 
-        // Estado de VISTO
-        const vistosArr = Array.isArray(item.vistos) ? item.vistos : [];
-        const yaVisto = vistosArr.includes(activeUser);
-        const vistoTexto = vistosArr.length > 0
-          ? `✔ Visto por: ${vistosArr.join(', ')}`
-          : `Aún sin confirmar lectura`;
-
-        // Comentarios
-        const comentariosArr = Array.isArray(item.comentarios) ? item.comentarios : [];
-        const commentsHtml = comentariosArr.length > 0
-          ? comentariosArr.map(c => `
-              <div class="comment-item">
-                <span class="comment-author">${c.autor}:</span>
-                <span>${c.texto}</span>
-                <span class="comment-time">${c.fecha || ''}</span>
-              </div>
-            `).join('')
-          : `<div style="font-size:12px; color:var(--text-muted);">Sin comentarios todavía.</div>`;
+        const comments = Array.isArray(rep.comments) ? rep.comments : [];
+        const commentsHtml = comments.map(c => `<div style="font-size:12px; margin-top:4px;"><strong>${c.author}:</strong> ${c.text}</div>`).join('');
 
         return `
           <div class="report-card">
             <div class="card-top">
-              <div class="version-group">
-                <span class="dot ${dotClass}"></span>
-                <span class="tag-version">${item.version}</span>
-                <span class="tag-phase">${item.fase || 'General'}</span>
-                ${activeUser === 'Admin' ? destLabel : ''}
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="tag-day">${rep.day_label}</span>
+                <span class="tag-category">${rep.category}</span>
               </div>
-              <div class="card-actions">
-                <span class="card-date">${fecha}</span>
-                ${deleteBtn}
-              </div>
+              <span class="card-date">${fecha}</span>
             </div>
 
-            <div class="report-title">${item.resumen}</div>
-            <div class="report-desc">${item.detalles || ''}</div>
+            <div class="report-title">${rep.title}</div>
+            <div class="report-desc">${rep.description}</div>
             ${fotosHtml}
 
             <div class="interaction-bar">
-              <button class="btn-visto ${yaVisto ? 'active-visto' : ''}" onclick="toggleVisto('${item.id}')">
-                ${yaVisto ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
-              </button>
-
-              <button class="btn-comment-toggle" onclick="toggleCommentBox('${item.id}')">
-                💬 Comentario (${comentariosArr.length})
-              </button>
-
-              <div class="visto-list-badge">${vistoTexto}</div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button class="btn-seen ${rep.client_seen_at ? 'active' : ''}" onclick="markSeen('${rep.id}')">
+                  ${rep.client_seen_at ? '✔ Visto' : 'Marcar Visto'}
+                </button>
+                <button class="btn-approve ${aprobado ? 'active' : ''}" onclick="toggleApprove('${rep.id}', ${aprobado})">
+                  ${aprobado ? '★ Hito Aprobado' : 'Aprobar Hito'}
+                </button>
+              </div>
+              <span style="font-size:11.5px; color:var(--text-muted);">${visto}</span>
             </div>
 
-            <div class="comments-section" id="comments-box-${item.id}">
-              <div class="comment-list">
-                ${commentsHtml}
-              </div>
-              <div class="comment-form">
-                <input type="text" id="comment-input-${item.id}" class="comment-input" placeholder="Escribe un comentario...">
-                <button class="btn-send-comment" onclick="sendComment('${item.id}')">Enviar</button>
+            <div style="margin-top:10px; background:rgba(255,255,255,0.6); padding:8px 12px; border-radius:10px;">
+              <div style="font-size:11.5px; font-weight:700; color:var(--text-body);">Observaciones y Feedback:</div>
+              ${commentsHtml || '<div style="font-size:11.5px; color:#888;">Sin observaciones registradas.</div>'}
+              <div style="display:flex; gap:6px; margin-top:6px;">
+                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:6px 10px; font-size:12px;" placeholder="Escribir observación...">
+                <button class="btn-action-primary" style="padding:6px 12px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
               </div>
             </div>
           </div>
@@ -1338,206 +1442,314 @@
       }).join('');
     }
 
-    // MARCAR COMO VISTO
-    async function toggleVisto(reportId) {
-      const report = allReports.find(r => r.id === reportId);
-      if (!report) return;
-
-      let vistosActuales = Array.isArray(report.vistos) ? [...report.vistos] : [];
-      if (vistosActuales.includes(activeUser)) {
-        vistosActuales = vistosActuales.filter(u => u !== activeUser);
-      } else {
-        vistosActuales.push(activeUser);
-      }
-
-      const { error } = await supabaseClient
-        .from('changelog_updates')
-        .update({ vistos: vistosActuales })
-        .eq('id', reportId);
-
-      if (error) {
-        alert("No se pudo actualizar el estado VISTO: " + error.message);
-      } else {
-        loadReports();
-      }
+    function filterReports() {
+      const q = document.getElementById('feed-search').value.toLowerCase().trim();
+      if (!q) { renderReports(currentReports); return; }
+      const filtered = currentReports.filter(r => 
+        r.title.toLowerCase().includes(q) || 
+        r.description.toLowerCase().includes(q) || 
+        r.category.toLowerCase().includes(q) ||
+        r.day_label.toLowerCase().includes(q)
+      );
+      renderReports(filtered);
     }
 
-    // MOSTRAR / OCULTAR CAJA DE COMENTARIO
-    function toggleCommentBox(reportId) {
-      const box = document.getElementById(`comments-box-${reportId}`);
-      if (box) box.classList.toggle('open');
+    async function markSeen(reportId) {
+      await supabaseClient.from('daily_reports').update({ client_seen_at: new Date().toISOString() }).eq('id', reportId);
+      loadActiveProjectData();
     }
 
-    // ENVIAR COMENTARIO
-    async function sendComment(reportId) {
-      const input = document.getElementById(`comment-input-${reportId}`);
-      const texto = input.value.trim();
-      if (!texto) return;
+    async function toggleApprove(reportId, currentStatus) {
+      const newStatus = currentStatus ? 'pendiente' : 'aprobado';
+      await supabaseClient.from('daily_reports').update({ 
+        status: newStatus,
+        client_approved_at: newStatus === 'aprobado' ? new Date().toISOString() : null
+      }).eq('id', reportId);
 
-      const report = allReports.find(r => r.id === reportId);
-      if (!report) return;
+      // Registrar auditoría del hito
+      await supabaseClient.from('project_audit_logs').insert([{
+        project_id: currentProject.id,
+        author_name: activeUser,
+        action_type: 'aprobacion_hito',
+        description: `El hito fue marcado como: ${newStatus.toUpperCase()}`
+      }]);
 
-      const comentariosActuales = Array.isArray(report.comentarios) ? [...report.comentarios] : [];
-      const ahora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      loadActiveProjectData();
+    }
 
-      comentariosActuales.push({
-        autor: activeUser,
-        texto,
-        fecha: ahora
+    async function addComment(reportId) {
+      const input = document.getElementById(`comm-input-${reportId}`);
+      const val = input.value.trim();
+      if (!val) return;
+
+      const report = currentReports.find(r => r.id === reportId);
+      const comments = Array.isArray(report.comments) ? [...report.comments] : [];
+      comments.push({ author: activeUser, text: val, date: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) });
+
+      await supabaseClient.from('daily_reports').update({ comments }).eq('id', reportId);
+      input.value = '';
+      loadActiveProjectData();
+    }
+
+    // MÓDULO C: GALERÍA DE TERRENO Y ANTES/DESPUÉS
+    function renderGallery(reports) {
+      const gallery = document.getElementById('gallery-grid');
+      let allImages = [];
+      reports.forEach(r => {
+        if (r.report_images) allImages.push(...r.report_images);
       });
 
-      input.value = '';
-
-      const { error } = await supabaseClient
-        .from('changelog_updates')
-        .update({ comentarios: comentariosActuales })
-        .eq('id', reportId);
-
-      if (error) {
-        alert("No se pudo enviar el comentario: " + error.message);
-      } else {
-        loadReports();
+      if (allImages.length === 0) {
+        gallery.innerHTML = `<div style="font-size:13px; color:var(--text-muted);">No hay fotografías de campo indexadas.</div>`;
+        return;
       }
+
+      gallery.innerHTML = allImages.map(img => `
+        <div style="position:relative;">
+          <img src="${img.image_url}" class="photo-thumb" onclick="openFullscreenImg('${img.image_url}')">
+          <span style="position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;">${img.zone || 'Terreno'}</span>
+        </div>
+      `).join('');
     }
 
-    // ELIMINAR INFORME
-    async function deleteReport(id) {
-      if (activeUser !== 'Admin') return;
-      if (!confirm("¿Eliminar este informe definitivamente?")) return;
+    function initBeforeAfterSlider() {
+      const container = document.getElementById('ba-slider');
+      const wrap = document.getElementById('ba-after-wrap');
+      const handle = document.getElementById('ba-handle');
+      let isDown = false;
 
-      const { error } = await supabaseClient
-        .from('changelog_updates')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        alert("Error al eliminar: " + error.message);
-      } else {
-        loadReports();
+      function updateSlider(x) {
+        const rect = container.getBoundingClientRect();
+        let posX = x - rect.left;
+        if (posX < 0) posX = 0;
+        if (posX > rect.width) posX = rect.width;
+        const pct = (posX / rect.width) * 100;
+        wrap.style.width = pct + '%';
+        handle.style.left = pct + '%';
       }
+
+      container.addEventListener('mousedown', () => isDown = true);
+      window.addEventListener('mouseup', () => isDown = false);
+      container.addEventListener('mousemove', (e) => { if (isDown) updateSlider(e.clientX); });
+
+      container.addEventListener('touchstart', () => isDown = true);
+      window.addEventListener('touchend', () => isDown = false);
+      container.addEventListener('touchmove', (e) => { if (isDown) updateSlider(e.touches[0].clientX); });
     }
 
-    // SUBIDA DE FOTOS
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('file-input');
+    // MÓDULO D: AUDITORÍA (AUDIT TRAIL)
+    function renderAudit(entries) {
+      const list = document.getElementById('audit-list');
+      if (!entries || entries.length === 0) {
+        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted);">Sin registros en la bitácora de modificaciones.</div>`;
+        return;
+      }
 
-    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); });
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      handleFiles(e.dataTransfer.files);
-    });
-    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+      list.innerHTML = entries.map(ent => `
+        <div class="audit-entry">
+          <div class="audit-meta">
+            <span><strong>${ent.author_name}</strong> • ${ent.action_type.replace('_', ' ').toUpperCase()}</span>
+            <span>${new Date(ent.log_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+          </div>
+          <div class="audit-title">${ent.description}</div>
+          ${ent.new_value ? `<div class="audit-desc"><strong>Valor anterior:</strong> ${ent.previous_value || 'N/A'} → <strong>Nuevo:</strong> ${ent.new_value}</div>` : ''}
+        </div>
+      `).join('');
+    }
 
-    function handleFiles(files) {
+    // MÓDULO E: CENTRO DOCUMENTAL
+    function renderDocuments(docs) {
+      const tbody = document.getElementById('docs-table-body');
+      if (!docs || docs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay documentos técnicos adjuntos.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = docs.map(d => `
+        <tr>
+          <td><strong>${d.title}</strong></td>
+          <td><span class="tag-category">${d.category.toUpperCase()}</span></td>
+          <td>${d.version}</td>
+          <td>${new Date(d.uploaded_at).toLocaleDateString()}</td>
+          <td><a href="${d.file_url}" target="_blank" class="btn-action-primary" style="padding:4px 8px; font-size:11px; text-decoration:none;">Descargar PDF</a></td>
+        </tr>
+      `).join('');
+    }
+
+    // COMPRESIÓN DE IMÁGENES CLIENT-SIDE
+    function handleImageUpload(files) {
       Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) return;
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
             const MAX_WIDTH = 1200;
-            let width = img.width;
-            let height = img.height;
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-            canvas.width = width;
-            canvas.height = height;
+            let w = img.width;
+            let h = img.height;
+            if (w > MAX_WIDTH) { h *= MAX_WIDTH / w; w = MAX_WIDTH; }
+            canvas.width = w;
+            canvas.height = h;
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.75));
+            ctx.drawImage(img, 0, 0, w, h);
+            const comp = canvas.toDataURL('image/jpeg', 0.75);
+            uploadedImagesBase64.push(comp);
             renderPreviews();
           };
-          img.src = event.target.result;
+          img.src = e.target.result;
         };
         reader.readAsDataURL(file);
       });
     }
 
     function renderPreviews() {
-      const list = document.getElementById('preview-list');
-      list.innerHTML = uploadedImagesBase64.map((data, idx) => `
+      const wrap = document.getElementById('rep-img-previews');
+      wrap.innerHTML = uploadedImagesBase64.map((src, i) => `
         <div class="preview-wrap">
-          <img src="${data}">
-          <button class="preview-remove" onclick="removeImage(${idx})">✕</button>
+          <img src="${src}">
+          <button style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeImgPreview(${i})">✕</button>
         </div>
       `).join('');
     }
 
-    function removeImage(idx) {
-      uploadedImagesBase64.splice(idx, 1);
+    function removeImgPreview(i) {
+      uploadedImagesBase64.splice(i, 1);
       renderPreviews();
     }
 
-    // PUBLICAR INFORME
-    async function submitReport() {
-      if (activeUser !== 'Admin') return;
+    // PUBLICACIÓN DE FORMULARIOS (ADMIN)
+    async function submitDailyReport() {
+      if (!currentProject) return;
+      const day = document.getElementById('form-rep-day').value.trim();
+      const cat = document.getElementById('form-rep-cat').value;
+      const title = document.getElementById('form-rep-title').value.trim();
+      const desc = document.getElementById('form-rep-desc').value.trim();
 
-      const destinatario = document.getElementById('rep-target').value;
-      const version = document.getElementById('rep-version').value.trim();
-      const fase = document.getElementById('rep-phase').value.trim() || 'General';
-      const resumen = document.getElementById('rep-title').value.trim();
-      const detalles = document.getElementById('rep-desc').value.trim();
+      if (!day || !title || !desc) { alert("Complete los campos obligatorios."); return; }
 
-      if (!version || !resumen) {
-        alert("Completa al menos la versión y el título.");
-        return;
+      const { data: rep, error } = await supabaseClient.from('daily_reports').insert([{
+        project_id: currentProject.id,
+        day_label: day,
+        category: cat,
+        title,
+        description: desc,
+        report_date: new Date().toISOString().split('T')[0]
+      }]).select().single();
+
+      if (error) { alert("Error: " + error.message); return; }
+
+      if (uploadedImagesBase64.length > 0) {
+        const imgs = uploadedImagesBase64.map(uri => ({
+          report_id: rep.id,
+          image_url: uri,
+          zone: 'General'
+        }));
+        await supabaseClient.from('report_images').insert(imgs);
       }
 
-      const saveBtn = document.getElementById('btn-save-report');
-      saveBtn.innerText = "Publicando...";
-      saveBtn.disabled = true;
-
-      const { error } = await supabaseClient
-        .from('changelog_updates')
-        .insert([{
-          version,
-          fase,
-          autor: 'Admin',
-          destinatario,
-          resumen,
-          detalles,
-          imagenes: uploadedImagesBase64,
-          vistos: [],
-          comentarios: []
-        }]);
-
-      saveBtn.innerText = "Publicar Informe";
-      saveBtn.disabled = false;
-
-      if (error) {
-        alert("Error al publicar: " + error.message);
-      } else {
-        closeReportModal();
-        document.getElementById('rep-version').value = '';
-        document.getElementById('rep-phase').value = '';
-        document.getElementById('rep-title').value = '';
-        document.getElementById('rep-desc').value = '';
-        uploadedImagesBase64 = [];
-        renderPreviews();
-        loadReports();
-      }
+      closeModal('modal-report');
+      uploadedImagesBase64 = [];
+      renderPreviews();
+      loadActiveProjectData();
     }
 
-    function openReportModal() { document.getElementById('report-modal').classList.add('open'); }
-    function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
-    function openLightbox(url) {
-      document.getElementById('lightbox-img').src = url;
-      document.getElementById('lightbox').classList.add('open');
-    }
-    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+    async function submitAuditEntry() {
+      if (!currentProject) return;
+      const type = document.getElementById('form-aud-type').value;
+      const desc = document.getElementById('form-aud-desc').value.trim();
+      const prev = document.getElementById('form-aud-prev').value.trim();
+      const next = document.getElementById('form-aud-new').value.trim();
 
-    function setupRealtime() {
-      supabaseClient
-        .channel('public:changelog_updates')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'changelog_updates' }, () => {
-          if (activeUser) loadReports();
-        })
+      await supabaseClient.from('project_audit_logs').insert([{
+        project_id: currentProject.id,
+        author_name: activeUser,
+        action_type: type,
+        description: desc,
+        previous_value: prev,
+        new_value: next
+      }]);
+
+      closeModal('modal-audit');
+      loadActiveProjectData();
+    }
+
+    async function submitDocument() {
+      if (!currentProject) return;
+      const title = document.getElementById('form-doc-title').value.trim();
+      const category = document.getElementById('form-doc-cat').value;
+      const version = document.getElementById('form-doc-ver').value.trim();
+      const file_url = document.getElementById('form-doc-url').value.trim();
+
+      await supabaseClient.from('project_documents').insert([{
+        project_id: currentProject.id,
+        title,
+        category,
+        version,
+        file_url
+      }]);
+
+      closeModal('modal-doc');
+      loadActiveProjectData();
+    }
+
+    // EXPORTACIÓN A PDF FORMAL
+    function printExecutiveReport() {
+      if (!currentProject) return;
+
+      document.getElementById('print-date').innerText = `Fecha de emisión: ${new Date().toLocaleDateString()}`;
+      document.getElementById('print-project-code').innerText = `ID PROYECTO: ${currentProject.code}`;
+      document.getElementById('print-project-name').innerText = currentProject.name;
+      document.getElementById('print-project-client').innerText = `Cliente: ${currentProject.client_name} | ${currentProject.address || ''}`;
+      document.getElementById('print-planned').innerText = `Progreso Planificado: ${currentProject.planned_progress}%`;
+      document.getElementById('print-actual').innerText = `Progreso Ejecutado: ${currentProject.actual_progress}%`;
+      document.getElementById('print-phase').innerText = `Fase Actual: ${currentProject.current_phase}`;
+
+      const printBody = document.getElementById('print-reports-body');
+      printBody.innerHTML = currentReports.slice(0, 5).map(r => `
+        <div style="margin-bottom:14px; border-bottom:1px solid #eee; padding-bottom:8px;">
+          <div style="font-weight:bold; font-size:13px;">${r.day_label} — ${r.title} (${r.category})</div>
+          <div style="font-size:12px; color:#444; margin-top:3px;">${r.description}</div>
+          <div style="font-size:11px; color:#777; margin-top:4px;">Estado: ${r.status.toUpperCase()}</div>
+        </div>
+      `).join('');
+
+      window.print();
+    }
+
+    // TIEMPO REAL
+    function setupRealtimeSubscriptions() {
+      supabaseClient.channel('realtime_obra')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => loadActiveProjectData())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => loadActiveProjectData())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_documents' }, () => loadActiveProjectData())
         .subscribe();
     }
+
+    // NAVEGACIÓN Y MODALES
+    function switchModule(mod) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.module-section').forEach(s => s.classList.remove('active-module'));
+
+      document.getElementById(`tab-btn-${mod}`)?.classList.add('active');
+      document.getElementById(`sec-${mod}`)?.classList.add('active-module');
+      closeSidebar();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawer-backdrop').classList.toggle('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('drawer-backdrop').classList.remove('open');
+    }
+
+    function openCreateReportModal() { document.getElementById('modal-report').classList.add('open'); }
+    function openAuditModal() { document.getElementById('modal-audit').classList.add('open'); }
+    function openDocModal() { document.getElementById('modal-doc').classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openFullscreenImg(url) { window.open(url, '_blank'); }
   </script>
 </body>
 </html>
