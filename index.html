@@ -19,7 +19,6 @@
       --ios-glass: rgba(246, 247, 249, 0.86);
       --ios-glass-border: rgba(255, 255, 255, 0.65);
       
-      /* Barra lateral y barra de tareas al 70% de opacidad con desenfoque trasero */
       --sidebar-bg: rgba(66, 79, 61, 0.70);
       --topbar-bg: rgba(245, 248, 243, 0.70);
       --sidebar-text: #EAEFE8;
@@ -46,7 +45,6 @@
       --status-danger-bg: #F9E8E6;
     }
 
-    /* CERO ANIMACIONES Y BLOQUEO DE DESPLAZAMIENTO LATERAL EN MÓVILES */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -54,6 +52,19 @@
       -webkit-font-smoothing: antialiased;
       transition: none !important;
       animation: none !important;
+    }
+
+    .hp-field {
+      position: absolute !important;
+      left: -9999px !important;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .card-date, #label-actual, .vault-date-count, .docs-table td {
+      font-variant-numeric: tabular-nums;
     }
 
     html, body {
@@ -177,7 +188,7 @@
       position: relative;
     }
 
-    /* BARRA LATERAL CON 70% DE OPACIDAD Y DESENFOQUE TRASERO */
+    /* BARRA LATERAL AL 70% DE OPACIDAD Y DESENFOQUE TRASERO */
     .sidebar {
       width: 270px;
       background: var(--sidebar-bg);
@@ -1083,7 +1094,6 @@
             <span>Documentos</span>
           </li>
 
-          <!-- NUEVO MENÚ DE USUARIOS (SOLO PARA ADMIN) -->
           <li class="nav-item" id="nav-item-users" style="display:none;" onclick="switchModule('users')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -1214,7 +1224,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div>
             <h3 style="font-size:17px; font-weight:700;">Centro Documental</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF con vista previa y descarga directa.</p>
+            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF con vista previa multipágina y descarga directa.</p>
           </div>
           <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openCreateDocModal()">+ Subir Archivo PDF</button>
         </div>
@@ -1286,7 +1296,12 @@
         <h3 class="modal-title" id="pdf-preview-title">Vista Previa del Documento</h3>
         <button class="modal-close" onclick="closePdfPreview()">✕</button>
       </div>
-      <iframe id="pdf-preview-frame" style="width:100%; flex:1; border:1px solid #D5DFD2; border-radius:12px; background:#fff;"></iframe>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px;">
+        <a id="pdf-native-open-btn" href="#" target="_blank" rel="noopener" class="btn-action-primary" style="padding:6px 12px; font-size:12px; text-decoration:none;">↗ Abrir todas las páginas en pestaña completa</a>
+      </div>
+      <object id="pdf-preview-frame" type="application/pdf" style="width:100%; flex:1; border:1px solid #D5DFD2; border-radius:12px; background:#fff;">
+        <p style="padding:24px; text-align:center; font-size:13px; color:var(--text-body);">Pulsa el botón superior para abrir todas las páginas del documento en el lector nativo de tu dispositivo.</p>
+      </object>
     </div>
   </div>
 
@@ -1297,6 +1312,7 @@
         <h3 class="modal-title">Modificar Obra, Cliente y Avance</h3>
         <button class="modal-close" onclick="closeModal('modal-edit-project')">✕</button>
       </div>
+      <input type="text" id="hp-project" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
         <label>Nombre del Proyecto / Obra</label>
@@ -1344,7 +1360,7 @@
     </div>
   </div>
 
-  <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA (CON CALENDARIO ÚNICO) -->
+  <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA (CON PERSISTENCIA DE IMÁGENES) -->
   <div class="modal-overlay" id="modal-report">
     <div class="modal-box">
       <div class="modal-header">
@@ -1352,6 +1368,7 @@
         <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
       </div>
       <input type="hidden" id="form-rep-editing-id" value="">
+      <input type="text" id="hp-report" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
         <label>Fecha del Informe (El horario se asignará automáticamente con la hora actual)</label>
@@ -1374,9 +1391,9 @@
       </div>
 
       <div class="form-group">
-        <label>Fotografías de Obra (Arrastrar o pulsar)</label>
+        <label>Fotografías de Obra (Las imágenes actuales se conservan salvo que las retires con ✕)</label>
         <div class="dropzone" id="img-dropzone" onclick="document.getElementById('rep-files').click()">
-          <div style="font-size:13px; font-weight:600;">📷 Arrastra tus fotografías aquí o haz clic para seleccionar</div>
+          <div style="font-size:13px; font-weight:600;">📷 Arrastra nuevas fotografías aquí o haz clic para añadir</div>
           <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Se organizarán por fecha en el Baúl de Galería</div>
         </div>
         <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
@@ -1398,6 +1415,7 @@
         <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
       </div>
       <input type="hidden" id="form-doc-editing-id" value="">
+      <input type="text" id="hp-doc" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
         <label>Título del Documento</label>
@@ -1423,7 +1441,7 @@
         <label>Archivo PDF (Arrastrar o seleccionar desde tu dispositivo)</label>
         <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('doc-file-input').click()">
           <div style="font-size:13px; font-weight:600;" id="pdf-dropzone-label">📄 Arrastra tu archivo .PDF aquí o haz clic para subir</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Soporta vista previa integrada y descarga directa</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Soporta vista previa multipágina y descarga directa en móvil y PC</div>
         </div>
         <input type="file" id="doc-file-input" accept="application/pdf,.pdf" style="display:none;" onchange="handlePdfFileSelect(this.files)">
       </div>
@@ -1443,6 +1461,7 @@
         <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
       </div>
       <input type="hidden" id="form-user-editing-id" value="">
+      <input type="text" id="hp-user" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
         <label>Usuario de Inicio de Sesión (Sin espacios, ej.: Cliente1, Cliente5)</label>
@@ -1522,7 +1541,12 @@
     let currentProject = null;
     let currentReports = [];
     let currentDocs = [];
+
+    // Estados separados para garantizar persistencia de imágenes al editar informes
+    let existingReportImages = [];
+    let removedImageIds = [];
     let uploadedImagesBase64 = [];
+
     let selectedPdfDataUrl = null;
     let currentPdfBlobUrl = null;
 
@@ -1535,10 +1559,26 @@
     let startDragY = 0;
     let rafPending = false;
 
-    // Corrección ortográfica automática de términos frecuentes en obra
-    function formatOrthography(text) {
+    // Sanitización DOM y Honeypot
+    function escapeHtml(raw) {
+      if (!raw) return '';
+      return String(raw)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function isHoneypotTriggered(id) {
+      const el = document.getElementById(id);
+      return Boolean(el && el.value.trim() !== '');
+    }
+
+    // Corrección ortográfica limpia (texto puro para BD y escapado para DOM)
+    function cleanOrthographyRaw(text) {
       if (!text) return '';
-      let clean = text.trim();
+      let clean = String(text).trim();
       const replacements = {
         '\\bimpermeabilizacion\\b': 'Impermeabilización',
         '\\bemchape\\b': 'Enchape',
@@ -1555,6 +1595,10 @@
         clean = clean.replace(new RegExp(pattern, 'gi'), replacement);
       }
       return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
+
+    function formatOrthography(text) {
+      return escapeHtml(cleanOrthographyRaw(text));
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1580,7 +1624,6 @@
       setupRealtimeSubscriptions();
     }
 
-    // LOGIN DINÁMICO CONTRA SUPABASE (ADMIN + USUARIOS CREADOS)
     async function handleLogin() {
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
@@ -1620,7 +1663,6 @@
       }
     }
 
-    // CARGAR PROYECTOS Y ROLES
     async function loadProjects() {
       const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
       if (error) return;
@@ -1636,7 +1678,7 @@
         document.getElementById('nav-item-users').style.display = 'flex';
 
         const dropdown = document.getElementById('active-project-dropdown');
-        dropdown.innerHTML = allProjects.map(p => `<option value="${p.id}">${p.name} (${p.code} — ${p.client_name})</option>`).join('');
+        dropdown.innerHTML = allProjects.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${escapeHtml(p.code)} — ${escapeHtml(p.client_name)})</option>`).join('');
 
         currentProject = allProjects.find(p => p.id === prevSelectedId) || allProjects[0] || null;
         if (currentProject) dropdown.value = currentProject.id;
@@ -1664,8 +1706,8 @@
     function renderHeaderDashboard() {
       if (!currentProject) return;
 
-      document.getElementById('dash-project-name').innerText = currentProject.name;
-      document.getElementById('dash-project-desc').innerText = `Cliente: ${currentProject.client_name} — ${currentProject.address || 'Ubicación registrada'}`;
+      document.getElementById('dash-project-name').innerText = cleanOrthographyRaw(currentProject.name);
+      document.getElementById('dash-project-desc').innerText = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} — ${cleanOrthographyRaw(currentProject.address || 'Ubicación registrada')}`;
 
       const badge = document.getElementById('dash-health-badge');
       badge.className = `health-badge ${currentProject.status}`;
@@ -1675,13 +1717,12 @@
       document.getElementById('label-actual').innerText = `${actual.toFixed(1)}%`;
       document.getElementById('bar-actual').style.width = `${Math.min(actual, 100)}%`;
 
-      document.getElementById('dash-phase').innerText = formatOrthography(currentProject.current_phase || 'En ejecución');
+      document.getElementById('dash-phase').innerText = cleanOrthographyRaw(currentProject.current_phase || 'En ejecución');
       document.getElementById('dash-milestone-date').innerText = currentProject.next_milestone_date 
         ? new Date(currentProject.next_milestone_date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : 'Por definir';
     }
 
-    // CARGA EN PARALELO (PROMISE.ALL) PARA VELOCIDAD INSTANTÁNEA
     async function loadActiveProjectData() {
       if (!currentProject) return;
 
@@ -1714,7 +1755,7 @@
       renderDocuments(currentDocs);
     }
 
-    // RENDERIZAR INFORMES (CON FECHA ÚNICA + HORARIO ACTUAL Y EDICIÓN)
+    // RENDERIZAR INFORMES
     function renderReports(items) {
       const feed = document.getElementById('feed-timeline');
       if (!items || items.length === 0) {
@@ -1730,10 +1771,9 @@
           day: '2-digit', month: 'short', year: 'numeric'
         });
 
-        // Si day_label guarda la hora (ej. "09:30 p. m."), se muestra junto a la fecha única
         const tieneHora = rep.day_label && (rep.day_label.includes(':') || rep.day_label.includes('m'));
         const horaCreacion = tieneHora
-          ? rep.day_label
+          ? escapeHtml(rep.day_label)
           : new Date(rep.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
         const fechaUnicaLabel = `📅 ${fechaFormateada} • ${horaCreacion}`;
@@ -1746,7 +1786,6 @@
           ? `✔ Visto confirmado el ${new Date(rep.client_seen_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`
           : 'Pendiente de confirmación de lectura';
 
-        // El cliente no puede desmarcar "Visto" una vez activado; solo el Admin puede alternarlo
         const disableSeenBtn = (activeUser !== 'Admin' && yaVisto) ? 'disabled title="Confirmación registrada. Solo el administrador puede modificar este estado."' : '';
 
         const adminActions = activeUser === 'Admin'
@@ -1768,8 +1807,8 @@
         const comments = Array.isArray(rep.comments) ? rep.comments : [];
         const commentsHtml = comments.map(c => `
           <div style="font-size:12.5px; margin-top:5px; background:#fff; padding:6px 10px; border-radius:8px;">
-            <strong>${c.author}:</strong> ${formatOrthography(c.text)}
-            <span style="float:right; font-size:10.5px; color:#777;">${c.date || ''}</span>
+            <strong>${escapeHtml(c.author)}:</strong> ${formatOrthography(c.text)}
+            <span style="float:right; font-size:10.5px; color:#777;">${escapeHtml(c.date || '')}</span>
           </div>
         `).join('');
 
@@ -1807,7 +1846,6 @@
       }).join('');
     }
 
-    // BUSCADOR POR TEXTO Y POR FECHA DE CALENDARIO
     function filterReports() {
       const q = (document.getElementById('feed-search')?.value || '').toLowerCase().trim();
       const filterDate = document.getElementById('feed-search-date')?.value || '';
@@ -1838,14 +1876,10 @@
       filterReports();
     }
 
-    // BLOQUEO DE "MARCAR COMO VISTO" PARA CLIENTES (SOLO ADMIN PUEDE DESMARCAR)
     async function toggleSeenStatus(reportId) {
       const report = currentReports.find(r => r.id === reportId);
       if (!report) return;
-
-      if (report.client_seen_at && activeUser !== 'Admin') {
-        return;
-      }
+      if (report.client_seen_at && activeUser !== 'Admin') return;
 
       const nuevoEstado = report.client_seen_at ? null : new Date().toISOString();
       await supabaseClient.from('daily_reports').update({ client_seen_at: nuevoEstado }).eq('id', reportId);
@@ -1861,7 +1895,7 @@
       const comments = Array.isArray(report.comments) ? [...report.comments] : [];
       comments.push({
         author: activeUser,
-        text: formatOrthography(val),
+        text: cleanOrthographyRaw(val),
         date: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       });
 
@@ -1870,7 +1904,7 @@
       loadActiveProjectData();
     }
 
-    // CREAR Y EDITAR INFORMES (CON FECHA DE CALENDARIO + HORA AUTOMÁTICA)
+    // CREAR Y EDITAR INFORMES (CON CONSERVACIÓN ESTRICTA DE IMÁGENES PREEXISTENTES)
     function openCreateReportModal() {
       document.getElementById('modal-report-heading').innerText = 'Publicar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = '';
@@ -1878,6 +1912,8 @@
       document.getElementById('form-rep-cat').value = '';
       document.getElementById('form-rep-title').value = '';
       document.getElementById('form-rep-desc').value = '';
+      existingReportImages = [];
+      removedImageIds = [];
       uploadedImagesBase64 = [];
       renderPreviews();
       document.getElementById('modal-report').classList.add('open');
@@ -1891,22 +1927,56 @@
       document.getElementById('modal-report-heading').innerText = 'Editar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = rep.id;
       document.getElementById('form-rep-date').value = rep.report_date || new Date(rep.created_at).toISOString().split('T')[0];
-      document.getElementById('form-rep-cat').value = rep.category || '';
-      document.getElementById('form-rep-title').value = rep.title || '';
-      document.getElementById('form-rep-desc').value = rep.description || '';
-      uploadedImagesBase64 = (rep.report_images || []).map(img => img.image_url);
+      document.getElementById('form-rep-cat').value = cleanOrthographyRaw(rep.category || '');
+      document.getElementById('form-rep-title').value = cleanOrthographyRaw(rep.title || '');
+      document.getElementById('form-rep-desc').value = cleanOrthographyRaw(rep.description || '');
+
+      existingReportImages = (rep.report_images || []).map(img => ({ id: img.id, url: img.image_url }));
+      removedImageIds = [];
+      uploadedImagesBase64 = [];
       renderPreviews();
       document.getElementById('modal-report').classList.add('open');
     }
 
+    function renderPreviews() {
+      const wrap = document.getElementById('rep-img-previews');
+      const existingHtml = existingReportImages.map(img => `
+        <div class="preview-wrap" title="Imagen guardada en el informe">
+          <img src="${img.url}">
+          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeExistingImg('${img.id}')">✕</button>
+        </div>
+      `).join('');
+
+      const newHtml = uploadedImagesBase64.map((src, i) => `
+        <div class="preview-wrap" title="Nueva imagen por añadir">
+          <img src="${src}">
+          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeImgPreview(${i})">✕</button>
+        </div>
+      `).join('');
+
+      wrap.innerHTML = existingHtml + newHtml;
+    }
+
+    function removeExistingImg(imgId) {
+      removedImageIds.push(imgId);
+      existingReportImages = existingReportImages.filter(img => img.id !== imgId);
+      renderPreviews();
+    }
+
+    function removeImgPreview(i) {
+      uploadedImagesBase64.splice(i, 1);
+      renderPreviews();
+    }
+
     async function submitDailyReport() {
       if (!currentProject || activeUser !== 'Admin') return;
+      if (isHoneypotTriggered('hp-report')) return;
 
       const editingId = document.getElementById('form-rep-editing-id').value;
       const report_date = document.getElementById('form-rep-date').value || new Date().toISOString().split('T')[0];
-      const category = formatOrthography(document.getElementById('form-rep-cat').value.trim() || 'General');
-      const title = formatOrthography(document.getElementById('form-rep-title').value.trim());
-      const description = formatOrthography(document.getElementById('form-rep-desc').value.trim());
+      const category = cleanOrthographyRaw(document.getElementById('form-rep-cat').value.trim() || 'General');
+      const title = cleanOrthographyRaw(document.getElementById('form-rep-title').value.trim());
+      const description = cleanOrthographyRaw(document.getElementById('form-rep-desc').value.trim());
       const currentTimeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
       if (!title || !description) {
@@ -1919,25 +1989,25 @@
       btn.disabled = true;
 
       if (editingId) {
-        // Actualizar informe existente
         const { error } = await supabaseClient
           .from('daily_reports')
           .update({ report_date, category, title, description })
           .eq('id', editingId);
 
         if (!error) {
-          await supabaseClient.from('report_images').delete().eq('report_id', editingId);
+          if (removedImageIds.length > 0) {
+            await supabaseClient.from('report_images').delete().in('id', removedImageIds);
+          }
           if (uploadedImagesBase64.length > 0) {
-            const imgs = uploadedImagesBase64.map(uri => ({
+            const newImgs = uploadedImagesBase64.map(uri => ({
               report_id: editingId,
               image_url: uri,
               zone: category
             }));
-            await supabaseClient.from('report_images').insert(imgs);
+            await supabaseClient.from('report_images').insert(newImgs);
           }
         }
       } else {
-        // Crear nuevo informe con fecha del calendario y horario actual
         const { data: rep, error } = await supabaseClient.from('daily_reports').insert([{
           project_id: currentProject.id,
           day_label: currentTimeStr,
@@ -1969,6 +2039,8 @@
       btn.innerText = "Guardar Informe";
       btn.disabled = false;
       closeModal('modal-report');
+      existingReportImages = [];
+      removedImageIds = [];
       uploadedImagesBase64 = [];
       renderPreviews();
       loadActiveProjectData();
@@ -2030,7 +2102,7 @@
             <div class="photo-grid" style="margin-bottom:0;">
               ${group.images.map(item => `
                 <div style="position:relative;">
-                  <img src="${item.url}" loading="lazy" decoding="async" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.category} — ${group.label}')">
+                  <img src="${item.url}" loading="lazy" decoding="async" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.category.replace(/'/g, "")} — ${group.label.replace(/'/g, "")}')">
                   <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.82); color:#fff; font-size:10px; padding:3px 8px; border-radius:6px; pointer-events:none;">${item.category}</span>
                 </div>
               `).join('')}
@@ -2053,7 +2125,7 @@
         return `
           <div class="audit-entry">
             <div class="audit-meta">
-              <span><strong>${badgeText}</strong> • Por ${ent.author_name}</span>
+              <span><strong>${badgeText}</strong> • Por ${escapeHtml(ent.author_name)}</span>
               <span>${new Date(ent.log_date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</span>
             </div>
             <div class="audit-title">${formatOrthography(ent.description)}</div>
@@ -2062,7 +2134,61 @@
       }).join('');
     }
 
-    // CENTRO DOCUMENTAL CON VISTA PREVIA, EDICIÓN Y DESCARGA
+    // CENTRO DOCUMENTAL: VISTA PREVIA MULTIPÁGINA Y DESCARGA NATIVA EN MÓVIL Y PC
+    function pdfDataUrlToBlobUrl(fileUrl) {
+      if (!fileUrl) return '';
+      if (!fileUrl.startsWith('data:')) return fileUrl;
+      const parts = fileUrl.split(',');
+      const byteString = atob(parts[1]);
+      const ab = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+        ab[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: 'application/pdf' });
+      return URL.createObjectURL(blob);
+    }
+
+    function previewPdfDocument(docId) {
+      const doc = currentDocs.find(d => d.id === docId);
+      if (!doc || !doc.file_url) return;
+
+      if (currentPdfBlobUrl) URL.revokeObjectURL(currentPdfBlobUrl);
+      currentPdfBlobUrl = pdfDataUrlToBlobUrl(doc.file_url);
+
+      const isMobile = window.innerWidth <= 820 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.open(currentPdfBlobUrl, '_blank', 'noopener');
+        return;
+      }
+
+      document.getElementById('pdf-preview-title').innerText = `Vista Previa — ${cleanOrthographyRaw(doc.title)}`;
+      document.getElementById('pdf-native-open-btn').href = currentPdfBlobUrl;
+      document.getElementById('pdf-preview-frame').setAttribute('data', currentPdfBlobUrl);
+      document.getElementById('modal-pdf-preview').classList.add('open');
+    }
+
+    function closePdfPreview() {
+      document.getElementById('modal-pdf-preview').classList.remove('open');
+      document.getElementById('pdf-preview-frame').removeAttribute('data');
+    }
+
+    function downloadPdfDocument(docId, idx) {
+      const doc = currentDocs.find(d => d.id === docId);
+      if (!doc || !doc.file_url) return;
+
+      const blobUrl = pdfDataUrlToBlobUrl(doc.file_url);
+      const cleanFileName = (doc.title || `documento_${idx + 1}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.pdf';
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = cleanFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 8000);
+    }
+
     function renderDocuments(docs) {
       const tbody = document.getElementById('docs-table-body');
       if (!docs || docs.length === 0) {
@@ -2071,7 +2197,6 @@
       }
 
       tbody.innerHTML = docs.map((d, idx) => {
-        const cleanFileName = (d.title || `documento_${idx + 1}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.pdf';
         const adminBtns = activeUser === 'Admin'
           ? `<button class="btn-edit-project" style="display:inline-flex; padding:5px 9px; font-size:11px; margin-left:4px;" onclick="openEditDocModal('${d.id}')">✎ Editar</button>
              <button class="btn-logout" style="padding:5px 9px; font-size:11px; margin-left:4px;" onclick="deleteDocument('${d.id}')">🗑️</button>`
@@ -2080,53 +2205,17 @@
         return `
           <tr>
             <td><strong>📄 ${formatOrthography(d.title)}</strong></td>
-            <td><span class="tag-category">${(d.category || 'Plano').toUpperCase()}</span></td>
-            <td>${d.version}</td>
+            <td><span class="tag-category">${escapeHtml((d.category || 'Plano').toUpperCase())}</span></td>
+            <td>${escapeHtml(d.version)}</td>
             <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
             <td style="white-space:nowrap;">
               <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; background:#3A5A40; margin-right:4px;" onclick="previewPdfDocument('${d.id}')">👁️ Vista Previa</button>
-              <a href="${d.file_url}" download="${cleanFileName}" class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; text-decoration:none;">⬇ Descargar</a>
+              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px;" onclick="downloadPdfDocument('${d.id}', ${idx})">⬇ Descargar</button>
               ${adminBtns}
             </td>
           </tr>
         `;
       }).join('');
-    }
-
-    // CONVERTIR BASE64 A BLOB URL PARA VISTA PREVIA RÁPIDA DE PDF
-    function previewPdfDocument(docId) {
-      const doc = currentDocs.find(d => d.id === docId);
-      if (!doc || !doc.file_url) return;
-
-      document.getElementById('pdf-preview-title').innerText = `Vista Previa — ${formatOrthography(doc.title)}`;
-      const frame = document.getElementById('pdf-preview-frame');
-
-      if (currentPdfBlobUrl) {
-        URL.revokeObjectURL(currentPdfBlobUrl);
-        currentPdfBlobUrl = null;
-      }
-
-      if (doc.file_url.startsWith('data:application/pdf;base64,')) {
-        const base64Part = doc.file_url.split(',')[1];
-        const binaryStr = atob(base64Part);
-        const len = binaryStr.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-          bytes[i] = binaryStr.charCodeAt(i);
-        }
-        const blob = new Blob([bytes], { type: 'application/pdf' });
-        currentPdfBlobUrl = URL.createObjectURL(blob);
-        frame.src = currentPdfBlobUrl;
-      } else {
-        frame.src = doc.file_url;
-      }
-
-      document.getElementById('modal-pdf-preview').classList.add('open');
-    }
-
-    function closePdfPreview() {
-      document.getElementById('modal-pdf-preview').classList.remove('open');
-      document.getElementById('pdf-preview-frame').src = '';
     }
 
     function openCreateDocModal() {
@@ -2147,7 +2236,7 @@
 
       document.getElementById('modal-doc-heading').innerText = 'Editar Documento PDF';
       document.getElementById('form-doc-editing-id').value = doc.id;
-      document.getElementById('form-doc-title').value = doc.title || '';
+      document.getElementById('form-doc-title').value = cleanOrthographyRaw(doc.title || '');
       document.getElementById('form-doc-cat').value = doc.category || 'Plano';
       document.getElementById('form-doc-ver').value = doc.version || 'v1.0';
       selectedPdfDataUrl = doc.file_url;
@@ -2157,8 +2246,10 @@
 
     async function submitDocument() {
       if (!currentProject || activeUser !== 'Admin') return;
+      if (isHoneypotTriggered('hp-doc')) return;
+
       const editingId = document.getElementById('form-doc-editing-id').value;
-      const title = formatOrthography(document.getElementById('form-doc-title').value.trim());
+      const title = cleanOrthographyRaw(document.getElementById('form-doc-title').value.trim());
       const category = document.getElementById('form-doc-cat').value;
       const version = document.getElementById('form-doc-ver').value.trim() || 'v1.0';
 
@@ -2208,7 +2299,7 @@
       loadActiveProjectData();
     }
 
-    // GESTIÓN DE USUARIOS (AÑADIR, MODIFICAR Y ELIMINAR TANTAS VECES COMO QUIERA EL ADMIN)
+    // GESTIÓN DE USUARIOS (ADMIN)
     function renderUsersTable() {
       const tbody = document.getElementById('users-table-body');
       if (!tbody) return;
@@ -2217,7 +2308,7 @@
       const adminRow = `
         <tr style="background:#F5F8F3;">
           <td><strong>🔑 Admin</strong></td>
-          <td><code>${adminPass}</code></td>
+          <td><code>${escapeHtml(adminPass)}</code></td>
           <td>Administrador General</td>
           <td>Todos los proyectos</td>
           <td>
@@ -2228,13 +2319,13 @@
 
       const clientRows = allProjects.map(p => `
         <tr>
-          <td><strong>👤 ${p.code}</strong></td>
-          <td><code>${p.password || '1234'}</code></td>
-          <td>${p.client_name}</td>
-          <td>${p.name}</td>
+          <td><strong>👤 ${escapeHtml(p.code)}</strong></td>
+          <td><code>${escapeHtml(p.password || '1234')}</code></td>
+          <td>${escapeHtml(p.client_name)}</td>
+          <td>${escapeHtml(p.name)}</td>
           <td style="white-space:nowrap;">
             <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openUserModal('${p.id}')">✎ Editar</button>
-            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${p.id}', '${p.code}')">🗑️ Eliminar</button>
+            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${p.id}', '${escapeHtml(p.code)}')">🗑️ Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -2260,9 +2351,9 @@
         document.getElementById('form-user-editing-id').value = proj.id;
         document.getElementById('form-user-code').value = proj.code || '';
         document.getElementById('form-user-pass').value = proj.password || '1234';
-        document.getElementById('form-user-client').value = proj.client_name || '';
-        document.getElementById('form-user-project').value = proj.name || '';
-        document.getElementById('form-user-address').value = proj.address || '';
+        document.getElementById('form-user-client').value = cleanOrthographyRaw(proj.client_name || '');
+        document.getElementById('form-user-project').value = cleanOrthographyRaw(proj.name || '');
+        document.getElementById('form-user-address').value = cleanOrthographyRaw(proj.address || '');
       } else {
         document.getElementById('modal-user-heading').innerText = 'Añadir Nuevo Usuario';
         document.getElementById('form-user-editing-id').value = '';
@@ -2277,12 +2368,14 @@
 
     async function saveUserAccount() {
       if (activeUser !== 'Admin') return;
+      if (isHoneypotTriggered('hp-user')) return;
+
       const editingId = document.getElementById('form-user-editing-id').value;
       const code = document.getElementById('form-user-code').value.trim().replace(/\s+/g, '');
       const password = document.getElementById('form-user-pass').value.trim() || '1234';
-      const client_name = formatOrthography(document.getElementById('form-user-client').value.trim());
-      const name = formatOrthography(document.getElementById('form-user-project').value.trim());
-      const address = formatOrthography(document.getElementById('form-user-address').value.trim());
+      const client_name = cleanOrthographyRaw(document.getElementById('form-user-client').value.trim());
+      const name = cleanOrthographyRaw(document.getElementById('form-user-project').value.trim());
+      const address = cleanOrthographyRaw(document.getElementById('form-user-address').value.trim());
 
       if (!code || !client_name || !name) {
         alert("Completa el usuario, el nombre del cliente y el nombre del proyecto.");
@@ -2314,7 +2407,7 @@
       btn.disabled = false;
 
       if (errorObj) {
-        alert("Aviso al guardar usuario: " + errorObj.message + "\n(Asegúrate de haber ejecutado el comando ALTER TABLE projects ADD COLUMN IF NOT EXISTS password en Supabase).");
+        alert("Aviso al guardar usuario: " + errorObj.message);
         return;
       }
 
@@ -2334,15 +2427,15 @@
     function openEditProjectModal() {
       if (!currentProject || activeUser !== 'Admin') return;
 
-      document.getElementById('edit-proj-name').value = currentProject.name || '';
-      document.getElementById('edit-proj-client').value = currentProject.client_name || '';
-      document.getElementById('edit-proj-address').value = currentProject.address || '';
+      document.getElementById('edit-proj-name').value = cleanOrthographyRaw(currentProject.name || '');
+      document.getElementById('edit-proj-client').value = cleanOrthographyRaw(currentProject.client_name || '');
+      document.getElementById('edit-proj-address').value = cleanOrthographyRaw(currentProject.address || '');
       
       const prog = Number(currentProject.actual_progress || 0);
       document.getElementById('edit-proj-progress').value = prog;
       document.getElementById('edit-proj-progress-val').innerText = prog + '%';
 
-      document.getElementById('edit-proj-phase').value = currentProject.current_phase || '';
+      document.getElementById('edit-proj-phase').value = cleanOrthographyRaw(currentProject.current_phase || '');
       document.getElementById('edit-proj-status').value = currentProject.status || 'en_tiempo';
       document.getElementById('edit-proj-date').value = currentProject.next_milestone_date || '';
 
@@ -2351,12 +2444,13 @@
 
     async function saveProjectChanges() {
       if (!currentProject || activeUser !== 'Admin') return;
+      if (isHoneypotTriggered('hp-project')) return;
 
-      const name = formatOrthography(document.getElementById('edit-proj-name').value.trim());
-      const client_name = formatOrthography(document.getElementById('edit-proj-client').value.trim());
-      const address = formatOrthography(document.getElementById('edit-proj-address').value.trim());
+      const name = cleanOrthographyRaw(document.getElementById('edit-proj-name').value.trim());
+      const client_name = cleanOrthographyRaw(document.getElementById('edit-proj-client').value.trim());
+      const address = cleanOrthographyRaw(document.getElementById('edit-proj-address').value.trim());
       const actual_progress = parseFloat(document.getElementById('edit-proj-progress').value || 0);
-      const current_phase = formatOrthography(document.getElementById('edit-proj-phase').value.trim());
+      const current_phase = cleanOrthographyRaw(document.getElementById('edit-proj-phase').value.trim());
       const status = document.getElementById('edit-proj-status').value;
       const next_milestone_date = document.getElementById('edit-proj-date').value || null;
 
@@ -2380,7 +2474,7 @@
       await loadProjects();
     }
 
-    // VISOR LIGHTBOX ACELERADO POR HARDWARE (REQUESTANIMATIONFRAME)
+    // VISOR LIGHTBOX ACELERADO POR HARDWARE
     function openLightbox(url, captionText) {
       const modal = document.getElementById('lightbox-modal');
       const img = document.getElementById('lightbox-img');
@@ -2503,21 +2597,6 @@
       });
     }
 
-    function renderPreviews() {
-      const wrap = document.getElementById('rep-img-previews');
-      wrap.innerHTML = uploadedImagesBase64.map((src, i) => `
-        <div class="preview-wrap">
-          <img src="${src}">
-          <button style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeImgPreview(${i})">✕</button>
-        </div>
-      `).join('');
-    }
-
-    function removeImgPreview(i) {
-      uploadedImagesBase64.splice(i, 1);
-      renderPreviews();
-    }
-
     function handlePdfFileSelect(files) {
       if (!files || files.length === 0) return;
       const file = files[0];
@@ -2535,7 +2614,7 @@
         label.innerText = `✔ PDF listo: ${file.name}`;
         const titleInput = document.getElementById('form-doc-title');
         if (!titleInput.value.trim()) {
-          titleInput.value = formatOrthography(file.name.replace(/\.pdf$/i, ''));
+          titleInput.value = cleanOrthographyRaw(file.name.replace(/\.pdf$/i, ''));
         }
       };
       reader.readAsDataURL(file);
@@ -2547,16 +2626,16 @@
 
       document.getElementById('print-date').innerText = `Fecha de emisión: ${new Date().toLocaleDateString('es-ES')}`;
       document.getElementById('print-project-code').innerText = `CUENTA: ${currentProject.code}`;
-      document.getElementById('print-project-name').innerText = currentProject.name;
-      document.getElementById('print-project-client').innerText = `Cliente: ${currentProject.client_name} | ${currentProject.address || ''}`;
+      document.getElementById('print-project-name').innerText = cleanOrthographyRaw(currentProject.name);
+      document.getElementById('print-project-client').innerText = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} | ${cleanOrthographyRaw(currentProject.address || '')}`;
       document.getElementById('print-actual').innerText = `Avance de la Obra: ${currentProject.actual_progress}%`;
-      document.getElementById('print-phase').innerText = `Fase Actual: ${currentProject.current_phase}`;
+      document.getElementById('print-phase').innerText = `Fase Actual: ${cleanOrthographyRaw(currentProject.current_phase)}`;
       document.getElementById('print-milestone').innerText = `Final de Obra: ${currentProject.next_milestone_date || 'Por definir'}`;
 
       const printBody = document.getElementById('print-reports-body');
       printBody.innerHTML = currentReports.slice(0, 8).map(r => `
         <div style="margin-bottom:14px; border-bottom:1px solid #eee; padding-bottom:8px;">
-          <div style="font-weight:bold; font-size:13px;">${r.report_date} — ${formatOrthography(r.title)} (${formatOrthography(r.category)})</div>
+          <div style="font-weight:bold; font-size:13px;">${escapeHtml(r.report_date)} — ${formatOrthography(r.title)} (${formatOrthography(r.category)})</div>
           <div style="font-size:12px; color:#444; margin-top:3px;">${formatOrthography(r.description)}</div>
         </div>
       `).join('');
@@ -2566,7 +2645,7 @@
 
     // TIEMPO REAL
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra_v3')
+      supabaseClient.channel('realtime_obra_v4')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => loadProjects())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => loadActiveProjectData())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => loadActiveProjectData())
