@@ -16,12 +16,15 @@
   <style>
     :root {
       --ios-bg: radial-gradient(circle at 30% 20%, #b8c1c8 0%, #858e96 100%);
-      --ios-glass: rgba(246, 247, 249, 0.88);
+      --ios-glass: rgba(246, 247, 249, 0.85);
       --ios-glass-border: rgba(255, 255, 255, 0.65);
       
-      --sidebar-bg: #4A5A46;
-      --sidebar-text: #EDF2EC;
+      /* Barra lateral con 80% de opacidad y tono verde oliva original */
+      --sidebar-bg: rgba(66, 79, 61, 0.80);
+      --sidebar-text: #EAEFE8;
       --sidebar-muted: #B0BFA9;
+      --sidebar-active-bg: rgba(255, 255, 255, 0.11);
+      --sidebar-indicator: #C88A6B;
       
       --msg-pastel-green: #DCE6D8;
       --msg-pastel-border: #C4D4BE;
@@ -31,10 +34,6 @@
       --text-body: #465244;
       --text-muted: #6E7D6B;
       
-      --dot-terracotta: #C88A6B;
-      --dot-terracotta-bg: #F7EAE4;
-      --dot-olive: #687D63;
-      --dot-olive-bg: #E5EFE2;
       --btn-olive: #556850;
       --btn-olive-hover: #40503D;
 
@@ -68,11 +67,11 @@
       padding: 20px 16px;
     }
 
-    /* PANTALLA DE ACCESO MINIMALISTA */
+    /* 1. PANTALLA DE ACCESO MINIMALISTA */
     .login-wrapper {
       width: 100%;
       max-width: 390px;
-      background: rgba(250, 251, 252, 0.90);
+      background: rgba(250, 251, 252, 0.88);
       backdrop-filter: blur(40px) saturate(190%);
       -webkit-backdrop-filter: blur(40px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.75);
@@ -139,12 +138,12 @@
       font-family: inherit;
     }
     .login-input:focus {
-      border-color: var(--sidebar-bg);
+      border-color: var(--btn-olive);
       box-shadow: 0 0 0 3px rgba(74, 90, 70, 0.14);
     }
 
     .btn-submit-login {
-      background: var(--sidebar-bg);
+      background: var(--btn-olive);
       color: #FFFFFF;
       border: none;
       border-radius: 14px;
@@ -153,18 +152,14 @@
       font-weight: 600;
       cursor: pointer;
       margin-top: 6px;
-      transition: background 0.2s;
-    }
-    .btn-submit-login:hover {
-      background: var(--btn-olive-hover);
     }
 
-    /* ENTORNO PRINCIPAL */
+    /* 2. VENTANA PRINCIPAL */
     .app-window {
       width: 100%;
       max-width: 1280px;
       height: 92vh;
-      min-height: 720px;
+      min-height: 700px;
       background: var(--ios-glass);
       backdrop-filter: blur(35px) saturate(180%);
       -webkit-backdrop-filter: blur(35px) saturate(180%);
@@ -176,24 +171,29 @@
       position: relative;
     }
 
-    /* BARRA LATERAL MULTITENANT */
+    /* BARRA LATERAL CON 80% OPACIDAD, DESENFOQUE, ICONOS LINEALES Y PLANTA DETALLADA */
     .sidebar {
-      width: 260px;
+      width: 265px;
       background: var(--sidebar-bg);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--sidebar-text);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 26px 20px;
+      padding: 28px 18px 0 18px;
       position: relative;
       flex-shrink: 0;
       z-index: 40;
+      overflow: hidden;
     }
 
     .brand-section {
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       padding-bottom: 18px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      padding-left: 6px;
     }
     .brand-title {
       font-size: 26px;
@@ -213,47 +213,77 @@
       line-height: 1.35;
     }
 
+    /* LISTA DE NAVEGACIÓN ESTILO IMAGE_438AB3 */
     .nav-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
+      position: relative;
+      z-index: 2;
     }
     .nav-item {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      color: var(--sidebar-text);
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(234, 239, 232, 0.82);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s;
     }
-    .nav-item.active {
-      background: rgba(255, 255, 255, 0.16);
-      font-weight: 600;
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      fill: none;
+      flex-shrink: 0;
     }
     .nav-item:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      color: #FFFFFF;
+    }
+    .nav-item.active {
+      background: var(--sidebar-active-bg);
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+    /* Indicador lateral terracota idéntico a la imagen de referencia */
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 4.5px;
+      background: var(--sidebar-indicator);
+      border-radius: 0 4px 4px 0;
     }
 
+    /* ILUSTRACIÓN BOTÁNICA DETALLADA ESTILO IMAGE_438D78 */
     .sidebar-footer {
       position: relative;
-      min-height: 130px;
+      height: 250px;
+      width: 100%;
+      pointer-events: none;
+      margin-top: auto;
     }
     .plant-svg {
       position: absolute;
-      bottom: 0;
-      left: -8px;
-      width: 145px;
-      opacity: 0.22;
-      pointer-events: none;
+      bottom: -8px;
+      left: -18px;
+      width: 235px;
+      height: 250px;
+      opacity: 0.38;
     }
 
     .mobile-menu-btn {
       display: none;
-      background: var(--sidebar-bg);
+      background: var(--btn-olive);
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -285,7 +315,6 @@
       padding: 26px 32px;
     }
 
-    /* TOP HEADER */
     .top-header {
       display: flex;
       justify-content: space-between;
@@ -319,7 +348,7 @@
       margin-left: auto;
     }
     .user-meta-name {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -330,7 +359,7 @@
       height: 36px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--sidebar-bg);
+      border: 2px solid var(--btn-olive);
       background: #1C211B;
     }
     .btn-logout {
@@ -344,12 +373,12 @@
       cursor: pointer;
     }
 
-    /* MÓDULO A: CABECERA EJECUTIVA */
+    /* CABECERA EJECUTIVA CON 1 SOLA BARRA DE AVANCE Y BOTÓN DE MODIFICAR */
     .dashboard-header-card {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
       border-radius: 20px;
-      padding: 22px;
+      padding: 22px 24px;
       margin-bottom: 24px;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
@@ -373,13 +402,20 @@
       margin-top: 3px;
     }
 
+    .header-badges-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .health-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 6px 13px;
       border-radius: 14px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -388,42 +424,58 @@
     .health-badge.atencion { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid rgba(184, 130, 59, 0.3); }
     .health-badge.retraso { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(185, 92, 80, 0.3); }
 
-    .dual-progress-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      background: rgba(255, 255, 255, 0.65);
-      border: 1px solid #E2EADF;
-      padding: 16px;
-      border-radius: 16px;
-    }
-    .progress-col {
-      display: flex;
-      flex-direction: column;
+    .btn-edit-project {
+      background: #FFFFFF;
+      border: 1px solid var(--msg-pastel-border);
+      color: var(--text-title);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      align-items: center;
       gap: 6px;
+    }
+    .btn-edit-project:hover {
+      background: var(--msg-pastel-green);
+    }
+
+    /* BARRA ÚNICA DE AVANCE DE LA OBRA */
+    .single-progress-container {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #E2EADF;
+      padding: 16px 18px;
+      border-radius: 16px;
     }
     .progress-meta-text {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-title);
+      margin-bottom: 8px;
     }
     .bar-shell {
-      height: 10px;
+      height: 12px;
       background: #E0E7DC;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
       position: relative;
     }
-    .bar-fill-planned { height: 100%; background: #96A893; border-radius: 6px; transition: width 0.4s; }
-    .bar-fill-actual { height: 100%; background: var(--sidebar-bg); border-radius: 6px; transition: width 0.4s; }
+    .bar-fill-actual {
+      height: 100%;
+      background: var(--btn-olive);
+      border-radius: 8px;
+      transition: width 0.4s ease;
+    }
 
     .milestone-strip {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-top: 14px;
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text-body);
       border-top: 1px solid #E6ECE2;
       padding-top: 12px;
@@ -431,32 +483,7 @@
       gap: 10px;
     }
 
-    /* MÓDULOS DE CONTENIDO Y PESTAÑAS */
-    .module-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #DCE4D8;
-      padding-bottom: 8px;
-      overflow-x: auto;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .tab-btn.active {
-      background: #FFFFFF;
-      color: var(--text-title);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
+    /* SECCIONES DE MÓDULOS (SIN BARRA INTERMEDIA) */
     .module-section { display: none; }
     .module-section.active-module { display: block; }
 
@@ -473,9 +500,9 @@
       background: rgba(255, 255, 255, 0.85);
       border: 1px solid #D5DFD2;
       border-radius: 18px;
-      padding: 8px 16px;
+      padding: 9px 16px;
       font-size: 13px;
-      width: 280px;
+      width: 300px;
       outline: none;
     }
     .btn-action-primary {
@@ -496,6 +523,7 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+      padding-bottom: 24px;
     }
 
     .report-card {
@@ -522,7 +550,7 @@
       font-family: monospace;
     }
     .tag-category {
-      background: var(--sidebar-bg);
+      background: var(--btn-olive);
       color: #FFFFFF;
       font-size: 11px;
       font-weight: 600;
@@ -532,6 +560,7 @@
     .card-date {
       font-size: 11.5px;
       color: var(--text-body);
+      font-weight: 500;
     }
 
     .report-title {
@@ -545,7 +574,7 @@
       color: var(--text-body);
       line-height: 1.6;
       white-space: pre-line;
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.58);
       padding: 12px 14px;
       border-radius: 12px;
       margin-bottom: 14px;
@@ -553,17 +582,21 @@
 
     .photo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
       gap: 10px;
       margin-bottom: 14px;
     }
     .photo-thumb {
       width: 100%;
-      height: 115px;
+      height: 120px;
       border-radius: 12px;
       object-fit: cover;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.7);
+      cursor: zoom-in;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: transform 0.15s ease;
+    }
+    .photo-thumb:hover {
+      transform: scale(1.02);
     }
 
     .interaction-bar {
@@ -578,115 +611,59 @@
 
     .btn-seen {
       background: var(--msg-inner-cream);
-      border: 1.5px solid var(--sidebar-bg);
+      border: 1.5px solid var(--btn-olive);
       color: var(--text-title);
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
+      padding: 9px 18px;
+      border-radius: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
     }
     .btn-seen.active {
-      background: var(--sidebar-bg);
+      background: var(--btn-olive);
       color: #FFFFFF;
-    }
-    .btn-approve {
-      background: var(--status-ok-bg);
-      border: 1px solid var(--status-ok);
-      color: var(--status-ok);
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-approve.active {
-      background: var(--status-ok);
-      color: #FFFFFF;
-    }
-    .btn-comment-toggle {
-      background: var(--msg-inner-cream);
-      border: 1px solid var(--msg-pastel-border);
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
     }
 
-    /* MÓDULO C: GALERÍA Y SLIDER ANTES / DESPUÉS */
-    .slider-box {
-      background: #FFFFFF;
-      border-radius: 16px;
+    /* VAULT DE LA GALERÍA ORGANIZADO POR FECHAS */
+    .vault-date-group {
+      background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
-      padding: 16px;
-      margin-bottom: 24px;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
     }
-    .slider-title {
-      font-size: 15px;
+    .vault-date-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E1E9DD;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .vault-date-title {
+      font-size: 14.5px;
       font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .ba-slider-container {
-      position: relative;
-      width: 100%;
-      height: 380px;
-      border-radius: 12px;
-      overflow: hidden;
-      user-select: none;
-    }
-    .ba-image-before, .ba-image-after {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .ba-image-after-wrap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 50%;
-      overflow: hidden;
-      border-right: 2px solid #FFFFFF;
-    }
-    .ba-slider-handle {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 4px;
-      background: #FFFFFF;
-      cursor: ew-resize;
-    }
-    .ba-slider-handle::after {
-      content: '↔';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #FFFFFF;
       color: var(--text-title);
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      gap: 8px;
+    }
+    .vault-date-count {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #E8F0E5;
+      padding: 3px 10px;
+      border-radius: 12px;
     }
 
-    /* MÓDULO D: AUDITORÍA (AUDIT TRAIL) */
+    /* BITÁCORA DE DECISIONES (SOLO INFORMES Y DOCUMENTOS) */
     .audit-timeline {
       position: relative;
       padding-left: 24px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 14px;
     }
     .audit-timeline::before {
       content: '';
@@ -701,18 +678,18 @@
       position: relative;
       background: #FFFFFF;
       border: 1px solid var(--msg-pastel-border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 14px 18px;
     }
     .audit-entry::before {
       content: '';
       position: absolute;
-      left: -24px;
+      left: -23px;
       top: 18px;
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--sidebar-bg);
+      background: var(--btn-olive);
       border: 2px solid #FFFFFF;
     }
     .audit-meta {
@@ -727,13 +704,8 @@
       font-weight: 700;
       color: var(--text-title);
     }
-    .audit-desc {
-      font-size: 12.5px;
-      color: var(--text-body);
-      margin-top: 4px;
-    }
 
-    /* MÓDULO E: CENTRO DOCUMENTAL */
+    /* CENTRO DOCUMENTAL */
     .docs-table {
       width: 100%;
       border-collapse: collapse;
@@ -754,7 +726,83 @@
       color: var(--text-body);
     }
 
-    /* FORMULARIOS Y MODALES */
+    /* VISOR LIGHTBOX CON ZOOM INTERACTIVO */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 25, 20, 0.92);
+      backdrop-filter: blur(14px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 900;
+      overflow: hidden;
+      user-select: none;
+    }
+    .lightbox-overlay.open { display: flex; }
+
+    .lightbox-toolbar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      left: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 910;
+      pointer-events: none;
+    }
+    .lightbox-caption {
+      color: #EAEFE8;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 7px 14px;
+      border-radius: 20px;
+      pointer-events: auto;
+    }
+    .lightbox-controls {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .lightbox-btn {
+      background: rgba(255, 255, 255, 0.16);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .lightbox-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .lightbox-stage {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+    }
+    .lightbox-stage:active {
+      cursor: grabbing;
+    }
+    .lightbox-img {
+      max-width: 88vw;
+      max-height: 82vh;
+      border-radius: 10px;
+      transform-origin: center center;
+      transition: transform 0.08s ease-out;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    /* MODALES */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -770,7 +818,7 @@
 
     .modal-box {
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       background: #FAFBF9;
       border-radius: 22px;
       padding: 24px;
@@ -809,10 +857,14 @@
     .dropzone {
       border: 2px dashed #B8C7B4;
       border-radius: 12px;
-      padding: 16px;
+      padding: 18px;
       text-align: center;
       background: var(--msg-inner-cream);
       cursor: pointer;
+    }
+    .dropzone.dragover {
+      border-color: var(--btn-olive);
+      background: #E5EFE2;
     }
     .preview-container {
       display: flex;
@@ -835,7 +887,7 @@
     /* REPORTE FORMAL IMPRIMIBLE */
     @media print {
       body { background: #FFFFFF; padding: 0; color: #000; }
-      .app-window, .sidebar, .top-header, .module-tabs, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
+      .app-window, .sidebar, .top-header, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
         display: none !important;
       }
       #print-report-template {
@@ -852,15 +904,13 @@
         position: fixed;
         top: 0;
         left: -280px;
-        width: 270px;
+        width: 265px;
         height: 100vh;
         transition: left 0.25s ease;
       }
       .sidebar.open { left: 0; }
       .mobile-menu-btn { display: inline-flex; }
       .main-viewport { padding: 18px 14px; }
-      .dual-progress-container { grid-template-columns: 1fr; gap: 10px; }
-      .ba-slider-container { height: 240px; }
       .search-feed { width: 100%; }
     }
   </style>
@@ -875,57 +925,113 @@
       <div class="login-tag">Daily Intelligent Electronic Graphic Organizer</div>
     </div>
 
-    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();">
+    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
       <div class="form-group-login">
-        <label for="login-user">Identificador de Acceso</label>
-        <input type="text" id="login-user" class="login-input" placeholder="Ej: Admin, Cliente1, Cliente2..." required>
+        <label for="login-user">Usuario</label>
+        <input type="text" id="login-user" name="username" autocomplete="username" class="login-input" placeholder="Ej: Admin, Cliente1..." required>
       </div>
 
       <div class="form-group-login">
         <label for="login-pass">Contraseña</label>
-        <input type="password" id="login-pass" class="login-input" placeholder="••••" required>
+        <input type="password" id="login-pass" name="password" autocomplete="current-password" class="login-input" placeholder="••••" required>
       </div>
 
-      <button type="submit" class="btn-submit-login">Ingresar a la Plataforma</button>
+      <button type="submit" class="btn-submit-login">Iniciar Sesión</button>
     </form>
   </div>
 
-  <!-- 2. VENTANA PRINCIPAL MULTITENANT -->
+  <!-- 2. VENTANA PRINCIPAL -->
   <div class="app-window" id="app-screen">
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL -->
+    <!-- BARRA LATERAL CON 80% OPACIDAD, ICONOS LINEALES Y PLANTA COMPLEJA -->
     <aside class="sidebar" id="sidebar">
       <div>
         <div class="brand-section">
           <div class="brand-title">DIEGO</div>
-          <div class="brand-subtitle">Private Construction Tracker</div>
+          <div class="brand-subtitle">Daily Intelligent Electronic Graphic Organizer</div>
         </div>
 
         <ul class="nav-list">
-          <li class="nav-item active" onclick="switchModule('feed')">
-            <span>🏗️</span> Informes de Obra
+          <li class="nav-item active" id="nav-item-feed" onclick="switchModule('feed')">
+            <!-- Icono Casa Lineal -->
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10.5L12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9z"/>
+              <path d="M9 21V14h6v7"/>
+            </svg>
+            <span>Informes de Obra</span>
           </li>
-          <li class="nav-item" onclick="switchModule('gallery')">
-            <span>📷</span> Galería & Comparativa
+
+          <li class="nav-item" id="nav-item-gallery" onclick="switchModule('gallery')">
+            <!-- Icono Carpeta / Vault Lineal -->
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>Vault de Galería</span>
           </li>
-          <li class="nav-item" onclick="switchModule('audit')">
-            <span>⏱️</span> Trazabilidad (Auditoría)
+
+          <li class="nav-item" id="nav-item-audit" onclick="switchModule('audit')">
+            <!-- Icono Nota / Bitácora Lineal -->
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <line x1="8" y1="9" x2="16" y2="9"/>
+              <line x1="8" y1="13" x2="16" y2="13"/>
+              <line x1="8" y1="17" x2="12" y2="17"/>
+            </svg>
+            <span>Bitácora</span>
           </li>
-          <li class="nav-item" onclick="switchModule('docs')">
-            <span>📁</span> Centro Documental
+
+          <li class="nav-item" id="nav-item-docs" onclick="switchModule('docs')">
+            <!-- Icono Documento Lineal -->
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>Documentos</span>
           </li>
         </ul>
       </div>
 
+      <!-- PLANTA BOTÁNICA DETALLADA CON NERVADURAS FINAS (ESTILO IMAGE_438D78) -->
       <div class="sidebar-footer">
-        <svg class="plant-svg" viewBox="0 0 100 160" fill="none" stroke="#EDF2EC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M 45 160 Q 48 100 40 20" />
-          <path d="M 44 135 C 20 130 10 110 25 105 C 38 102 44 125 44 135 Z" />
-          <path d="M 44 115 C 65 110 80 90 65 85 C 50 82 43 105 44 115 Z" />
-          <path d="M 42 90 C 18 85 8 65 24 60 C 36 57 42 80 42 90 Z" />
-          <path d="M 42 70 C 62 65 74 45 60 40 C 47 38 41 60 42 70 Z" />
-          <path d="M 40 45 C 22 40 18 25 30 20 C 38 18 40 35 40 45 Z" />
+        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Tallo principal arqueado -->
+          <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.4"/>
+          <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.1" opacity="0.7"/>
+          
+          <!-- Hoja Superior Central (Larga lanceolada con nervaduras) -->
+          <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 62 120 Q 88 68 114 14" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 78 90 L 72 78 M 88 70 L 82 58 M 96 52 L 92 42 M 82 84 L 93 79 M 92 64 L 101 60" stroke-width="0.5" opacity="0.6"/>
+
+          <!-- Hoja Izquierda Alta -->
+          <path d="M 38 162 C 32 118, 42 78, 52 42 C 58 84, 52 126, 38 162 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 38 162 Q 46 102 52 42" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 43 130 L 37 116 M 46 105 L 40 92 M 48 80 L 44 68 M 45 118 L 53 108 M 48 94 L 54 84" stroke-width="0.5" opacity="0.6"/>
+
+          <!-- Hoja Extrema Izquierda -->
+          <path d="M 16 190 C 6 142, 8 92, 16 48 C 26 92, 26 144, 16 190 Z" stroke-width="1.1" opacity="0.8"/>
+          <path d="M 16 190 Q 16 118 16 48" stroke-width="0.6" opacity="0.65"/>
+
+          <!-- Hoja Derecha Superior -->
+          <path d="M 78 108 C 102 82, 134 62, 166 52 C 142 78, 112 98, 78 108 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 78 108 Q 122 78 166 52" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 102 92 L 108 80 M 122 79 L 128 68 M 140 68 L 145 59 M 112 86 L 124 88 M 132 73 L 143 75" stroke-width="0.5" opacity="0.6"/>
+
+          <!-- Hoja Derecha Media Horizontal -->
+          <path d="M 56 142 C 96 122, 145 118, 192 128 C 148 142, 102 146, 56 142 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 56 142 Q 124 130 192 128" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 90 137 L 102 127 M 118 133 L 130 124 M 146 131 L 158 124 M 104 135 L 118 141 M 134 132 L 148 137" stroke-width="0.5" opacity="0.6"/>
+
+          <!-- Hoja Derecha Baja -->
+          <path d="M 35 184 C 66 158, 102 146, 138 142 C 110 168, 74 182, 35 184 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 35 184 Q 86 162 138 142" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 65 171 L 75 160 M 88 161 L 98 152 M 78 166 L 92 170 M 102 156 L 114 159" stroke-width="0.5" opacity="0.6"/>
+
+          <!-- Hoja Inferior Derecha -->
+          <path d="M 22 218 C 48 198, 78 188, 110 186 C 84 208, 54 218, 22 218 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+          <path d="M 22 218 Q 66 202 110 186" stroke-width="0.7" opacity="0.75"/>
+          <path d="M 50 208 L 60 198 M 74 199 L 84 191 M 62 204 L 76 208" stroke-width="0.5" opacity="0.6"/>
         </svg>
       </div>
     </aside>
@@ -938,9 +1044,8 @@
         <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
         <div class="project-selector-wrap" id="admin-project-selector" style="display:none;">
-          <label style="font-size:12px; font-weight:700; color:var(--text-body);">PROYECTO:</label>
+          <label style="font-size:12px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
           <select id="active-project-dropdown" class="project-selector" onchange="changeActiveProject(this.value)">
-            <!-- Poblado dinámicamente -->
           </select>
         </div>
 
@@ -952,57 +1057,40 @@
         </div>
       </div>
 
-      <!-- MÓDULO A: CABECERA EJECUTIVA -->
+      <!-- CABECERA EJECUTIVA CON 1 BARRA DE AVANCE Y CONTROL TOTAL -->
       <div class="dashboard-header-card">
         <div class="project-main-meta">
           <div>
             <h1 class="project-title" id="dash-project-name">Cargando proyecto...</h1>
-            <p class="project-subtitle" id="dash-project-desc">Aislamiento Multitenant Activo</p>
+            <p class="project-subtitle" id="dash-project-desc">Seguimiento de Obra</p>
           </div>
-          <div id="dash-health-badge" class="health-badge en_tiempo">En Tiempo</div>
+          <div class="header-badges-group">
+            <button class="btn-edit-project" id="btn-edit-project" onclick="openEditProjectModal()">✎ Modificar Obra y Avance</button>
+            <div id="dash-health-badge" class="health-badge en_tiempo">En Tiempo</div>
+          </div>
         </div>
 
-        <div class="dual-progress-container">
-          <div class="progress-col">
-            <div class="progress-meta-text">
-              <span>Avance Planificado</span>
-              <span id="label-planned">0%</span>
-            </div>
-            <div class="bar-shell">
-              <div class="bar-fill-planned" id="bar-planned" style="width: 0%;"></div>
-            </div>
+        <div class="single-progress-container">
+          <div class="progress-meta-text">
+            <span>Avance de la Obra</span>
+            <span id="label-actual">0%</span>
           </div>
-
-          <div class="progress-col">
-            <div class="progress-meta-text">
-              <span>Avance Real Ejecutado</span>
-              <span id="label-actual">0%</span>
-            </div>
-            <div class="bar-shell">
-              <div class="bar-fill-actual" id="bar-actual" style="width: 0%;"></div>
-            </div>
+          <div class="bar-shell">
+            <div class="bar-fill-actual" id="bar-actual" style="width: 0%;"></div>
           </div>
         </div>
 
         <div class="milestone-strip">
           <div><strong>Fase Actual:</strong> <span id="dash-phase">Estructura</span></div>
-          <div><strong>Próximo Hito:</strong> <span id="dash-milestone-date">Pendiente</span></div>
+          <div><strong>Final de Obra:</strong> <span id="dash-milestone-date">Por definir</span></div>
         </div>
       </div>
 
-      <!-- PESTAÑAS MÓDULOS -->
-      <div class="module-tabs">
-        <button class="tab-btn active" id="tab-btn-feed" onclick="switchModule('feed')">Informes Diarios</button>
-        <button class="tab-btn" id="tab-btn-gallery" onclick="switchModule('gallery')">Galería & Antes/Después</button>
-        <button class="tab-btn" id="tab-btn-audit" onclick="switchModule('audit')">Bitácora de Decisiones</button>
-        <button class="tab-btn" id="tab-btn-docs" onclick="switchModule('docs')">Centro Documental</button>
-      </div>
-
-      <!-- SECCIÓN FEED -->
+      <!-- SECCIÓN 1: INFORMES DE OBRA -->
       <section class="module-section active-module" id="sec-feed">
         <div class="feed-controls">
-          <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Filtrar informes por título, fase o día..." oninput="filterReports()">
-          <button class="btn-action-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Redactar Informe</button>
+          <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar informe por título, fase o fecha..." oninput="filterReports()">
+          <button class="btn-action-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Nuevo Informe</button>
         </div>
 
         <div class="timeline" id="feed-timeline">
@@ -1010,41 +1098,37 @@
         </div>
       </section>
 
-      <!-- SECCIÓN GALERÍA Y SLIDER -->
+      <!-- SECCIÓN 2: VAULT DE LA GALERÍA ORGANIZADO POR FECHAS -->
       <section class="module-section" id="sec-gallery">
-        <div class="slider-box">
-          <div class="slider-title">Comparativa de Terreno: Evolución Antes vs. Después</div>
-          <div class="ba-slider-container" id="ba-slider">
-            <img src="https://images.unsplash.com/photo-1541888946425-d0fbb1861593?auto=format&fit=crop&w=1200&q=80" class="ba-image-before" alt="Antes">
-            <div class="ba-image-after-wrap" id="ba-after-wrap">
-              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" class="ba-image-after" alt="Después">
-            </div>
-            <div class="ba-slider-handle" id="ba-handle"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h3 style="font-size:17px; font-weight:700;">Vault Fotográfico de Obra</h3>
+            <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de subida. Pulsa cualquier imagen para abrir el visor con Zoom.</p>
           </div>
         </div>
-
-        <div style="margin-bottom:12px; font-weight:700;">Evidencias de Obra por Zona</div>
-        <div class="photo-grid" id="gallery-grid">
-          <!-- Poblado dinámicamente -->
+        <div id="gallery-vault-container">
+          <!-- Poblado dinámicamente agrupado por fechas -->
         </div>
       </section>
 
-      <!-- SECCIÓN TRAZABILIDAD (AUDIT TRAIL) -->
+      <!-- SECCIÓN 3: BITÁCORA DE DECISIONES (AUTOMÁTICA PARA INFORMES Y DOCUMENTOS) -->
       <section class="module-section" id="sec-audit">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h3 style="font-size:16px;">Trazabilidad Formal de Modificaciones y Aprobaciones</h3>
-          <button class="btn-action-primary" id="btn-add-audit" style="display:none;" onclick="openAuditModal()">+ Registrar Modificación</button>
+        <div style="margin-bottom:18px;">
+          <h3 style="font-size:17px; font-weight:700;">Bitácora de Publicaciones</h3>
+          <p style="font-size:12.5px; color:var(--text-muted);">Registro cronológico automático de cada informe y documento oficial subido al proyecto.</p>
         </div>
         <div class="audit-timeline" id="audit-list">
-          <!-- Poblado dinámicamente -->
         </div>
       </section>
 
-      <!-- SECCIÓN CENTRO DOCUMENTAL -->
+      <!-- SECCIÓN 4: CENTRO DOCUMENTAL CON SUBIDA DE ARCHIVOS PDF -->
       <section class="module-section" id="sec-docs">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h3 style="font-size:16px;">Planos Vigentes, Licencias y Minutas de Reunión</h3>
-          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openDocModal()">+ Subir Documento</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="font-size:17px; font-weight:700;">Centro Documental</h3>
+            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF.</p>
+          </div>
+          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openDocModal()">+ Subir Archivo PDF</button>
         </div>
         <table class="docs-table">
           <thead>
@@ -1057,7 +1141,6 @@
             </tr>
           </thead>
           <tbody id="docs-table-body">
-            <!-- Poblado dinámicamente -->
           </tbody>
         </table>
       </section>
@@ -1065,12 +1148,159 @@
     </main>
   </div>
 
-  <!-- PLANTILLA IMPRIMIBLE / EXPORTACIÓN FORMAL EN PDF -->
+  <!-- VISOR LIGHTBOX MODAL CON ZOOM (+ / - / RUEDA / ARRASTRE) -->
+  <div class="lightbox-overlay" id="lightbox-modal">
+    <div class="lightbox-toolbar">
+      <div class="lightbox-caption" id="lightbox-caption">Evidencia de Obra</div>
+      <div class="lightbox-controls">
+        <button class="lightbox-btn" onclick="adjustZoom(-0.35)" title="Alejar">－</button>
+        <button class="lightbox-btn" onclick="resetZoom()" id="zoom-level-indicator" title="Restaurar">100%</button>
+        <button class="lightbox-btn" onclick="adjustZoom(0.35)" title="Acercar">＋</button>
+        <button class="lightbox-btn" style="background:rgba(185,92,80,0.85);" onclick="closeLightbox()">✕ Cerrar</button>
+      </div>
+    </div>
+    <div class="lightbox-stage" id="lightbox-stage">
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Vista ampliada">
+    </div>
+  </div>
+
+  <!-- MODAL: MODIFICAR PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA (ADMIN) -->
+  <div class="modal-overlay" id="modal-edit-project">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Modificar Obra, Cliente y Avance</h3>
+        <button class="modal-close" onclick="closeModal('modal-edit-project')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre del Proyecto / Obra</label>
+        <input type="text" id="edit-proj-name" class="form-input" placeholder="Ej: Residencia Mónaco — Villa 04">
+      </div>
+
+      <div class="form-group">
+        <label>Nombre del Cliente / Propietario</label>
+        <input type="text" id="edit-proj-client" class="form-input" placeholder="Ej: Familia Echeverría">
+      </div>
+
+      <div class="form-group">
+        <label>Ubicación / Dirección</label>
+        <input type="text" id="edit-proj-address" class="form-input" placeholder="Ej: Costa del Este, Lote 12">
+      </div>
+
+      <div class="form-group">
+        <label>Avance de la Obra (%): <strong id="edit-proj-progress-val">0%</strong></label>
+        <input type="range" id="edit-proj-progress" min="0" max="100" step="0.5" style="width:100%; accent-color:var(--btn-olive);" oninput="document.getElementById('edit-proj-progress-val').innerText = this.value + '%'">
+      </div>
+
+      <div class="form-group">
+        <label>Fase Actual</label>
+        <input type="text" id="edit-proj-phase" class="form-input" placeholder="Ej: Estructuras y Losas">
+      </div>
+
+      <div class="form-group">
+        <label>Estado del Semáforo</label>
+        <select id="edit-proj-status" class="form-select">
+          <option value="en_tiempo">En Tiempo (Verde)</option>
+          <option value="atencion">Atención Requerida (Amarillo)</option>
+          <option value="retraso">Retraso (Rojo)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha de Final de Obra</label>
+        <input type="date" id="edit-proj-date" class="form-input">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-edit-project')">Cancelar</button>
+        <button class="btn-action-primary" id="btn-save-project" onclick="saveProjectChanges()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REDACTAR INFORME (ADMIN) -->
+  <div class="modal-overlay" id="modal-report">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Publicar Informe de Obra</h3>
+        <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Versión / Día (Ej: Día 24, Semana 5)</label>
+        <input type="text" id="form-rep-day" class="form-input" placeholder="Día 24" required>
+      </div>
+      <div class="form-group">
+        <label>Categoría Técnica</label>
+        <input type="text" id="form-rep-cat" class="form-input" placeholder="Estructuras, Cimentación, Acabados..." value="Estructuras">
+      </div>
+      <div class="form-group">
+        <label>Título del Informe</label>
+        <input type="text" id="form-rep-title" class="form-input" placeholder="Vaciado de columnas y fraguado nivel 2" required>
+      </div>
+      <div class="form-group">
+        <label>Descripción Técnica</label>
+        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Observaciones detalladas para el cliente..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fotografías de Obra (Arrastrar o pulsar)</label>
+        <div class="dropzone" id="img-dropzone" onclick="document.getElementById('rep-files').click()">
+          <div style="font-size:13px; font-weight:600;">📷 Arrastra tus fotos aquí o haz clic para seleccionar</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Se agruparán por fecha en el Vault automáticamente</div>
+        </div>
+        <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
+        <div class="preview-container" id="rep-img-previews"></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-report')">Cancelar</button>
+        <button class="btn-action-primary" id="btn-submit-rep" onclick="submitDailyReport()">Publicar Informe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUBIR ARCHIVO PDF DIRECTO (ADMIN) -->
+  <div class="modal-overlay" id="modal-doc">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Subir Archivo PDF Oficial</h3>
+        <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Título del Documento</label>
+        <input type="text" id="form-doc-title" class="form-input" placeholder="Plano Estructural Nivel 2" required>
+      </div>
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="form-doc-cat" class="form-select">
+          <option value="plano">Plano Técnico</option>
+          <option value="licencia">Licencia de Construcción</option>
+          <option value="minuta">Acta / Minuta de Obra</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Versión</label>
+        <input type="text" id="form-doc-ver" class="form-input" placeholder="v1.0" value="v1.0">
+      </div>
+      <div class="form-group">
+        <label>Archivo PDF (Arrastrar o seleccionar desde tu equipo)</label>
+        <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('doc-file-input').click()">
+          <div style="font-size:13px; font-weight:600;" id="pdf-dropzone-label">📄 Arrastra tu archivo .PDF aquí o haz clic para subir</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Subida directa sin enlaces externos</div>
+        </div>
+        <input type="file" id="doc-file-input" accept="application/pdf,.pdf" style="display:none;" onchange="handlePdfFileSelect(this.files)">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-doc')">Cancelar</button>
+        <button class="btn-action-primary" id="btn-submit-doc" onclick="submitDocument()">Subir PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANTILLA IMPRIMIBLE / EXPORTACIÓN EN PDF -->
   <div id="print-report-template" style="padding:40px; font-family:'Inter', sans-serif;">
     <div style="border-bottom:2px solid #333; padding-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <h1 style="font-size:24px; margin:0;">DIEGO — REPORTE EJECUTIVO DE OBRA</h1>
-        <p style="font-size:12px; color:#555; margin:4px 0 0;">Plataforma de Auditoría y Trazabilidad de Construcción</p>
+        <p style="font-size:12px; color:#555; margin:4px 0 0;">Seguimiento Técnico y Control de Avance</p>
       </div>
       <div style="text-align:right;">
         <p style="font-size:12px; margin:0;" id="print-date"></p>
@@ -1082,140 +1312,17 @@
       <h2 style="font-size:18px; margin:0 0 6px;" id="print-project-name"></h2>
       <p style="font-size:13px; margin:0;" id="print-project-client"></p>
       <div style="display:flex; gap:30px; margin-top:12px; font-size:13px;">
-        <span id="print-planned"></span>
         <span id="print-actual"></span>
         <span id="print-phase"></span>
+        <span id="print-milestone"></span>
       </div>
     </div>
 
-    <h3 style="font-size:16px; margin:20px 0 10px; border-bottom:1px solid #ddd; padding-bottom:6px;">Últimos Informes de Terreno</h3>
+    <h3 style="font-size:16px; margin:20px 0 10px; border-bottom:1px solid #ddd; padding-bottom:6px;">Informes Recientes</h3>
     <div id="print-reports-body"></div>
-
-    <div style="margin-top:50px; display:flex; justify-content:space-between;">
-      <div style="border-top:1px solid #777; width:220px; text-align:center; padding-top:6px; font-size:12px;">
-        Arquitectura & Dirección de Obra
-      </div>
-      <div style="border-top:1px solid #777; width:220px; text-align:center; padding-top:6px; font-size:12px;">
-        Propietario / Cliente
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: REDACTAR INFORME (ADMIN) -->
-  <div class="modal-overlay" id="modal-report">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 class="modal-title">Redactar Informe de Avance</h3>
-        <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
-      </div>
-      <div class="form-group">
-        <label>Etiqueta de Hito / Día (Ej: Día 24, Semana 5)</label>
-        <input type="text" id="form-rep-day" class="form-input" placeholder="Día 24" required>
-      </div>
-      <div class="form-group">
-        <label>Categoría Técnica</label>
-        <select id="form-rep-cat" class="form-select">
-          <option value="Estructuras">Estructuras</option>
-          <option value="Cimentación">Cimentación</option>
-          <option value="Mampostería">Mampostería</option>
-          <option value="Instalaciones Eléctricas / Hidráulicas">Instalaciones Eléctricas / Hidráulicas</option>
-          <option value="Acabados y Fachada">Acabados y Fachada</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Título del Resumen</label>
-        <input type="text" id="form-rep-title" class="form-input" placeholder="Vaciado de columnas y fraguado nivel 2" required>
-      </div>
-      <div class="form-group">
-        <label>Descripción Técnica Pormenorizada</label>
-        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Observaciones técnicas detalladas para el cliente..." required></textarea>
-      </div>
-      <div class="form-group">
-        <label>Fotografías de Obra (Compresión automática)</label>
-        <div class="dropzone" onclick="document.getElementById('rep-files').click()">
-          <div style="font-size:13px; font-weight:600;">📷 Arrastra o pulsa para cargar fotos</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Optimización WebP/JPEG ligera</div>
-        </div>
-        <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
-        <div class="preview-container" id="rep-img-previews"></div>
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-report')">Cancelar</button>
-        <button class="btn-action-primary" onclick="submitDailyReport()">Publicar Informe</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: REGISTRAR AUDITORÍA (ADMIN) -->
-  <div class="modal-overlay" id="modal-audit">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 class="modal-title">Registrar Evento de Trazabilidad</h3>
-        <button class="modal-close" onclick="closeModal('modal-audit')">✕</button>
-      </div>
-      <div class="form-group">
-        <label>Tipo de Acción</label>
-        <select id="form-aud-type" class="form-select">
-          <option value="cambio_fecha">Ajuste de Cronograma / Fecha</option>
-          <option value="ajuste_especificacion">Modificación de Especificación o Material</option>
-          <option value="aprobacion_hito">Aprobación Formal de Hito</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Descripción del Evento</label>
-        <textarea id="form-aud-desc" class="form-textarea" rows="3" placeholder="Razón del cambio o acuerdo establecido..." required></textarea>
-      </div>
-      <div class="form-group">
-        <label>Valor Anterior (Opcional)</label>
-        <input type="text" id="form-aud-prev" class="form-input" placeholder="Ej: Fecha entrega 15 Octubre">
-      </div>
-      <div class="form-group">
-        <label>Nuevo Valor Acordado</label>
-        <input type="text" id="form-aud-new" class="form-input" placeholder="Ej: Nueva fecha 25 Octubre">
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-audit')">Cancelar</button>
-        <button class="btn-action-primary" onclick="submitAuditEntry()">Guardar Registro</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: SUBIR DOCUMENTO (ADMIN) -->
-  <div class="modal-overlay" id="modal-doc">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 class="modal-title">Subir Documentación Oficial</h3>
-        <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
-      </div>
-      <div class="form-group">
-        <label>Nombre del Archivo / Documento</label>
-        <input type="text" id="form-doc-title" class="form-input" placeholder="Plano Estructural Rev 2.1" required>
-      </div>
-      <div class="form-group">
-        <label>Categoría</label>
-        <select id="form-doc-cat" class="form-select">
-          <option value="plano">Plano Técnico</option>
-          <option value="licencia">Licencia de Construcción</option>
-          <option value="minuta">Minuta / Acta de Reunión</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Versión</label>
-        <input type="text" id="form-doc-ver" class="form-input" placeholder="v2.1" value="v1.0">
-      </div>
-      <div class="form-group">
-        <label>URL / Enlace del Documento PDF</label>
-        <input type="url" id="form-doc-url" class="form-input" placeholder="https://ejemplo.com/plano.pdf" required>
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-doc')">Cancelar</button>
-        <button class="btn-action-primary" onclick="submitDocument()">Registrar Documento</button>
-      </div>
-    </div>
   </div>
 
   <script>
-    // Respaldo visual vectorial SVG del felino verde salvia
     const CAT_FALLBACK_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#0B0D0A"/>
@@ -1225,26 +1332,37 @@
       </svg>
     `);
 
-    // Conexión Supabase
     const SUPABASE_URL = "https://euagegivizyfweymdiaa.supabase.co";
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // Estado Global de la Sesión
     let activeUser = localStorage.getItem('diego_active_user') || null;
     let allProjects = [];
     let currentProject = null;
     let currentReports = [];
     let uploadedImagesBase64 = [];
+    let selectedPdfDataUrl = null;
+    let selectedPdfName = "";
 
-    // Inicialización
+    // Variables del Visor con Zoom
+    let currentZoom = 1;
+    let panX = 0;
+    let panY = 0;
+    let isDraggingImg = false;
+    let startDragX = 0;
+    let startDragY = 0;
+
     window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('diego_saved_username');
+      if (savedUser) document.getElementById('login-user').value = savedUser;
       initSession();
-      initBeforeAfterSlider();
+      initLightboxEvents();
+      initDragAndDropZones();
     });
 
     function initSession() {
-      if (!activeUser) {
+      const validUsers = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
+      if (!activeUser || !validUsers.includes(activeUser)) {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
         return;
@@ -1263,18 +1381,19 @@
 
       const validUsers = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
       if (!validUsers.includes(user) || pass !== "1234") {
-        alert("Credenciales incorrectas. Utilice Admin o Cliente1..4 con contraseña 1234.");
+        alert("Usuario o contraseña incorrectos. Recuerda escribir la inicial en mayúscula y sin espacios (Admin, Cliente1..4).");
         return;
       }
 
       activeUser = user;
       localStorage.setItem('diego_active_user', user);
+      localStorage.setItem('diego_saved_username', user);
       document.getElementById('login-pass').value = '';
       initSession();
     }
 
     function handleLogout() {
-      if (confirm("¿Desea cerrar la sesión activa?")) {
+      if (confirm("¿Deseas salir de tu cuenta?")) {
         activeUser = null;
         localStorage.removeItem('diego_active_user');
         document.getElementById('app-screen').style.display = 'none';
@@ -1282,33 +1401,34 @@
       }
     }
 
-    // CARGA MULTITENANT DE PROYECTOS
+    // CARGA DE PROYECTOS Y CONTROL DE PERMISOS
     async function loadProjects() {
-      const { data, error } = await supabaseClient.from('projects').select('*').order('created_at', { ascending: true });
+      const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
       if (error) {
         console.error("Error al cargar proyectos:", error);
         return;
       }
 
       allProjects = data || [];
+      const prevSelectedId = currentProject ? currentProject.id : null;
 
       if (activeUser === 'Admin') {
         document.getElementById('admin-project-selector').style.display = 'flex';
         document.getElementById('btn-create-report').style.display = 'inline-flex';
-        document.getElementById('btn-add-audit').style.display = 'inline-flex';
         document.getElementById('btn-add-doc').style.display = 'inline-flex';
+        document.getElementById('btn-edit-project').style.display = 'inline-flex';
 
         const dropdown = document.getElementById('active-project-dropdown');
-        dropdown.innerHTML = allProjects.map(p => `<option value="${p.id}">${p.name} (${p.code})</option>`).join('');
+        dropdown.innerHTML = allProjects.map(p => `<option value="${p.id}">${p.name} (${p.code} — ${p.client_name})</option>`).join('');
 
-        currentProject = allProjects[0] || null;
+        currentProject = allProjects.find(p => p.id === prevSelectedId) || allProjects[0] || null;
+        if (currentProject) dropdown.value = currentProject.id;
       } else {
         document.getElementById('admin-project-selector').style.display = 'none';
         document.getElementById('btn-create-report').style.display = 'none';
-        document.getElementById('btn-add-audit').style.display = 'none';
         document.getElementById('btn-add-doc').style.display = 'none';
+        document.getElementById('btn-edit-project').style.display = 'none';
 
-        // Aislamiento: El cliente sólo accede a su propio código de proyecto
         currentProject = allProjects.find(p => p.code.toLowerCase() === activeUser.toLowerCase()) || null;
       }
 
@@ -1323,56 +1443,116 @@
       loadActiveProjectData();
     }
 
-    // MÓDULO A: RENDERIZAR CABECERA
+    // CABECERA EJECUTIVA (1 SOLA BARRA + FINAL DE OBRA)
     function renderHeaderDashboard() {
       if (!currentProject) return;
 
       document.getElementById('dash-project-name').innerText = currentProject.name;
-      document.getElementById('dash-project-desc').innerText = `Propietario: ${currentProject.client_name} — ${currentProject.address || 'Ubicación reservada'}`;
+      document.getElementById('dash-project-desc').innerText = `Cliente: ${currentProject.client_name} — ${currentProject.address || 'Ubicación registrada'}`;
 
       const badge = document.getElementById('dash-health-badge');
       badge.className = `health-badge ${currentProject.status}`;
-      badge.innerText = currentProject.status === 'en_tiempo' ? 'En Tiempo' : (currentProject.status === 'atencion' ? 'Atención Requerida' : 'Retraso Crítico');
+      badge.innerText = currentProject.status === 'en_tiempo' ? 'En Tiempo' : (currentProject.status === 'atencion' ? 'Atención Requerida' : 'Retraso');
 
-      const planned = Number(currentProject.planned_progress || 0);
       const actual = Number(currentProject.actual_progress || 0);
-
-      document.getElementById('label-planned').innerText = `${planned.toFixed(1)}%`;
       document.getElementById('label-actual').innerText = `${actual.toFixed(1)}%`;
-
-      document.getElementById('bar-planned').style.width = `${Math.min(planned, 100)}%`;
       document.getElementById('bar-actual').style.width = `${Math.min(actual, 100)}%`;
 
       document.getElementById('dash-phase').innerText = currentProject.current_phase || 'En Ejecución';
       document.getElementById('dash-milestone-date').innerText = currentProject.next_milestone_date 
-        ? new Date(currentProject.next_milestone_date).toLocaleDateString()
+        ? new Date(currentProject.next_milestone_date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : 'Por definir';
     }
 
-    // CARGA DE DATOS DEL PROYECTO SELECCIONADO
+    // MODAL PARA MODIFICAR NOMBRES DE PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA
+    function openEditProjectModal() {
+      if (!currentProject || activeUser !== 'Admin') return;
+
+      document.getElementById('edit-proj-name').value = currentProject.name || '';
+      document.getElementById('edit-proj-client').value = currentProject.client_name || '';
+      document.getElementById('edit-proj-address').value = currentProject.address || '';
+      
+      const prog = Number(currentProject.actual_progress || 0);
+      document.getElementById('edit-proj-progress').value = prog;
+      document.getElementById('edit-proj-progress-val').innerText = prog + '%';
+
+      document.getElementById('edit-proj-phase').value = currentProject.current_phase || '';
+      document.getElementById('edit-proj-status').value = currentProject.status || 'en_tiempo';
+      document.getElementById('edit-proj-date').value = currentProject.next_milestone_date || '';
+
+      document.getElementById('modal-edit-project').classList.add('open');
+    }
+
+    async function saveProjectChanges() {
+      if (!currentProject || activeUser !== 'Admin') return;
+
+      const name = document.getElementById('edit-proj-name').value.trim();
+      const client_name = document.getElementById('edit-proj-client').value.trim();
+      const address = document.getElementById('edit-proj-address').value.trim();
+      const actual_progress = parseFloat(document.getElementById('edit-proj-progress').value || 0);
+      const current_phase = document.getElementById('edit-proj-phase').value.trim();
+      const status = document.getElementById('edit-proj-status').value;
+      const next_milestone_date = document.getElementById('edit-proj-date').value || null;
+
+      if (!name || !client_name) {
+        alert("El nombre del proyecto y el nombre del cliente son obligatorios.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-project');
+      btn.innerText = "Guardando...";
+      btn.disabled = true;
+
+      const { error } = await supabaseClient
+        .from('projects')
+        .update({
+          name,
+          client_name,
+          address,
+          actual_progress,
+          current_phase,
+          status,
+          next_milestone_date
+        })
+        .eq('id', currentProject.id);
+
+      btn.innerText = "Guardar Cambios";
+      btn.disabled = false;
+
+      if (error) {
+        alert("Error al actualizar la obra: " + error.message);
+        return;
+      }
+
+      closeModal('modal-edit-project');
+      await loadProjects();
+    }
+
+    // CARGA DE DATOS DEL PROYECTO ACTIVO
     async function loadActiveProjectData() {
       if (!currentProject) return;
 
-      // 1. Cargar Informes con sus imágenes
+      // 1. Informes e imágenes
       const { data: reports } = await supabaseClient
         .from('daily_reports')
         .select(`*, report_images(*)`)
         .eq('project_id', currentProject.id)
-        .order('report_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       currentReports = reports || [];
       renderReports(currentReports);
-      renderGallery(currentReports);
+      renderGalleryVaultByDate(currentReports);
 
-      // 2. Cargar Auditoría
+      // 2. Bitácora (Solo notificaciones de informes y documentos)
       const { data: audits } = await supabaseClient
         .from('project_audit_logs')
         .select('*')
         .eq('project_id', currentProject.id)
+        .in('action_type', ['nuevo_informe', 'nuevo_documento'])
         .order('log_date', { ascending: false });
       renderAudit(audits || []);
 
-      // 3. Cargar Documentación
+      // 3. Documentos PDF
       const { data: docs } = await supabaseClient
         .from('project_documents')
         .select('*')
@@ -1381,27 +1561,36 @@
       renderDocuments(docs || []);
     }
 
-    // MÓDULO B: INFORMES DE AVANCE
+    // RENDERIZAR INFORMES
     function renderReports(items) {
       const feed = document.getElementById('feed-timeline');
       if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No hay reportes de avance registrados para este proyecto.</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No hay informes publicados en este proyecto todavía.</div>`;
         return;
       }
 
       feed.innerHTML = items.map(rep => {
-        const fecha = new Date(rep.report_date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-        const visto = rep.client_seen_at ? `✔ Visto por el cliente el ${new Date(rep.client_seen_at).toLocaleDateString()}` : 'No confirmado aún';
-        const aprobado = rep.status === 'aprobado';
+        const fecha = new Date(rep.created_at || rep.report_date).toLocaleDateString('es-ES', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+        const visto = rep.client_seen_at
+          ? `✔ Visto confirmado el ${new Date(rep.client_seen_at).toLocaleDateString('es-ES')}`
+          : 'Pendiente de confirmación de lectura';
+
+        const deleteBtn = activeUser === 'Admin'
+          ? `<button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${rep.id}')">🗑️ Eliminar</button>`
+          : '';
 
         const fotosHtml = (rep.report_images && rep.report_images.length > 0)
           ? `<div class="photo-grid">
-              ${rep.report_images.map(img => `<img src="${img.image_url}" class="photo-thumb" onclick="openFullscreenImg('${img.image_url}')">`).join('')}
+              ${rep.report_images.map((img, i) => `
+                <img src="${img.image_url}" class="photo-thumb" alt="Foto" onclick="openLightbox('${img.image_url}', '${rep.title.replace(/'/g, "")} — ${fecha}')">
+              `).join('')}
              </div>`
           : '';
 
         const comments = Array.isArray(rep.comments) ? rep.comments : [];
-        const commentsHtml = comments.map(c => `<div style="font-size:12px; margin-top:4px;"><strong>${c.author}:</strong> ${c.text}</div>`).join('');
+        const commentsHtml = comments.map(c => `<div style="font-size:12.5px; margin-top:5px; background:#fff; padding:6px 10px; border-radius:8px;"><strong>${c.author}:</strong> ${c.text} <span style="float:right; font-size:10.5px; color:#777;">${c.date || ''}</span></div>`).join('');
 
         return `
           <div class="report-card">
@@ -1410,7 +1599,10 @@
                 <span class="tag-day">${rep.day_label}</span>
                 <span class="tag-category">${rep.category}</span>
               </div>
-              <span class="card-date">${fecha}</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="card-date">${fecha}</span>
+                ${deleteBtn}
+              </div>
             </div>
 
             <div class="report-title">${rep.title}</div>
@@ -1418,23 +1610,18 @@
             ${fotosHtml}
 
             <div class="interaction-bar">
-              <div style="display:flex; gap:8px; align-items:center;">
-                <button class="btn-seen ${rep.client_seen_at ? 'active' : ''}" onclick="markSeen('${rep.id}')">
-                  ${rep.client_seen_at ? '✔ Visto' : 'Marcar Visto'}
-                </button>
-                <button class="btn-approve ${aprobado ? 'active' : ''}" onclick="toggleApprove('${rep.id}', ${aprobado})">
-                  ${aprobado ? '★ Hito Aprobado' : 'Aprobar Hito'}
-                </button>
-              </div>
-              <span style="font-size:11.5px; color:var(--text-muted);">${visto}</span>
+              <button class="btn-seen ${rep.client_seen_at ? 'active' : ''}" onclick="markSeen('${rep.id}')">
+                ${rep.client_seen_at ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
+              </button>
+              <span style="font-size:11.5px; color:var(--text-body); font-weight:500;">${visto}</span>
             </div>
 
-            <div style="margin-top:10px; background:rgba(255,255,255,0.6); padding:8px 12px; border-radius:10px;">
-              <div style="font-size:11.5px; font-weight:700; color:var(--text-body);">Observaciones y Feedback:</div>
-              ${commentsHtml || '<div style="font-size:11.5px; color:#888;">Sin observaciones registradas.</div>'}
-              <div style="display:flex; gap:6px; margin-top:6px;">
-                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:6px 10px; font-size:12px;" placeholder="Escribir observación...">
-                <button class="btn-action-primary" style="padding:6px 12px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
+            <div style="margin-top:12px; background:rgba(255,255,255,0.65); padding:10px 12px; border-radius:12px;">
+              <div style="font-size:12px; font-weight:700; color:var(--text-body);">💬 Comentarios (${comments.length}):</div>
+              ${commentsHtml || '<div style="font-size:11.5px; color:#777; margin-top:3px;">Sin comentarios todavía.</div>'}
+              <div style="display:flex; gap:6px; margin-top:8px;">
+                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
+                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
               </div>
             </div>
           </div>
@@ -1454,26 +1641,17 @@
       renderReports(filtered);
     }
 
-    async function markSeen(reportId) {
-      await supabaseClient.from('daily_reports').update({ client_seen_at: new Date().toISOString() }).eq('id', reportId);
+    async function deleteReport(reportId) {
+      if (activeUser !== 'Admin') return;
+      if (!confirm("¿Deseas eliminar este informe y sus fotos asociadas?")) return;
+      await supabaseClient.from('daily_reports').delete().eq('id', reportId);
       loadActiveProjectData();
     }
 
-    async function toggleApprove(reportId, currentStatus) {
-      const newStatus = currentStatus ? 'pendiente' : 'aprobado';
-      await supabaseClient.from('daily_reports').update({ 
-        status: newStatus,
-        client_approved_at: newStatus === 'aprobado' ? new Date().toISOString() : null
-      }).eq('id', reportId);
-
-      // Registrar auditoría del hito
-      await supabaseClient.from('project_audit_logs').insert([{
-        project_id: currentProject.id,
-        author_name: activeUser,
-        action_type: 'aprobacion_hito',
-        description: `El hito fue marcado como: ${newStatus.toUpperCase()}`
-      }]);
-
+    async function markSeen(reportId) {
+      const report = currentReports.find(r => r.id === reportId);
+      const nuevoEstado = report && report.client_seen_at ? null : new Date().toISOString();
+      await supabaseClient.from('daily_reports').update({ client_seen_at: nuevoEstado }).eq('id', reportId);
       loadActiveProjectData();
     }
 
@@ -1491,92 +1669,230 @@
       loadActiveProjectData();
     }
 
-    // MÓDULO C: GALERÍA DE TERRENO Y ANTES/DESPUÉS
-    function renderGallery(reports) {
-      const gallery = document.getElementById('gallery-grid');
-      let allImages = [];
-      reports.forEach(r => {
-        if (r.report_images) allImages.push(...r.report_images);
+    // VAULT DE LA GALERÍA ORGANIZADO POR FECHAS (SIN ACOPLAR DÍAS DISTINTOS)
+    function renderGalleryVaultByDate(reports) {
+      const container = document.getElementById('gallery-vault-container');
+      const groupsByDate = {};
+
+      reports.forEach(rep => {
+        if (!rep.report_images || rep.report_images.length === 0) return;
+
+        // Fecha exacta de subida (día calendario)
+        const rawDate = rep.created_at ? new Date(rep.created_at) : new Date(rep.report_date + 'T12:00:00');
+        const dateKey = rawDate.toISOString().split('T')[0];
+        const formattedDate = rawDate.toLocaleDateString('es-ES', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        if (!groupsByDate[dateKey]) {
+          groupsByDate[dateKey] = {
+            label: formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1),
+            images: []
+          };
+        }
+
+        rep.report_images.forEach(img => {
+          groupsByDate[dateKey].images.push({
+            url: img.image_url,
+            title: rep.title,
+            dayLabel: rep.day_label,
+            category: rep.category,
+            dateLabel: formattedDate
+          });
+        });
       });
 
-      if (allImages.length === 0) {
-        gallery.innerHTML = `<div style="font-size:13px; color:var(--text-muted);">No hay fotografías de campo indexadas.</div>`;
+      const sortedKeys = Object.keys(groupsByDate).sort((a, b) => b.localeCompare(a));
+
+      if (sortedKeys.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--msg-inner-cream); border-radius:16px;">No hay fotografías subidas en el Vault de este proyecto todavía.</div>`;
         return;
       }
 
-      gallery.innerHTML = allImages.map(img => `
-        <div style="position:relative;">
-          <img src="${img.image_url}" class="photo-thumb" onclick="openFullscreenImg('${img.image_url}')">
-          <span style="position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;">${img.zone || 'Terreno'}</span>
-        </div>
-      `).join('');
+      container.innerHTML = sortedKeys.map(key => {
+        const group = groupsByDate[key];
+        return `
+          <div class="vault-date-group">
+            <div class="vault-date-header">
+              <div class="vault-date-title">
+                <span>📅 ${group.label}</span>
+              </div>
+              <span class="vault-date-count">${group.images.length} ${group.images.length === 1 ? 'fotografía' : 'fotografías'}</span>
+            </div>
+            <div class="photo-grid" style="margin-bottom:0;">
+              ${group.images.map(item => `
+                <div style="position:relative;">
+                  <img src="${item.url}" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.dayLabel} (${item.category}) — ${group.label}')">
+                  <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.75); color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; pointer-events:none;">${item.dayLabel} • ${item.category}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    function initBeforeAfterSlider() {
-      const container = document.getElementById('ba-slider');
-      const wrap = document.getElementById('ba-after-wrap');
-      const handle = document.getElementById('ba-handle');
-      let isDown = false;
-
-      function updateSlider(x) {
-        const rect = container.getBoundingClientRect();
-        let posX = x - rect.left;
-        if (posX < 0) posX = 0;
-        if (posX > rect.width) posX = rect.width;
-        const pct = (posX / rect.width) * 100;
-        wrap.style.width = pct + '%';
-        handle.style.left = pct + '%';
-      }
-
-      container.addEventListener('mousedown', () => isDown = true);
-      window.addEventListener('mouseup', () => isDown = false);
-      container.addEventListener('mousemove', (e) => { if (isDown) updateSlider(e.clientX); });
-
-      container.addEventListener('touchstart', () => isDown = true);
-      window.addEventListener('touchend', () => isDown = false);
-      container.addEventListener('touchmove', (e) => { if (isDown) updateSlider(e.touches[0].clientX); });
-    }
-
-    // MÓDULO D: AUDITORÍA (AUDIT TRAIL)
+    // BITÁCORA AUTOMÁTICA (EXCLUSIVA PARA INFORMES Y DOCUMENTOS SUBIDOS)
     function renderAudit(entries) {
       const list = document.getElementById('audit-list');
       if (!entries || entries.length === 0) {
-        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted);">Sin registros en la bitácora de modificaciones.</div>`;
+        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted); background:var(--msg-inner-cream); padding:24px; border-radius:14px; text-align:center;">La bitácora registrará automáticamente cada vez que se suba un nuevo informe o documento PDF.</div>`;
         return;
       }
 
-      list.innerHTML = entries.map(ent => `
-        <div class="audit-entry">
-          <div class="audit-meta">
-            <span><strong>${ent.author_name}</strong> • ${ent.action_type.replace('_', ' ').toUpperCase()}</span>
-            <span>${new Date(ent.log_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+      list.innerHTML = entries.map(ent => {
+        const badgeText = ent.action_type === 'nuevo_informe' ? '📋 INFORME SUBIDO' : '📄 DOCUMENTO SUBIDO';
+        return `
+          <div class="audit-entry">
+            <div class="audit-meta">
+              <span><strong>${badgeText}</strong> • Por ${ent.author_name}</span>
+              <span>${new Date(ent.log_date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+            </div>
+            <div class="audit-title">${ent.description}</div>
           </div>
-          <div class="audit-title">${ent.description}</div>
-          ${ent.new_value ? `<div class="audit-desc"><strong>Valor anterior:</strong> ${ent.previous_value || 'N/A'} → <strong>Nuevo:</strong> ${ent.new_value}</div>` : ''}
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // MÓDULO E: CENTRO DOCUMENTAL
+    // CENTRO DOCUMENTAL CON DESCARGA Y VISUALIZACIÓN DIRECTA DE PDF
     function renderDocuments(docs) {
       const tbody = document.getElementById('docs-table-body');
       if (!docs || docs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay documentos técnicos adjuntos.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:24px;">No hay archivos PDF cargados en este proyecto.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = docs.map(d => `
-        <tr>
-          <td><strong>${d.title}</strong></td>
-          <td><span class="tag-category">${d.category.toUpperCase()}</span></td>
-          <td>${d.version}</td>
-          <td>${new Date(d.uploaded_at).toLocaleDateString()}</td>
-          <td><a href="${d.file_url}" target="_blank" class="btn-action-primary" style="padding:4px 8px; font-size:11px; text-decoration:none;">Descargar PDF</a></td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = docs.map((d, idx) => {
+        const cleanFileName = (d.title || `documento_${idx + 1}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.pdf';
+        const deleteDocBtn = activeUser === 'Admin'
+          ? `<button class="btn-logout" style="padding:4px 8px; font-size:11px; margin-left:6px;" onclick="deleteDocument('${d.id}')">🗑️</button>`
+          : '';
+
+        return `
+          <tr>
+            <td><strong>📄 ${d.title}</strong></td>
+            <td><span class="tag-category">${d.category.toUpperCase()}</span></td>
+            <td>${d.version}</td>
+            <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
+            <td>
+              <a href="${d.file_url}" download="${cleanFileName}" class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; text-decoration:none;">⬇ Descargar PDF</a>
+              ${deleteDocBtn}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // COMPRESIÓN DE IMÁGENES CLIENT-SIDE
+    async function deleteDocument(docId) {
+      if (activeUser !== 'Admin') return;
+      if (!confirm("¿Eliminar este documento PDF?")) return;
+      await supabaseClient.from('project_documents').delete().eq('id', docId);
+      loadActiveProjectData();
+    }
+
+    // VISOR LIGHTBOX CON ZOOM INTERACTIVO
+    function openLightbox(url, captionText) {
+      const modal = document.getElementById('lightbox-modal');
+      const img = document.getElementById('lightbox-img');
+      document.getElementById('lightbox-caption').innerText = captionText || 'Evidencia Fotográfica';
+      img.src = url;
+      resetZoom();
+      modal.classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.remove('open');
+      document.getElementById('lightbox-img').src = '';
+    }
+
+    function adjustZoom(delta) {
+      currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 4.5);
+      if (currentZoom === 1) { panX = 0; panY = 0; }
+      applyLightboxTransform();
+    }
+
+    function resetZoom() {
+      currentZoom = 1;
+      panX = 0;
+      panY = 0;
+      applyLightboxTransform();
+    }
+
+    function applyLightboxTransform() {
+      const img = document.getElementById('lightbox-img');
+      img.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      document.getElementById('zoom-level-indicator').innerText = `${Math.round(currentZoom * 100)}%`;
+    }
+
+    function initLightboxEvents() {
+      const stage = document.getElementById('lightbox-stage');
+
+      stage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.25 : -0.25;
+        adjustZoom(delta);
+      }, { passive: false });
+
+      stage.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        isDraggingImg = true;
+        startDragX = e.clientX - panX;
+        startDragY = e.clientY - panY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingImg) return;
+        panX = e.clientX - startDragX;
+        panY = e.clientY - startDragY;
+        applyLightboxTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDraggingImg = false;
+      });
+
+      // Soporte táctil en celulares para mover la imagen con zoom
+      stage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDraggingImg = true;
+          startDragX = e.touches[0].clientX - panX;
+          startDragY = e.touches[0].clientY - panY;
+        }
+      });
+
+      stage.addEventListener('touchmove', (e) => {
+        if (!isDraggingImg || e.touches.length !== 1) return;
+        panX = e.touches[0].clientX - startDragX;
+        panY = e.touches[0].clientY - startDragY;
+        applyLightboxTransform();
+      });
+
+      stage.addEventListener('touchend', () => {
+        isDraggingImg = false;
+      });
+    }
+
+    // ZONAS DRAG & DROP PARA FOTOS Y ARCHIVOS PDF
+    function initDragAndDropZones() {
+      const imgZone = document.getElementById('img-dropzone');
+      imgZone.addEventListener('dragover', (e) => { e.preventDefault(); imgZone.classList.add('dragover'); });
+      imgZone.addEventListener('dragleave', () => imgZone.classList.remove('dragover'));
+      imgZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imgZone.classList.remove('dragover');
+        handleImageUpload(e.dataTransfer.files);
+      });
+
+      const pdfZone = document.getElementById('pdf-dropzone');
+      pdfZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfZone.classList.add('dragover'); });
+      pdfZone.addEventListener('dragleave', () => pdfZone.classList.remove('dragover'));
+      pdfZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pdfZone.classList.remove('dragover');
+        handlePdfFileSelect(e.dataTransfer.files);
+      });
+    }
+
     function handleImageUpload(files) {
       Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) return;
@@ -1585,7 +1901,7 @@
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1200;
+            const MAX_WIDTH = 1280;
             let w = img.width;
             let h = img.height;
             if (w > MAX_WIDTH) { h *= MAX_WIDTH / w; w = MAX_WIDTH; }
@@ -1593,7 +1909,7 @@
             canvas.height = h;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
-            const comp = canvas.toDataURL('image/jpeg', 0.75);
+            const comp = canvas.toDataURL('image/jpeg', 0.78);
             uploadedImagesBase64.push(comp);
             renderPreviews();
           };
@@ -1618,15 +1934,47 @@
       renderPreviews();
     }
 
-    // PUBLICACIÓN DE FORMULARIOS (ADMIN)
+    // SELECCIÓN DIRECTA DE ARCHIVO PDF
+    function handlePdfFileSelect(files) {
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert("Por favor selecciona un archivo en formato PDF.");
+        return;
+      }
+
+      selectedPdfName = file.name;
+      const label = document.getElementById('pdf-dropzone-label');
+      label.innerText = `⏳ Procesando: ${file.name}...`;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        selectedPdfDataUrl = e.target.result;
+        label.innerText = `✔ PDF listo para subir: ${file.name}`;
+        const titleInput = document.getElementById('form-doc-title');
+        if (!titleInput.value.trim()) {
+          titleInput.value = file.name.replace(/\.pdf$/i, '');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // PUBLICACIÓN DE INFORME + NOTIFICACIÓN AUTOMÁTICA EN BITÁCORA
     async function submitDailyReport() {
-      if (!currentProject) return;
+      if (!currentProject || activeUser !== 'Admin') return;
       const day = document.getElementById('form-rep-day').value.trim();
-      const cat = document.getElementById('form-rep-cat').value;
+      const cat = document.getElementById('form-rep-cat').value.trim() || 'General';
       const title = document.getElementById('form-rep-title').value.trim();
       const desc = document.getElementById('form-rep-desc').value.trim();
 
-      if (!day || !title || !desc) { alert("Complete los campos obligatorios."); return; }
+      if (!day || !title || !desc) {
+        alert("Completa la versión/día, el título y la descripción.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-rep');
+      btn.innerText = "Publicando...";
+      btn.disabled = true;
 
       const { data: rep, error } = await supabaseClient.from('daily_reports').insert([{
         project_id: currentProject.id,
@@ -1637,58 +1985,86 @@
         report_date: new Date().toISOString().split('T')[0]
       }]).select().single();
 
-      if (error) { alert("Error: " + error.message); return; }
+      if (error) {
+        btn.innerText = "Publicar Informe";
+        btn.disabled = false;
+        alert("Error: " + error.message);
+        return;
+      }
 
       if (uploadedImagesBase64.length > 0) {
         const imgs = uploadedImagesBase64.map(uri => ({
           report_id: rep.id,
           image_url: uri,
-          zone: 'General'
+          zone: cat
         }));
         await supabaseClient.from('report_images').insert(imgs);
       }
 
+      // Notificación automática exclusiva en Bitácora
+      await supabaseClient.from('project_audit_logs').insert([{
+        project_id: currentProject.id,
+        author_name: activeUser,
+        action_type: 'nuevo_informe',
+        description: `Se publicó el informe "${title}" (${day} — ${cat})${uploadedImagesBase64.length > 0 ? ` con ${uploadedImagesBase64.length} foto(s)` : ''}.`
+      }]);
+
+      btn.innerText = "Publicar Informe";
+      btn.disabled = false;
       closeModal('modal-report');
+      document.getElementById('form-rep-day').value = '';
+      document.getElementById('form-rep-title').value = '';
+      document.getElementById('form-rep-desc').value = '';
       uploadedImagesBase64 = [];
       renderPreviews();
       loadActiveProjectData();
     }
 
-    async function submitAuditEntry() {
-      if (!currentProject) return;
-      const type = document.getElementById('form-aud-type').value;
-      const desc = document.getElementById('form-aud-desc').value.trim();
-      const prev = document.getElementById('form-aud-prev').value.trim();
-      const next = document.getElementById('form-aud-new').value.trim();
-
-      await supabaseClient.from('project_audit_logs').insert([{
-        project_id: currentProject.id,
-        author_name: activeUser,
-        action_type: type,
-        description: desc,
-        previous_value: prev,
-        new_value: next
-      }]);
-
-      closeModal('modal-audit');
-      loadActiveProjectData();
-    }
-
+    // SUBIDA DE ARCHIVO PDF + NOTIFICACIÓN AUTOMÁTICA EN BITÁCORA
     async function submitDocument() {
-      if (!currentProject) return;
+      if (!currentProject || activeUser !== 'Admin') return;
       const title = document.getElementById('form-doc-title').value.trim();
       const category = document.getElementById('form-doc-cat').value;
-      const version = document.getElementById('form-doc-ver').value.trim();
-      const file_url = document.getElementById('form-doc-url').value.trim();
+      const version = document.getElementById('form-doc-ver').value.trim() || 'v1.0';
 
-      await supabaseClient.from('project_documents').insert([{
+      if (!title || !selectedPdfDataUrl) {
+        alert("Por favor escribe el título y selecciona o arrastra un archivo PDF.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-doc');
+      btn.innerText = "Subiendo PDF...";
+      btn.disabled = true;
+
+      const { error } = await supabaseClient.from('project_documents').insert([{
         project_id: currentProject.id,
         title,
         category,
         version,
-        file_url
+        file_url: selectedPdfDataUrl
       }]);
 
+      if (error) {
+        btn.innerText = "Subir PDF";
+        btn.disabled = false;
+        alert("Error al subir PDF: " + error.message);
+        return;
+      }
+
+      // Notificación automática exclusiva en Bitácora
+      await supabaseClient.from('project_audit_logs').insert([{
+        project_id: currentProject.id,
+        author_name: activeUser,
+        action_type: 'nuevo_documento',
+        description: `Se subió el documento PDF "${title}" (${category.toUpperCase()} — ${version}).`
+      }]);
+
+      btn.innerText = "Subir PDF";
+      btn.disabled = false;
+      selectedPdfDataUrl = null;
+      selectedPdfName = "";
+      document.getElementById('form-doc-title').value = '';
+      document.getElementById('pdf-dropzone-label').innerText = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
       closeModal('modal-doc');
       loadActiveProjectData();
     }
@@ -1697,20 +2073,19 @@
     function printExecutiveReport() {
       if (!currentProject) return;
 
-      document.getElementById('print-date').innerText = `Fecha de emisión: ${new Date().toLocaleDateString()}`;
-      document.getElementById('print-project-code').innerText = `ID PROYECTO: ${currentProject.code}`;
+      document.getElementById('print-date').innerText = `Fecha de emisión: ${new Date().toLocaleDateString('es-ES')}`;
+      document.getElementById('print-project-code').innerText = `CUENTA: ${currentProject.code}`;
       document.getElementById('print-project-name').innerText = currentProject.name;
       document.getElementById('print-project-client').innerText = `Cliente: ${currentProject.client_name} | ${currentProject.address || ''}`;
-      document.getElementById('print-planned').innerText = `Progreso Planificado: ${currentProject.planned_progress}%`;
-      document.getElementById('print-actual').innerText = `Progreso Ejecutado: ${currentProject.actual_progress}%`;
+      document.getElementById('print-actual').innerText = `Avance de la Obra: ${currentProject.actual_progress}%`;
       document.getElementById('print-phase').innerText = `Fase Actual: ${currentProject.current_phase}`;
+      document.getElementById('print-milestone').innerText = `Final de Obra: ${currentProject.next_milestone_date || 'Por definir'}`;
 
       const printBody = document.getElementById('print-reports-body');
-      printBody.innerHTML = currentReports.slice(0, 5).map(r => `
+      printBody.innerHTML = currentReports.slice(0, 8).map(r => `
         <div style="margin-bottom:14px; border-bottom:1px solid #eee; padding-bottom:8px;">
           <div style="font-weight:bold; font-size:13px;">${r.day_label} — ${r.title} (${r.category})</div>
           <div style="font-size:12px; color:#444; margin-top:3px;">${r.description}</div>
-          <div style="font-size:11px; color:#777; margin-top:4px;">Estado: ${r.status.toUpperCase()}</div>
         </div>
       `).join('');
 
@@ -1719,19 +2094,20 @@
 
     // TIEMPO REAL
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra')
+      supabaseClient.channel('realtime_obra_v2')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => loadProjects())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => loadActiveProjectData())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => loadActiveProjectData())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'project_documents' }, () => loadActiveProjectData())
         .subscribe();
     }
 
-    // NAVEGACIÓN Y MODALES
+    // CAMBIO DE CATEGORÍA EN LA BARRA LATERAL CON SEÑALIZACIÓN ACTIVA
     function switchModule(mod) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.module-section').forEach(s => s.classList.remove('active-module'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.module-section').forEach(sec => sec.classList.remove('active-module'));
 
-      document.getElementById(`tab-btn-${mod}`)?.classList.add('active');
+      document.getElementById(`nav-item-${mod}`)?.classList.add('active');
       document.getElementById(`sec-${mod}`)?.classList.add('active-module');
       closeSidebar();
     }
@@ -1746,10 +2122,8 @@
     }
 
     function openCreateReportModal() { document.getElementById('modal-report').classList.add('open'); }
-    function openAuditModal() { document.getElementById('modal-audit').classList.add('open'); }
     function openDocModal() { document.getElementById('modal-doc').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    function openFullscreenImg(url) { window.open(url, '_blank'); }
   </script>
 </body>
 </html>
