@@ -16,14 +16,15 @@
   <style>
     :root {
       --ios-bg: radial-gradient(circle at 30% 20%, #b8c1c8 0%, #858e96 100%);
-      --ios-glass: rgba(246, 247, 249, 0.85);
+      --ios-glass: rgba(246, 247, 249, 0.86);
       --ios-glass-border: rgba(255, 255, 255, 0.65);
       
-      /* Barra lateral con 80% de opacidad y tono verde oliva original */
-      --sidebar-bg: rgba(66, 79, 61, 0.80);
+      /* Barra lateral y barra de tareas al 70% de opacidad con desenfoque trasero */
+      --sidebar-bg: rgba(66, 79, 61, 0.70);
+      --topbar-bg: rgba(245, 248, 243, 0.70);
       --sidebar-text: #EAEFE8;
-      --sidebar-muted: #B0BFA9;
-      --sidebar-active-bg: rgba(255, 255, 255, 0.11);
+      --sidebar-muted: #C2D0BC;
+      --sidebar-active-bg: rgba(255, 255, 255, 0.14);
       --sidebar-indicator: #C88A6B;
       
       --msg-pastel-green: #DCE6D8;
@@ -45,43 +46,51 @@
       --status-danger-bg: #F9E8E6;
     }
 
-    * {
+    /* CERO ANIMACIONES Y BLOQUEO DE DESPLAZAMIENTO LATERAL EN MÓVILES */
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
+      transition: none !important;
+      animation: none !important;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      overscroll-behavior-x: none;
+      touch-action: pan-y;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--ios-bg);
       color: var(--text-title);
+    }
+
+    body {
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px 16px;
+      padding: 18px 14px;
     }
 
     /* 1. PANTALLA DE ACCESO MINIMALISTA */
     .login-wrapper {
       width: 100%;
-      max-width: 390px;
+      max-width: 380px;
+      margin: 0 auto;
       background: rgba(250, 251, 252, 0.88);
-      backdrop-filter: blur(40px) saturate(190%);
-      -webkit-backdrop-filter: blur(40px) saturate(190%);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
       border: 1px solid rgba(255, 255, 255, 0.75);
       border-radius: 26px;
-      box-shadow: 0 30px 70px rgba(35, 42, 48, 0.28);
-      padding: 36px 28px;
+      box-shadow: 0 24px 60px rgba(35, 42, 48, 0.25);
+      padding: 34px 26px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
     }
 
     .login-avatar-top {
@@ -91,7 +100,6 @@
       margin: 0 auto 4px;
       object-fit: cover;
       border: 2px solid var(--msg-pastel-border);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
       background: #1C211B;
     }
 
@@ -139,7 +147,6 @@
     }
     .login-input:focus {
       border-color: var(--btn-olive);
-      box-shadow: 0 0 0 3px rgba(74, 90, 70, 0.14);
     }
 
     .btn-submit-login {
@@ -159,44 +166,44 @@
       width: 100%;
       max-width: 1280px;
       height: 92vh;
-      min-height: 700px;
+      min-height: 680px;
+      margin: 0 auto;
       background: var(--ios-glass);
-      backdrop-filter: blur(35px) saturate(180%);
-      -webkit-backdrop-filter: blur(35px) saturate(180%);
       border: 1px solid var(--ios-glass-border);
       border-radius: 26px;
-      box-shadow: 0 35px 80px rgba(30, 36, 42, 0.30);
+      box-shadow: 0 30px 70px rgba(30, 36, 42, 0.28);
       display: none;
       overflow: hidden;
       position: relative;
     }
 
-    /* BARRA LATERAL CON 80% OPACIDAD, DESENFOQUE, ICONOS LINEALES Y PLANTA DETALLADA */
+    /* BARRA LATERAL CON 70% DE OPACIDAD Y DESENFOQUE TRASERO */
     .sidebar {
-      width: 265px;
+      width: 270px;
       background: var(--sidebar-bg);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
       color: var(--sidebar-text);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 28px 18px 0 18px;
+      padding: 24px 16px 16px 16px;
       position: relative;
       flex-shrink: 0;
       z-index: 40;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .brand-section {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-      padding-bottom: 18px;
-      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
       padding-left: 6px;
     }
     .brand-title {
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 300;
       letter-spacing: 4px;
       color: #FFFFFF;
@@ -205,7 +212,7 @@
       line-height: 1;
     }
     .brand-subtitle {
-      font-size: 8.5px;
+      font-size: 8px;
       letter-spacing: 1.2px;
       color: var(--sidebar-muted);
       margin-top: 8px;
@@ -213,12 +220,11 @@
       line-height: 1.35;
     }
 
-    /* LISTA DE NAVEGACIÓN ESTILO IMAGE_438AB3 */
     .nav-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       position: relative;
       z-index: 2;
     }
@@ -226,33 +232,31 @@
       position: relative;
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 12px 16px;
+      gap: 13px;
+      padding: 11px 14px;
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 400;
-      color: rgba(234, 239, 232, 0.82);
+      color: rgba(234, 239, 232, 0.85);
       cursor: pointer;
-      transition: background 0.2s, color 0.2s;
     }
     .nav-item svg {
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       stroke: currentColor;
       stroke-width: 1.7;
       fill: none;
       flex-shrink: 0;
     }
     .nav-item:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       color: #FFFFFF;
     }
     .nav-item.active {
       background: var(--sidebar-active-bg);
       color: #FFFFFF;
-      font-weight: 500;
+      font-weight: 600;
     }
-    /* Indicador lateral terracota idéntico a la imagen de referencia */
     .nav-item.active::before {
       content: '';
       position: absolute;
@@ -264,21 +268,51 @@
       border-radius: 0 4px 4px 0;
     }
 
-    /* ILUSTRACIÓN BOTÁNICA DETALLADA ESTILO IMAGE_438D78 */
+    /* PIE DE BARRA LATERAL: CRÉDITOS + ILUSTRACIÓN BOTÁNICA */
     .sidebar-footer {
       position: relative;
-      height: 250px;
-      width: 100%;
-      pointer-events: none;
-      margin-top: auto;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      z-index: 2;
+    }
+    .credits-block {
+      position: relative;
+      z-index: 3;
+      font-size: 10.5px;
+      line-height: 1.45;
+      color: rgba(234, 239, 232, 0.90);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .credits-services {
+      font-size: 9.5px;
+      color: var(--sidebar-muted);
+      letter-spacing: 0.2px;
+      line-height: 1.5;
+    }
+    .credits-authors {
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 10px;
+    }
+    .credits-authors strong {
+      color: #FFFFFF;
+      display: block;
+      font-weight: 600;
     }
     .plant-svg {
       position: absolute;
-      bottom: -8px;
-      left: -18px;
-      width: 235px;
-      height: 250px;
-      opacity: 0.38;
+      bottom: -10px;
+      right: -18px;
+      width: 175px;
+      height: 190px;
+      opacity: 0.24;
+      pointer-events: none;
+      z-index: 1;
     }
 
     .mobile-menu-btn {
@@ -293,14 +327,14 @@
       cursor: pointer;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .drawer-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(35, 43, 34, 0.45);
-      backdrop-filter: blur(6px);
+      background: rgba(25, 32, 24, 0.5);
       z-index: 35;
     }
     .drawer-backdrop.open { display: block; }
@@ -308,91 +342,105 @@
     /* ÁREA PRINCIPAL */
     .main-viewport {
       flex: 1;
+      width: 100%;
+      max-width: 100%;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      scroll-behavior: smooth;
-      padding: 26px 32px;
+      overflow-x: hidden;
+      padding: 22px 28px;
     }
 
+    /* BARRA DE TAREAS SUPERIOR AL 70% OPACIDAD Y DESENFOQUE */
     .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 16px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .project-selector-wrap {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .project-selector {
       background: #FFFFFF;
       border: 1px solid #CFD8CC;
       color: var(--text-title);
-      padding: 8px 14px;
-      border-radius: 14px;
-      font-size: 13px;
+      padding: 7px 12px;
+      border-radius: 12px;
+      font-size: 12.5px;
       font-weight: 600;
       outline: none;
       font-family: inherit;
+      max-width: 100%;
     }
 
     .user-pill {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       margin-left: auto;
     }
     .user-meta-name {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       color: var(--text-title);
     }
     .avatar-img {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--btn-olive);
       background: #1C211B;
+      flex-shrink: 0;
     }
     .btn-logout {
       background: var(--status-danger-bg);
       border: 1px solid rgba(185, 92, 80, 0.28);
-      padding: 6px 12px;
-      border-radius: 16px;
+      padding: 6px 11px;
+      border-radius: 14px;
       font-size: 11.5px;
       font-weight: 600;
       color: var(--status-danger);
       cursor: pointer;
     }
 
-    /* CABECERA EJECUTIVA CON 1 SOLA BARRA DE AVANCE Y BOTÓN DE MODIFICAR */
+    /* CABECERA EJECUTIVA */
     .dashboard-header-card {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
       border-radius: 20px;
-      padding: 22px 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      padding: 20px 22px;
+      margin-bottom: 22px;
     }
     .project-main-meta {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 16px;
-      gap: 14px;
+      margin-bottom: 14px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .project-title {
       font-family: 'Playfair Display', serif;
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 700;
       color: var(--text-title);
     }
@@ -405,7 +453,7 @@
     .header-badges-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -413,9 +461,9 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 13px;
+      padding: 5px 12px;
       border-radius: 14px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -437,15 +485,11 @@
       align-items: center;
       gap: 6px;
     }
-    .btn-edit-project:hover {
-      background: var(--msg-pastel-green);
-    }
 
-    /* BARRA ÚNICA DE AVANCE DE LA OBRA */
     .single-progress-container {
-      background: rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.78);
       border: 1px solid #E2EADF;
-      padding: 16px 18px;
+      padding: 14px 16px;
       border-radius: 16px;
     }
     .progress-meta-text {
@@ -467,51 +511,81 @@
       height: 100%;
       background: var(--btn-olive);
       border-radius: 8px;
-      transition: width 0.4s ease;
     }
 
     .milestone-strip {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 12.5px;
       color: var(--text-body);
       border-top: 1px solid #E6ECE2;
-      padding-top: 12px;
+      padding-top: 10px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
-    /* SECCIONES DE MÓDULOS (SIN BARRA INTERMEDIA) */
-    .module-section { display: none; }
+    /* SECCIONES DE MÓDULOS */
+    .module-section { display: none; width: 100%; }
     .module-section.active-module { display: block; }
 
-    /* MÓDULO B: FEED DE INFORMES */
+    /* MÓDULO B: FEED DE INFORMES Y BUSCADOR DE FECHA */
     .feed-controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    .search-feed {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid #D5DFD2;
-      border-radius: 18px;
-      padding: 9px 16px;
-      font-size: 13px;
-      width: 300px;
-      outline: none;
+    .search-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
     }
+    .search-feed {
+      background: #FFFFFF;
+      border: 1px solid #D5DFD2;
+      border-radius: 14px;
+      padding: 8px 14px;
+      font-size: 13px;
+      min-width: 220px;
+      flex: 1;
+      max-width: 340px;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-date-input {
+      background: #FFFFFF;
+      border: 1px solid #D5DFD2;
+      border-radius: 14px;
+      padding: 7px 12px;
+      font-size: 12.5px;
+      color: var(--text-title);
+      outline: none;
+      font-family: inherit;
+    }
+    .btn-clear-date {
+      background: #EAEFE8;
+      border: 1px solid #CFD8CC;
+      color: var(--text-body);
+      padding: 7px 11px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     .btn-action-primary {
       background: var(--btn-olive);
       color: #FFFFFF;
       border: none;
-      padding: 9px 18px;
+      padding: 8px 16px;
       border-radius: 14px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -522,45 +596,42 @@
     .timeline {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       padding-bottom: 24px;
     }
 
     .report-card {
+      content-visibility: auto;
+      contain-intrinsic-size: 260px;
       background: var(--msg-pastel-green);
       border: 1px solid var(--msg-pastel-border);
       border-radius: 20px 20px 20px 6px;
-      padding: 20px;
-      box-shadow: 0 4px 16px rgba(55, 70, 52, 0.05);
+      padding: 18px 20px;
     }
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       gap: 8px;
       flex-wrap: wrap;
-    }
-    .tag-day {
-      font-size: 11.5px;
-      font-weight: 700;
-      background: var(--msg-inner-cream);
-      padding: 3px 9px;
-      border-radius: 8px;
-      font-family: monospace;
     }
     .tag-category {
       background: var(--btn-olive);
       color: #FFFFFF;
       font-size: 11px;
       font-weight: 600;
-      padding: 3px 10px;
+      padding: 4px 11px;
       border-radius: 12px;
     }
     .card-date {
-      font-size: 11.5px;
-      color: var(--text-body);
-      font-weight: 500;
+      font-size: 12px;
+      color: var(--text-title);
+      font-weight: 600;
+      background: var(--msg-inner-cream);
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--msg-pastel-border);
     }
 
     .report-title {
@@ -574,7 +645,7 @@
       color: var(--text-body);
       line-height: 1.6;
       white-space: pre-line;
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(255, 255, 255, 0.62);
       padding: 12px 14px;
       border-radius: 12px;
       margin-bottom: 14px;
@@ -582,21 +653,18 @@
 
     .photo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
       margin-bottom: 14px;
     }
     .photo-thumb {
       width: 100%;
-      height: 120px;
+      height: 115px;
       border-radius: 12px;
       object-fit: cover;
       cursor: zoom-in;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      transition: transform 0.15s ease;
-    }
-    .photo-thumb:hover {
-      transform: scale(1.02);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: #E5ECE2;
     }
 
     .interaction-bar {
@@ -613,9 +681,9 @@
       background: var(--msg-inner-cream);
       border: 1.5px solid var(--btn-olive);
       color: var(--text-title);
-      padding: 9px 18px;
+      padding: 8px 16px;
       border-radius: 12px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -623,14 +691,18 @@
       background: var(--btn-olive);
       color: #FFFFFF;
     }
+    .btn-seen:disabled {
+      opacity: 0.85;
+      cursor: not-allowed;
+    }
 
-    /* VAULT DE LA GALERÍA ORGANIZADO POR FECHAS */
+    /* BAÚL DE GALERÍA ORGANIZADO POR FECHAS */
     .vault-date-group {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
       border-radius: 18px;
       padding: 18px 20px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .vault-date-header {
       display: flex;
@@ -639,14 +711,13 @@
       border-bottom: 1px solid #E1E9DD;
       padding-bottom: 10px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .vault-date-title {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-title);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .vault-date-count {
       font-size: 11.5px;
@@ -657,13 +728,13 @@
       border-radius: 12px;
     }
 
-    /* BITÁCORA DE DECISIONES (SOLO INFORMES Y DOCUMENTOS) */
+    /* BITÁCORA DE PUBLICACIONES */
     .audit-timeline {
       position: relative;
-      padding-left: 24px;
+      padding-left: 22px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
     .audit-timeline::before {
       content: '';
@@ -679,12 +750,12 @@
       background: #FFFFFF;
       border: 1px solid var(--msg-pastel-border);
       border-radius: 14px;
-      padding: 14px 18px;
+      padding: 14px 16px;
     }
     .audit-entry::before {
       content: '';
       position: absolute;
-      left: -23px;
+      left: -21px;
       top: 18px;
       width: 10px;
       height: 10px;
@@ -698,6 +769,8 @@
       font-size: 11.5px;
       color: var(--text-muted);
       margin-bottom: 4px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .audit-title {
       font-size: 13.5px;
@@ -705,17 +778,21 @@
       color: var(--text-title);
     }
 
-    /* CENTRO DOCUMENTAL */
+    /* TABLAS RESPONSIVAS (DOCUMENTOS Y USUARIOS) */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--msg-pastel-border);
+      background: #FFFFFF;
+    }
     .docs-table {
       width: 100%;
       border-collapse: collapse;
-      background: #FFFFFF;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--msg-pastel-border);
+      min-width: 520px;
     }
     .docs-table th, .docs-table td {
-      padding: 12px 16px;
+      padding: 12px 14px;
       font-size: 13px;
       text-align: left;
       border-bottom: 1px solid #E6ECE2;
@@ -726,59 +803,58 @@
       color: var(--text-body);
     }
 
-    /* VISOR LIGHTBOX CON ZOOM INTERACTIVO */
+    /* VISOR LIGHTBOX ULTRA RÁPIDO (SIN LAG DE BLUR) */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(20, 25, 20, 0.92);
-      backdrop-filter: blur(14px);
+      background: rgba(16, 20, 16, 0.96);
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 900;
+      z-index: 950;
       overflow: hidden;
       user-select: none;
+      touch-action: none;
     }
     .lightbox-overlay.open { display: flex; }
 
     .lightbox-toolbar {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      left: 20px;
+      top: 16px;
+      right: 16px;
+      left: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 910;
+      z-index: 960;
       pointer-events: none;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .lightbox-caption {
       color: #EAEFE8;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.7);
       padding: 7px 14px;
-      border-radius: 20px;
+      border-radius: 16px;
       pointer-events: auto;
     }
     .lightbox-controls {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       pointer-events: auto;
     }
     .lightbox-btn {
-      background: rgba(255, 255, 255, 0.16);
+      background: #2C352B;
       color: #FFFFFF;
       border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 10px;
-      padding: 8px 13px;
+      padding: 8px 12px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-    }
-    .lightbox-btn:hover {
-      background: rgba(255, 255, 255, 0.28);
     }
 
     .lightbox-stage {
@@ -790,29 +866,26 @@
       overflow: hidden;
       cursor: grab;
     }
-    .lightbox-stage:active {
-      cursor: grabbing;
-    }
+    .lightbox-stage:active { cursor: grabbing; }
     .lightbox-img {
-      max-width: 88vw;
+      max-width: 90vw;
       max-height: 82vh;
-      border-radius: 10px;
+      border-radius: 8px;
       transform-origin: center center;
-      transition: transform 0.08s ease-out;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      will-change: transform;
+      pointer-events: none;
     }
 
     /* MODALES */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(45, 54, 44, 0.45);
-      backdrop-filter: blur(12px);
+      background: rgba(28, 35, 27, 0.65);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 500;
-      padding: 16px;
+      z-index: 800;
+      padding: 14px;
     }
     .modal-overlay.open { display: flex; }
 
@@ -820,9 +893,9 @@
       width: 100%;
       max-width: 520px;
       background: #FAFBF9;
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -830,12 +903,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-title { font-size: 16.5px; font-weight: 700; }
     .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
 
-    .form-group { margin-bottom: 13px; }
+    .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
       font-size: 12px;
@@ -847,7 +920,7 @@
       width: 100%;
       border: 1px solid #D5DFD2;
       border-radius: 10px;
-      padding: 10px 13px;
+      padding: 9px 12px;
       font-size: 13.5px;
       font-family: inherit;
       outline: none;
@@ -857,14 +930,10 @@
     .dropzone {
       border: 2px dashed #B8C7B4;
       border-radius: 12px;
-      padding: 18px;
+      padding: 16px;
       text-align: center;
       background: var(--msg-inner-cream);
       cursor: pointer;
-    }
-    .dropzone.dragover {
-      border-color: var(--btn-olive);
-      background: #E5EFE2;
     }
     .preview-container {
       display: flex;
@@ -890,28 +959,56 @@
       .app-window, .sidebar, .top-header, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
         display: none !important;
       }
-      #print-report-template {
-        display: block !important;
-      }
+      #print-report-template { display: block !important; }
     }
     #print-report-template { display: none; }
 
-    /* RESPONSIVIDAD MÓVIL */
+    /* AJUSTE MÓVIL CENTRADO Y FIJO (SIN BAMBOLEO LATERAL) */
     @media (max-width: 820px) {
-      body { padding: 10px; }
-      .app-window { height: 96vh; border-radius: 20px; }
+      body {
+        padding: 8px;
+        align-items: flex-start;
+      }
+      .app-window {
+        width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 16px);
+        min-height: calc(100vh - 16px);
+        border-radius: 18px;
+        margin: 0 auto;
+      }
       .sidebar {
         position: fixed;
         top: 0;
-        left: -280px;
+        left: 0;
         width: 265px;
         height: 100vh;
-        transition: left 0.25s ease;
+        display: none;
       }
-      .sidebar.open { left: 0; }
-      .mobile-menu-btn { display: inline-flex; }
-      .main-viewport { padding: 18px 14px; }
-      .search-feed { width: 100%; }
+      .sidebar.open {
+        display: flex;
+      }
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+      .main-viewport {
+        padding: 12px;
+        width: 100%;
+      }
+      .top-header {
+        padding: 8px 10px;
+        margin-bottom: 14px;
+      }
+      .search-feed {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      .project-title {
+        font-size: 21px;
+      }
+      .report-card {
+        padding: 14px;
+      }
     }
   </style>
 </head>
@@ -928,7 +1025,7 @@
     <form class="login-form" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
       <div class="form-group-login">
         <label for="login-user">Usuario</label>
-        <input type="text" id="login-user" name="username" autocomplete="username" class="login-input" placeholder="Ej: Admin, Cliente1..." required>
+        <input type="text" id="login-user" name="username" autocomplete="username" class="login-input" placeholder="Ej.: Admin, Cliente1..." required>
       </div>
 
       <div class="form-group-login">
@@ -944,7 +1041,7 @@
   <div class="app-window" id="app-screen">
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL CON 80% OPACIDAD, ICONOS LINEALES Y PLANTA COMPLEJA -->
+    <!-- BARRA LATERAL AL 70% DE OPACIDAD CON DESENFOQUE Y CRÉDITOS -->
     <aside class="sidebar" id="sidebar">
       <div>
         <div class="brand-section">
@@ -954,7 +1051,6 @@
 
         <ul class="nav-list">
           <li class="nav-item active" id="nav-item-feed" onclick="switchModule('feed')">
-            <!-- Icono Casa Lineal -->
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 10.5L12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9z"/>
               <path d="M9 21V14h6v7"/>
@@ -963,15 +1059,13 @@
           </li>
 
           <li class="nav-item" id="nav-item-gallery" onclick="switchModule('gallery')">
-            <!-- Icono Carpeta / Vault Lineal -->
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
             </svg>
-            <span>Vault de Galería</span>
+            <span>Baúl de Galería</span>
           </li>
 
           <li class="nav-item" id="nav-item-audit" onclick="switchModule('audit')">
-            <!-- Icono Nota / Bitácora Lineal -->
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="4" width="16" height="16" rx="2"/>
               <line x1="8" y1="9" x2="16" y2="9"/>
@@ -982,56 +1076,51 @@
           </li>
 
           <li class="nav-item" id="nav-item-docs" onclick="switchModule('docs')">
-            <!-- Icono Documento Lineal -->
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
             </svg>
             <span>Documentos</span>
           </li>
+
+          <!-- NUEVO MENÚ DE USUARIOS (SOLO PARA ADMIN) -->
+          <li class="nav-item" id="nav-item-users" style="display:none;" onclick="switchModule('users')">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Usuarios</span>
+          </li>
         </ul>
       </div>
 
-      <!-- PLANTA BOTÁNICA DETALLADA CON NERVADURAS FINAS (ESTILO IMAGE_438D78) -->
+      <!-- PIE DE BARRA LATERAL CON SERVICIOS, CRÉDITOS Y PLANTA BOTÁNICA -->
       <div class="sidebar-footer">
+        <div class="credits-block">
+          <div class="credits-services">
+            • Urbanismo<br>
+            • Diseño arquitectónico e interiorismo<br>
+            • Remodelación &amp; construcción total
+          </div>
+          <div class="credits-authors">
+            <strong>B+ Arquitectura Estudio</strong>
+            Gina Bustillo
+            <strong style="margin-top:5px;">Dynatic</strong>
+            Sixto Fernández
+          </div>
+        </div>
+
         <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round">
-          <!-- Tallo principal arqueado -->
           <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.4"/>
           <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.1" opacity="0.7"/>
-          
-          <!-- Hoja Superior Central (Larga lanceolada con nervaduras) -->
           <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
           <path d="M 62 120 Q 88 68 114 14" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 78 90 L 72 78 M 88 70 L 82 58 M 96 52 L 92 42 M 82 84 L 93 79 M 92 64 L 101 60" stroke-width="0.5" opacity="0.6"/>
-
-          <!-- Hoja Izquierda Alta -->
           <path d="M 38 162 C 32 118, 42 78, 52 42 C 58 84, 52 126, 38 162 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 38 162 Q 46 102 52 42" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 43 130 L 37 116 M 46 105 L 40 92 M 48 80 L 44 68 M 45 118 L 53 108 M 48 94 L 54 84" stroke-width="0.5" opacity="0.6"/>
-
-          <!-- Hoja Extrema Izquierda -->
-          <path d="M 16 190 C 6 142, 8 92, 16 48 C 26 92, 26 144, 16 190 Z" stroke-width="1.1" opacity="0.8"/>
-          <path d="M 16 190 Q 16 118 16 48" stroke-width="0.6" opacity="0.65"/>
-
-          <!-- Hoja Derecha Superior -->
           <path d="M 78 108 C 102 82, 134 62, 166 52 C 142 78, 112 98, 78 108 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 78 108 Q 122 78 166 52" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 102 92 L 108 80 M 122 79 L 128 68 M 140 68 L 145 59 M 112 86 L 124 88 M 132 73 L 143 75" stroke-width="0.5" opacity="0.6"/>
-
-          <!-- Hoja Derecha Media Horizontal -->
           <path d="M 56 142 C 96 122, 145 118, 192 128 C 148 142, 102 146, 56 142 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 56 142 Q 124 130 192 128" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 90 137 L 102 127 M 118 133 L 130 124 M 146 131 L 158 124 M 104 135 L 118 141 M 134 132 L 148 137" stroke-width="0.5" opacity="0.6"/>
-
-          <!-- Hoja Derecha Baja -->
           <path d="M 35 184 C 66 158, 102 146, 138 142 C 110 168, 74 182, 35 184 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 35 184 Q 86 162 138 142" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 65 171 L 75 160 M 88 161 L 98 152 M 78 166 L 92 170 M 102 156 L 114 159" stroke-width="0.5" opacity="0.6"/>
-
-          <!-- Hoja Inferior Derecha -->
-          <path d="M 22 218 C 48 198, 78 188, 110 186 C 84 208, 54 218, 22 218 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 22 218 Q 66 202 110 186" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 50 208 L 60 198 M 74 199 L 84 191 M 62 204 L 76 208" stroke-width="0.5" opacity="0.6"/>
         </svg>
       </div>
     </aside>
@@ -1039,25 +1128,25 @@
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-viewport">
       
-      <!-- TOP BAR -->
+      <!-- BARRA SUPERIOR DE TAREAS (70% OPACIDAD Y DESENFOQUE) -->
       <div class="top-header">
         <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
         <div class="project-selector-wrap" id="admin-project-selector" style="display:none;">
-          <label style="font-size:12px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
+          <label style="font-size:11.5px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
           <select id="active-project-dropdown" class="project-selector" onchange="changeActiveProject(this.value)">
           </select>
         </div>
 
         <div class="user-pill">
-          <button class="btn-action-primary" style="padding:6px 12px; font-size:11.5px;" onclick="printExecutiveReport()">🖨️ Exportar PDF</button>
+          <button class="btn-action-primary" style="padding:6px 11px; font-size:11.5px;" onclick="printExecutiveReport()">🖨️ Exportar PDF</button>
           <span class="user-meta-name" id="user-display-tag">USUARIO</span>
           <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Perfil">
           <button class="btn-logout" onclick="handleLogout()">Salir</button>
         </div>
       </div>
 
-      <!-- CABECERA EJECUTIVA CON 1 BARRA DE AVANCE Y CONTROL TOTAL -->
+      <!-- CABECERA EJECUTIVA -->
       <div class="dashboard-header-card">
         <div class="project-main-meta">
           <div>
@@ -1089,7 +1178,11 @@
       <!-- SECCIÓN 1: INFORMES DE OBRA -->
       <section class="module-section active-module" id="sec-feed">
         <div class="feed-controls">
-          <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar informe por título, fase o fecha..." oninput="filterReports()">
+          <div class="search-group">
+            <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar por título, categoría o fecha..." oninput="filterReports()">
+            <input type="date" id="feed-search-date" class="search-date-input" onchange="filterReports()" title="Filtrar por fecha exacta">
+            <button class="btn-clear-date" onclick="clearDateSearch()">Limpiar fecha</button>
+          </div>
           <button class="btn-action-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Nuevo Informe</button>
         </div>
 
@@ -1098,65 +1191,87 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 2: VAULT DE LA GALERÍA ORGANIZADO POR FECHAS -->
+      <!-- SECCIÓN 2: BAÚL DE GALERÍA ORGANIZADO POR FECHAS -->
       <section class="module-section" id="sec-gallery">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <div>
-            <h3 style="font-size:17px; font-weight:700;">Vault Fotográfico de Obra</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de subida. Pulsa cualquier imagen para abrir el visor con Zoom.</p>
-          </div>
+        <div style="margin-bottom:16px;">
+          <h3 style="font-size:17px; font-weight:700;">Baúl de Galería</h3>
+          <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de publicación. Pulsa cualquier fotografía para abrir el visor con zoom de alta velocidad.</p>
         </div>
-        <div id="gallery-vault-container">
-          <!-- Poblado dinámicamente agrupado por fechas -->
-        </div>
+        <div id="gallery-vault-container"></div>
       </section>
 
-      <!-- SECCIÓN 3: BITÁCORA DE DECISIONES (AUTOMÁTICA PARA INFORMES Y DOCUMENTOS) -->
+      <!-- SECCIÓN 3: BITÁCORA DE PUBLICACIONES -->
       <section class="module-section" id="sec-audit">
-        <div style="margin-bottom:18px;">
+        <div style="margin-bottom:16px;">
           <h3 style="font-size:17px; font-weight:700;">Bitácora de Publicaciones</h3>
           <p style="font-size:12.5px; color:var(--text-muted);">Registro cronológico automático de cada informe y documento oficial subido al proyecto.</p>
         </div>
-        <div class="audit-timeline" id="audit-list">
-        </div>
+        <div class="audit-timeline" id="audit-list"></div>
       </section>
 
-      <!-- SECCIÓN 4: CENTRO DOCUMENTAL CON SUBIDA DE ARCHIVOS PDF -->
+      <!-- SECCIÓN 4: CENTRO DOCUMENTAL CON VISTA PREVIA Y DESCARGA -->
       <section class="module-section" id="sec-docs">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div>
             <h3 style="font-size:17px; font-weight:700;">Centro Documental</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF.</p>
+            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF con vista previa y descarga directa.</p>
           </div>
-          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openDocModal()">+ Subir Archivo PDF</button>
+          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openCreateDocModal()">+ Subir Archivo PDF</button>
         </div>
-        <table class="docs-table">
-          <thead>
-            <tr>
-              <th>Documento</th>
-              <th>Categoría</th>
-              <th>Versión</th>
-              <th>Fecha</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody id="docs-table-body">
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Categoría</th>
+                <th>Versión</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="docs-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 5: GESTIÓN DE USUARIOS (SOLO PARA ADMIN) -->
+      <section class="module-section" id="sec-users">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="font-size:17px; font-weight:700;">Gestión de Usuarios y Accesos</h3>
+            <p style="font-size:12.5px; color:var(--text-muted);">Añade, modifica o elimina usuarios clientes, sus contraseñas y sus proyectos asignados.</p>
+          </div>
+          <button class="btn-action-primary" onclick="openUserModal()">+ Añadir Usuario</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Usuario (Login)</th>
+                <th>Contraseña</th>
+                <th>Cliente / Propietario</th>
+                <th>Proyecto Asignado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body"></tbody>
+          </table>
+        </div>
       </section>
 
     </main>
   </div>
 
-  <!-- VISOR LIGHTBOX MODAL CON ZOOM (+ / - / RUEDA / ARRASTRE) -->
+  <!-- VISOR LIGHTBOX OPTIMIZADO (SIN LAG) -->
   <div class="lightbox-overlay" id="lightbox-modal">
     <div class="lightbox-toolbar">
-      <div class="lightbox-caption" id="lightbox-caption">Evidencia de Obra</div>
+      <div class="lightbox-caption" id="lightbox-caption">Evidencia Fotográfica</div>
       <div class="lightbox-controls">
-        <button class="lightbox-btn" onclick="adjustZoom(-0.35)" title="Alejar">－</button>
+        <button class="lightbox-btn" onclick="adjustZoom(-0.4)" title="Alejar">－</button>
         <button class="lightbox-btn" onclick="resetZoom()" id="zoom-level-indicator" title="Restaurar">100%</button>
-        <button class="lightbox-btn" onclick="adjustZoom(0.35)" title="Acercar">＋</button>
-        <button class="lightbox-btn" style="background:rgba(185,92,80,0.85);" onclick="closeLightbox()">✕ Cerrar</button>
+        <button class="lightbox-btn" onclick="adjustZoom(0.4)" title="Acercar">＋</button>
+        <button class="lightbox-btn" style="background:var(--status-danger);" onclick="closeLightbox()">✕ Cerrar</button>
       </div>
     </div>
     <div class="lightbox-stage" id="lightbox-stage">
@@ -1164,7 +1279,18 @@
     </div>
   </div>
 
-  <!-- MODAL: MODIFICAR PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA (ADMIN) -->
+  <!-- VISOR MODAL DE VISTA PREVIA DE DOCUMENTOS PDF -->
+  <div class="modal-overlay" id="modal-pdf-preview">
+    <div class="modal-box" style="max-width: 900px; height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="pdf-preview-title">Vista Previa del Documento</h3>
+        <button class="modal-close" onclick="closePdfPreview()">✕</button>
+      </div>
+      <iframe id="pdf-preview-frame" style="width:100%; flex:1; border:1px solid #D5DFD2; border-radius:12px; background:#fff;"></iframe>
+    </div>
+  </div>
+
+  <!-- MODAL: MODIFICAR PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA -->
   <div class="modal-overlay" id="modal-edit-project">
     <div class="modal-box">
       <div class="modal-header">
@@ -1174,17 +1300,17 @@
 
       <div class="form-group">
         <label>Nombre del Proyecto / Obra</label>
-        <input type="text" id="edit-proj-name" class="form-input" placeholder="Ej: Residencia Mónaco — Villa 04">
+        <input type="text" id="edit-proj-name" class="form-input" placeholder="Ej.: Residencia Mónaco — Villa 04">
       </div>
 
       <div class="form-group">
         <label>Nombre del Cliente / Propietario</label>
-        <input type="text" id="edit-proj-client" class="form-input" placeholder="Ej: Familia Echeverría">
+        <input type="text" id="edit-proj-client" class="form-input" placeholder="Ej.: Familia Echeverría">
       </div>
 
       <div class="form-group">
         <label>Ubicación / Dirección</label>
-        <input type="text" id="edit-proj-address" class="form-input" placeholder="Ej: Costa del Este, Lote 12">
+        <input type="text" id="edit-proj-address" class="form-input" placeholder="Ej.: Costa del Este, Lote 12">
       </div>
 
       <div class="form-group">
@@ -1194,7 +1320,7 @@
 
       <div class="form-group">
         <label>Fase Actual</label>
-        <input type="text" id="edit-proj-phase" class="form-input" placeholder="Ej: Estructuras y Losas">
+        <input type="text" id="edit-proj-phase" class="form-input" placeholder="Ej.: Impermeabilización general">
       </div>
 
       <div class="form-group">
@@ -1218,79 +1344,134 @@
     </div>
   </div>
 
-  <!-- MODAL: REDACTAR INFORME (ADMIN) -->
+  <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA (CON CALENDARIO ÚNICO) -->
   <div class="modal-overlay" id="modal-report">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Publicar Informe de Obra</h3>
+        <h3 class="modal-title" id="modal-report-heading">Publicar Informe de Obra</h3>
         <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
       </div>
+      <input type="hidden" id="form-rep-editing-id" value="">
+
       <div class="form-group">
-        <label>Versión / Día (Ej: Día 24, Semana 5)</label>
-        <input type="text" id="form-rep-day" class="form-input" placeholder="Día 24" required>
+        <label>Fecha del Informe (El horario se asignará automáticamente con la hora actual)</label>
+        <input type="date" id="form-rep-date" class="form-input" required>
       </div>
+
       <div class="form-group">
         <label>Categoría Técnica</label>
-        <input type="text" id="form-rep-cat" class="form-input" placeholder="Estructuras, Cimentación, Acabados..." value="Estructuras">
+        <input type="text" id="form-rep-cat" class="form-input" placeholder="Ej.: Impermeabilización, Enchape, Estructuras..." required>
       </div>
+
       <div class="form-group">
         <label>Título del Informe</label>
-        <input type="text" id="form-rep-title" class="form-input" placeholder="Vaciado de columnas y fraguado nivel 2" required>
+        <input type="text" id="form-rep-title" class="form-input" placeholder="Ej.: Avances de enchape e impermeabilización de piscina" required>
       </div>
+
       <div class="form-group">
         <label>Descripción Técnica</label>
-        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Observaciones detalladas para el cliente..." required></textarea>
+        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Escribe las observaciones detalladas..." required></textarea>
       </div>
+
       <div class="form-group">
         <label>Fotografías de Obra (Arrastrar o pulsar)</label>
         <div class="dropzone" id="img-dropzone" onclick="document.getElementById('rep-files').click()">
-          <div style="font-size:13px; font-weight:600;">📷 Arrastra tus fotos aquí o haz clic para seleccionar</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Se agruparán por fecha en el Vault automáticamente</div>
+          <div style="font-size:13px; font-weight:600;">📷 Arrastra tus fotografías aquí o haz clic para seleccionar</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Se organizarán por fecha en el Baúl de Galería</div>
         </div>
         <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
         <div class="preview-container" id="rep-img-previews"></div>
       </div>
+
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
         <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-report')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-submit-rep" onclick="submitDailyReport()">Publicar Informe</button>
+        <button class="btn-action-primary" id="btn-submit-rep" onclick="submitDailyReport()">Guardar Informe</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: SUBIR ARCHIVO PDF DIRECTO (ADMIN) -->
+  <!-- MODAL: SUBIR O EDITAR DOCUMENTO PDF -->
   <div class="modal-overlay" id="modal-doc">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Subir Archivo PDF Oficial</h3>
+        <h3 class="modal-title" id="modal-doc-heading">Subir Archivo PDF Oficial</h3>
         <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
       </div>
+      <input type="hidden" id="form-doc-editing-id" value="">
+
       <div class="form-group">
         <label>Título del Documento</label>
-        <input type="text" id="form-doc-title" class="form-input" placeholder="Plano Estructural Nivel 2" required>
+        <input type="text" id="form-doc-title" class="form-input" placeholder="Ej.: Cronograma General de Obra" required>
       </div>
+
       <div class="form-group">
         <label>Categoría</label>
         <select id="form-doc-cat" class="form-select">
-          <option value="plano">Plano Técnico</option>
-          <option value="licencia">Licencia de Construcción</option>
-          <option value="minuta">Acta / Minuta de Obra</option>
+          <option value="Plano">Plano Técnico</option>
+          <option value="Licencia">Licencia de Construcción</option>
+          <option value="Acta">Acta / Minuta de Obra</option>
+          <option value="Presupuesto">Presupuesto / Cronograma</option>
         </select>
       </div>
+
       <div class="form-group">
         <label>Versión</label>
         <input type="text" id="form-doc-ver" class="form-input" placeholder="v1.0" value="v1.0">
       </div>
+
       <div class="form-group">
-        <label>Archivo PDF (Arrastrar o seleccionar desde tu equipo)</label>
+        <label>Archivo PDF (Arrastrar o seleccionar desde tu dispositivo)</label>
         <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('doc-file-input').click()">
           <div style="font-size:13px; font-weight:600;" id="pdf-dropzone-label">📄 Arrastra tu archivo .PDF aquí o haz clic para subir</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Subida directa sin enlaces externos</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Soporta vista previa integrada y descarga directa</div>
         </div>
         <input type="file" id="doc-file-input" accept="application/pdf,.pdf" style="display:none;" onchange="handlePdfFileSelect(this.files)">
       </div>
+
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
         <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-doc')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-submit-doc" onclick="submitDocument()">Subir PDF</button>
+        <button class="btn-action-primary" id="btn-submit-doc" onclick="submitDocument()">Guardar Documento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR O EDITAR USUARIO / CLIENTE (SOLO ADMIN) -->
+  <div class="modal-overlay" id="modal-user">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-user-heading">Añadir Nuevo Usuario</h3>
+        <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+      </div>
+      <input type="hidden" id="form-user-editing-id" value="">
+
+      <div class="form-group">
+        <label>Usuario de Inicio de Sesión (Sin espacios, ej.: Cliente1, Cliente5)</label>
+        <input type="text" id="form-user-code" class="form-input" placeholder="Ej.: Cliente5" required>
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña de Acceso</label>
+        <input type="text" id="form-user-pass" class="form-input" placeholder="Ej.: 1234" value="1234" required>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre del Cliente / Propietario</label>
+        <input type="text" id="form-user-client" class="form-input" placeholder="Ej.: Familia Bustillo" required>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre del Proyecto / Obra Asignada</label>
+        <input type="text" id="form-user-project" class="form-input" placeholder="Ej.: Proyecto Residencial Bocagrande" required>
+      </div>
+
+      <div class="form-group">
+        <label>Ubicación / Dirección</label>
+        <input type="text" id="form-user-address" class="form-input" placeholder="Ej.: Cartagena de Indias">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-user')">Cancelar</button>
+        <button class="btn-action-primary" id="btn-submit-user" onclick="saveUserAccount()">Guardar Usuario</button>
       </div>
     </div>
   </div>
@@ -1300,7 +1481,7 @@
     <div style="border-bottom:2px solid #333; padding-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <h1 style="font-size:24px; margin:0;">DIEGO — REPORTE EJECUTIVO DE OBRA</h1>
-        <p style="font-size:12px; color:#555; margin:4px 0 0;">Seguimiento Técnico y Control de Avance</p>
+        <p style="font-size:12px; color:#555; margin:4px 0 0;">B+ Arquitectura Estudio (Gina Bustillo) • Dynatic (Sixto Fernández)</p>
       </div>
       <div style="text-align:right;">
         <p style="font-size:12px; margin:0;" id="print-date"></p>
@@ -1340,17 +1521,41 @@
     let allProjects = [];
     let currentProject = null;
     let currentReports = [];
+    let currentDocs = [];
     let uploadedImagesBase64 = [];
     let selectedPdfDataUrl = null;
-    let selectedPdfName = "";
+    let currentPdfBlobUrl = null;
 
-    // Variables del Visor con Zoom
+    // Variables del Visor de Imágenes acelerado por GPU
     let currentZoom = 1;
     let panX = 0;
     let panY = 0;
     let isDraggingImg = false;
     let startDragX = 0;
     let startDragY = 0;
+    let rafPending = false;
+
+    // Corrección ortográfica automática de términos frecuentes en obra
+    function formatOrthography(text) {
+      if (!text) return '';
+      let clean = text.trim();
+      const replacements = {
+        '\\bimpermeabilizacion\\b': 'Impermeabilización',
+        '\\bemchape\\b': 'Enchape',
+        '\\bcimentacion\\b': 'Cimentación',
+        '\\bmamposteria\\b': 'Mampostería',
+        '\\binstalacion\\b': 'Instalación',
+        '\\bremodelacion\\b': 'Remodelación',
+        '\\bconstruccion\\b': 'Construcción',
+        '\\bhidraulica\\b': 'Hidráulica',
+        '\\belectrica\\b': 'Eléctrica',
+        '\\bdia\\b': 'Día'
+      };
+      for (const [pattern, replacement] of Object.entries(replacements)) {
+        clean = clean.replace(new RegExp(pattern, 'gi'), replacement);
+      }
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('diego_saved_username');
@@ -1360,9 +1565,8 @@
       initDragAndDropZones();
     });
 
-    function initSession() {
-      const validUsers = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
-      if (!activeUser || !validUsers.includes(activeUser)) {
+    async function initSession() {
+      if (!activeUser) {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
         return;
@@ -1372,22 +1576,37 @@
       document.getElementById('app-screen').style.display = 'flex';
       document.getElementById('user-display-tag').innerText = activeUser.toUpperCase();
 
-      loadProjects();
+      await loadProjects();
+      setupRealtimeSubscriptions();
     }
 
-    function handleLogin() {
+    // LOGIN DINÁMICO CONTRA SUPABASE (ADMIN + USUARIOS CREADOS)
+    async function handleLogin() {
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
 
-      const validUsers = ["Admin", "Cliente1", "Cliente2", "Cliente3", "Cliente4"];
-      if (!validUsers.includes(user) || pass !== "1234") {
-        alert("Usuario o contraseña incorrectos. Recuerda escribir la inicial en mayúscula y sin espacios (Admin, Cliente1..4).");
+      const adminPass = localStorage.getItem('diego_admin_pass') || '1234';
+      if (user === 'Admin' && pass === adminPass) {
+        activeUser = 'Admin';
+        localStorage.setItem('diego_active_user', 'Admin');
+        localStorage.setItem('diego_saved_username', 'Admin');
+        document.getElementById('login-pass').value = '';
+        initSession();
         return;
       }
 
-      activeUser = user;
-      localStorage.setItem('diego_active_user', user);
-      localStorage.setItem('diego_saved_username', user);
+      const { data: projects } = await supabaseClient.from('projects').select('*');
+      const matchedAccount = (projects || []).find(p => p.code.toLowerCase() === user.toLowerCase());
+      const expectedPass = matchedAccount ? (matchedAccount.password || '1234') : null;
+
+      if (!matchedAccount || pass !== expectedPass) {
+        alert("Usuario o contraseña incorrectos. Verifica tus datos de acceso.");
+        return;
+      }
+
+      activeUser = matchedAccount.code;
+      localStorage.setItem('diego_active_user', activeUser);
+      localStorage.setItem('diego_saved_username', activeUser);
       document.getElementById('login-pass').value = '';
       initSession();
     }
@@ -1401,13 +1620,10 @@
       }
     }
 
-    // CARGA DE PROYECTOS Y CONTROL DE PERMISOS
+    // CARGAR PROYECTOS Y ROLES
     async function loadProjects() {
       const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
-      if (error) {
-        console.error("Error al cargar proyectos:", error);
-        return;
-      }
+      if (error) return;
 
       allProjects = data || [];
       const prevSelectedId = currentProject ? currentProject.id : null;
@@ -1417,24 +1633,26 @@
         document.getElementById('btn-create-report').style.display = 'inline-flex';
         document.getElementById('btn-add-doc').style.display = 'inline-flex';
         document.getElementById('btn-edit-project').style.display = 'inline-flex';
+        document.getElementById('nav-item-users').style.display = 'flex';
 
         const dropdown = document.getElementById('active-project-dropdown');
         dropdown.innerHTML = allProjects.map(p => `<option value="${p.id}">${p.name} (${p.code} — ${p.client_name})</option>`).join('');
 
         currentProject = allProjects.find(p => p.id === prevSelectedId) || allProjects[0] || null;
         if (currentProject) dropdown.value = currentProject.id;
+        renderUsersTable();
       } else {
         document.getElementById('admin-project-selector').style.display = 'none';
         document.getElementById('btn-create-report').style.display = 'none';
         document.getElementById('btn-add-doc').style.display = 'none';
         document.getElementById('btn-edit-project').style.display = 'none';
+        document.getElementById('nav-item-users').style.display = 'none';
 
         currentProject = allProjects.find(p => p.code.toLowerCase() === activeUser.toLowerCase()) || null;
       }
 
       renderHeaderDashboard();
-      loadActiveProjectData();
-      setupRealtimeSubscriptions();
+      await loadActiveProjectData();
     }
 
     function changeActiveProject(projectId) {
@@ -1443,7 +1661,6 @@
       loadActiveProjectData();
     }
 
-    // CABECERA EJECUTIVA (1 SOLA BARRA + FINAL DE OBRA)
     function renderHeaderDashboard() {
       if (!currentProject) return;
 
@@ -1458,13 +1675,662 @@
       document.getElementById('label-actual').innerText = `${actual.toFixed(1)}%`;
       document.getElementById('bar-actual').style.width = `${Math.min(actual, 100)}%`;
 
-      document.getElementById('dash-phase').innerText = currentProject.current_phase || 'En Ejecución';
+      document.getElementById('dash-phase').innerText = formatOrthography(currentProject.current_phase || 'En ejecución');
       document.getElementById('dash-milestone-date').innerText = currentProject.next_milestone_date 
         ? new Date(currentProject.next_milestone_date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : 'Por definir';
     }
 
-    // MODAL PARA MODIFICAR NOMBRES DE PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA
+    // CARGA EN PARALELO (PROMISE.ALL) PARA VELOCIDAD INSTANTÁNEA
+    async function loadActiveProjectData() {
+      if (!currentProject) return;
+
+      const [reportsRes, auditsRes, docsRes] = await Promise.all([
+        supabaseClient
+          .from('daily_reports')
+          .select(`*, report_images(*)`)
+          .eq('project_id', currentProject.id)
+          .order('report_date', { ascending: false })
+          .order('created_at', { ascending: false }),
+        supabaseClient
+          .from('project_audit_logs')
+          .select('*')
+          .eq('project_id', currentProject.id)
+          .in('action_type', ['nuevo_informe', 'nuevo_documento'])
+          .order('log_date', { ascending: false }),
+        supabaseClient
+          .from('project_documents')
+          .select('*')
+          .eq('project_id', currentProject.id)
+          .order('uploaded_at', { ascending: false })
+      ]);
+
+      currentReports = reportsRes.data || [];
+      currentDocs = docsRes.data || [];
+
+      filterReports();
+      renderGalleryVaultByDate(currentReports);
+      renderAudit(auditsRes.data || []);
+      renderDocuments(currentDocs);
+    }
+
+    // RENDERIZAR INFORMES (CON FECHA ÚNICA + HORARIO ACTUAL Y EDICIÓN)
+    function renderReports(items) {
+      const feed = document.getElementById('feed-timeline');
+      if (!items || items.length === 0) {
+        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No se encontraron informes para los criterios seleccionados.</div>`;
+        return;
+      }
+
+      feed.innerHTML = items.map(rep => {
+        const dateObj = rep.report_date
+          ? new Date(rep.report_date + 'T12:00:00')
+          : new Date(rep.created_at);
+        const fechaFormateada = dateObj.toLocaleDateString('es-ES', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        });
+
+        // Si day_label guarda la hora (ej. "09:30 p. m."), se muestra junto a la fecha única
+        const tieneHora = rep.day_label && (rep.day_label.includes(':') || rep.day_label.includes('m'));
+        const horaCreacion = tieneHora
+          ? rep.day_label
+          : new Date(rep.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        const fechaUnicaLabel = `📅 ${fechaFormateada} • ${horaCreacion}`;
+        const categoriaLimpia = formatOrthography(rep.category || 'General');
+        const tituloLimpio = formatOrthography(rep.title || '');
+        const descLimpia = formatOrthography(rep.description || '');
+
+        const yaVisto = Boolean(rep.client_seen_at);
+        const vistoTexto = yaVisto
+          ? `✔ Visto confirmado el ${new Date(rep.client_seen_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`
+          : 'Pendiente de confirmación de lectura';
+
+        // El cliente no puede desmarcar "Visto" una vez activado; solo el Admin puede alternarlo
+        const disableSeenBtn = (activeUser !== 'Admin' && yaVisto) ? 'disabled title="Confirmación registrada. Solo el administrador puede modificar este estado."' : '';
+
+        const adminActions = activeUser === 'Admin'
+          ? `<div style="display:flex; gap:6px;">
+              <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openEditReportModal('${rep.id}')">✎ Editar</button>
+              <button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${rep.id}')">🗑️ Eliminar</button>
+             </div>`
+          : '';
+
+        const safeCaption = `${tituloLimpio.replace(/'/g, "")} (${fechaFormateada})`;
+        const fotosHtml = (rep.report_images && rep.report_images.length > 0)
+          ? `<div class="photo-grid">
+              ${rep.report_images.map(img => `
+                <img src="${img.image_url}" loading="lazy" decoding="async" class="photo-thumb" alt="Evidencia" onclick="openLightbox('${img.image_url}', '${safeCaption}')">
+              `).join('')}
+             </div>`
+          : '';
+
+        const comments = Array.isArray(rep.comments) ? rep.comments : [];
+        const commentsHtml = comments.map(c => `
+          <div style="font-size:12.5px; margin-top:5px; background:#fff; padding:6px 10px; border-radius:8px;">
+            <strong>${c.author}:</strong> ${formatOrthography(c.text)}
+            <span style="float:right; font-size:10.5px; color:#777;">${c.date || ''}</span>
+          </div>
+        `).join('');
+
+        return `
+          <div class="report-card">
+            <div class="card-top">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="card-date">${fechaUnicaLabel}</span>
+                <span class="tag-category">${categoriaLimpia}</span>
+              </div>
+              ${adminActions}
+            </div>
+
+            <div class="report-title">${tituloLimpio}</div>
+            <div class="report-desc">${descLimpia}</div>
+            ${fotosHtml}
+
+            <div class="interaction-bar">
+              <button class="btn-seen ${yaVisto ? 'active' : ''}" ${disableSeenBtn} onclick="toggleSeenStatus('${rep.id}')">
+                ${yaVisto ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
+              </button>
+              <span style="font-size:11.5px; color:var(--text-body); font-weight:500;">${vistoTexto}</span>
+            </div>
+
+            <div style="margin-top:12px; background:rgba(255,255,255,0.65); padding:10px 12px; border-radius:12px;">
+              <div style="font-size:12px; font-weight:700; color:var(--text-body);">💬 Comentarios (${comments.length}):</div>
+              ${commentsHtml || '<div style="font-size:11.5px; color:#777; margin-top:3px;">Sin comentarios todavía.</div>'}
+              <div style="display:flex; gap:6px; margin-top:8px;">
+                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
+                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // BUSCADOR POR TEXTO Y POR FECHA DE CALENDARIO
+    function filterReports() {
+      const q = (document.getElementById('feed-search')?.value || '').toLowerCase().trim();
+      const filterDate = document.getElementById('feed-search-date')?.value || '';
+
+      const filtered = currentReports.filter(r => {
+        const repDateIso = r.report_date || (r.created_at ? r.created_at.split('T')[0] : '');
+        const repDateFormatted = repDateIso
+          ? new Date(repDateIso + 'T12:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).toLowerCase()
+          : '';
+
+        const matchesDatePicker = !filterDate || repDateIso === filterDate;
+        const matchesText = !q ||
+          (r.title || '').toLowerCase().includes(q) ||
+          (r.description || '').toLowerCase().includes(q) ||
+          (r.category || '').toLowerCase().includes(q) ||
+          repDateIso.includes(q) ||
+          repDateFormatted.includes(q);
+
+        return matchesDatePicker && matchesText;
+      });
+
+      renderReports(filtered);
+    }
+
+    function clearDateSearch() {
+      document.getElementById('feed-search-date').value = '';
+      document.getElementById('feed-search').value = '';
+      filterReports();
+    }
+
+    // BLOQUEO DE "MARCAR COMO VISTO" PARA CLIENTES (SOLO ADMIN PUEDE DESMARCAR)
+    async function toggleSeenStatus(reportId) {
+      const report = currentReports.find(r => r.id === reportId);
+      if (!report) return;
+
+      if (report.client_seen_at && activeUser !== 'Admin') {
+        return;
+      }
+
+      const nuevoEstado = report.client_seen_at ? null : new Date().toISOString();
+      await supabaseClient.from('daily_reports').update({ client_seen_at: nuevoEstado }).eq('id', reportId);
+      loadActiveProjectData();
+    }
+
+    async function addComment(reportId) {
+      const input = document.getElementById(`comm-input-${reportId}`);
+      const val = input.value.trim();
+      if (!val) return;
+
+      const report = currentReports.find(r => r.id === reportId);
+      const comments = Array.isArray(report.comments) ? [...report.comments] : [];
+      comments.push({
+        author: activeUser,
+        text: formatOrthography(val),
+        date: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      });
+
+      await supabaseClient.from('daily_reports').update({ comments }).eq('id', reportId);
+      input.value = '';
+      loadActiveProjectData();
+    }
+
+    // CREAR Y EDITAR INFORMES (CON FECHA DE CALENDARIO + HORA AUTOMÁTICA)
+    function openCreateReportModal() {
+      document.getElementById('modal-report-heading').innerText = 'Publicar Informe de Obra';
+      document.getElementById('form-rep-editing-id').value = '';
+      document.getElementById('form-rep-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('form-rep-cat').value = '';
+      document.getElementById('form-rep-title').value = '';
+      document.getElementById('form-rep-desc').value = '';
+      uploadedImagesBase64 = [];
+      renderPreviews();
+      document.getElementById('modal-report').classList.add('open');
+    }
+
+    function openEditReportModal(reportId) {
+      if (activeUser !== 'Admin') return;
+      const rep = currentReports.find(r => r.id === reportId);
+      if (!rep) return;
+
+      document.getElementById('modal-report-heading').innerText = 'Editar Informe de Obra';
+      document.getElementById('form-rep-editing-id').value = rep.id;
+      document.getElementById('form-rep-date').value = rep.report_date || new Date(rep.created_at).toISOString().split('T')[0];
+      document.getElementById('form-rep-cat').value = rep.category || '';
+      document.getElementById('form-rep-title').value = rep.title || '';
+      document.getElementById('form-rep-desc').value = rep.description || '';
+      uploadedImagesBase64 = (rep.report_images || []).map(img => img.image_url);
+      renderPreviews();
+      document.getElementById('modal-report').classList.add('open');
+    }
+
+    async function submitDailyReport() {
+      if (!currentProject || activeUser !== 'Admin') return;
+
+      const editingId = document.getElementById('form-rep-editing-id').value;
+      const report_date = document.getElementById('form-rep-date').value || new Date().toISOString().split('T')[0];
+      const category = formatOrthography(document.getElementById('form-rep-cat').value.trim() || 'General');
+      const title = formatOrthography(document.getElementById('form-rep-title').value.trim());
+      const description = formatOrthography(document.getElementById('form-rep-desc').value.trim());
+      const currentTimeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+      if (!title || !description) {
+        alert("Completa el título y la descripción del informe.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-rep');
+      btn.innerText = "Guardando...";
+      btn.disabled = true;
+
+      if (editingId) {
+        // Actualizar informe existente
+        const { error } = await supabaseClient
+          .from('daily_reports')
+          .update({ report_date, category, title, description })
+          .eq('id', editingId);
+
+        if (!error) {
+          await supabaseClient.from('report_images').delete().eq('report_id', editingId);
+          if (uploadedImagesBase64.length > 0) {
+            const imgs = uploadedImagesBase64.map(uri => ({
+              report_id: editingId,
+              image_url: uri,
+              zone: category
+            }));
+            await supabaseClient.from('report_images').insert(imgs);
+          }
+        }
+      } else {
+        // Crear nuevo informe con fecha del calendario y horario actual
+        const { data: rep, error } = await supabaseClient.from('daily_reports').insert([{
+          project_id: currentProject.id,
+          day_label: currentTimeStr,
+          category,
+          title,
+          description,
+          report_date
+        }]).select().single();
+
+        if (!error && rep) {
+          if (uploadedImagesBase64.length > 0) {
+            const imgs = uploadedImagesBase64.map(uri => ({
+              report_id: rep.id,
+              image_url: uri,
+              zone: category
+            }));
+            await supabaseClient.from('report_images').insert(imgs);
+          }
+
+          await supabaseClient.from('project_audit_logs').insert([{
+            project_id: currentProject.id,
+            author_name: activeUser,
+            action_type: 'nuevo_informe',
+            description: `Se publicó el informe "${title}" (${category} — ${report_date}).`
+          }]);
+        }
+      }
+
+      btn.innerText = "Guardar Informe";
+      btn.disabled = false;
+      closeModal('modal-report');
+      uploadedImagesBase64 = [];
+      renderPreviews();
+      loadActiveProjectData();
+    }
+
+    async function deleteReport(reportId) {
+      if (activeUser !== 'Admin') return;
+      if (!confirm("¿Deseas eliminar este informe y sus fotografías asociadas?")) return;
+      await supabaseClient.from('daily_reports').delete().eq('id', reportId);
+      loadActiveProjectData();
+    }
+
+    // BAÚL DE GALERÍA ORGANIZADO POR FECHA SELECCIONADA
+    function renderGalleryVaultByDate(reports) {
+      const container = document.getElementById('gallery-vault-container');
+      const groupsByDate = {};
+
+      reports.forEach(rep => {
+        if (!rep.report_images || rep.report_images.length === 0) return;
+
+        const dateKey = rep.report_date || new Date(rep.created_at).toISOString().split('T')[0];
+        const dateObj = new Date(dateKey + 'T12:00:00');
+        const formattedDate = dateObj.toLocaleDateString('es-ES', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        if (!groupsByDate[dateKey]) {
+          groupsByDate[dateKey] = {
+            label: formatOrthography(formattedDate),
+            images: []
+          };
+        }
+
+        rep.report_images.forEach(img => {
+          groupsByDate[dateKey].images.push({
+            url: img.image_url,
+            title: formatOrthography(rep.title),
+            category: formatOrthography(rep.category || 'General'),
+            dateLabel: formatOrthography(formattedDate)
+          });
+        });
+      });
+
+      const sortedKeys = Object.keys(groupsByDate).sort((a, b) => b.localeCompare(a));
+
+      if (sortedKeys.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:36px; color:var(--text-muted); background:var(--msg-inner-cream); border-radius:16px;">No hay fotografías registradas en el Baúl de Galería todavía.</div>`;
+        return;
+      }
+
+      container.innerHTML = sortedKeys.map(key => {
+        const group = groupsByDate[key];
+        return `
+          <div class="vault-date-group">
+            <div class="vault-date-header">
+              <div class="vault-date-title">📅 ${group.label}</div>
+              <span class="vault-date-count">${group.images.length} ${group.images.length === 1 ? 'fotografía' : 'fotografías'}</span>
+            </div>
+            <div class="photo-grid" style="margin-bottom:0;">
+              ${group.images.map(item => `
+                <div style="position:relative;">
+                  <img src="${item.url}" loading="lazy" decoding="async" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.category} — ${group.label}')">
+                  <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.82); color:#fff; font-size:10px; padding:3px 8px; border-radius:6px; pointer-events:none;">${item.category}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // BITÁCORA DE PUBLICACIONES
+    function renderAudit(entries) {
+      const list = document.getElementById('audit-list');
+      if (!entries || entries.length === 0) {
+        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted); background:var(--msg-inner-cream); padding:24px; border-radius:14px; text-align:center;">La bitácora registrará automáticamente cada vez que se publique un informe o documento PDF.</div>`;
+        return;
+      }
+
+      list.innerHTML = entries.map(ent => {
+        const badgeText = ent.action_type === 'nuevo_informe' ? '📋 INFORME PUBLICADO' : '📄 DOCUMENTO PUBLICADO';
+        return `
+          <div class="audit-entry">
+            <div class="audit-meta">
+              <span><strong>${badgeText}</strong> • Por ${ent.author_name}</span>
+              <span>${new Date(ent.log_date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+            </div>
+            <div class="audit-title">${formatOrthography(ent.description)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // CENTRO DOCUMENTAL CON VISTA PREVIA, EDICIÓN Y DESCARGA
+    function renderDocuments(docs) {
+      const tbody = document.getElementById('docs-table-body');
+      if (!docs || docs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:24px;">No hay archivos PDF cargados en este proyecto.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = docs.map((d, idx) => {
+        const cleanFileName = (d.title || `documento_${idx + 1}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.pdf';
+        const adminBtns = activeUser === 'Admin'
+          ? `<button class="btn-edit-project" style="display:inline-flex; padding:5px 9px; font-size:11px; margin-left:4px;" onclick="openEditDocModal('${d.id}')">✎ Editar</button>
+             <button class="btn-logout" style="padding:5px 9px; font-size:11px; margin-left:4px;" onclick="deleteDocument('${d.id}')">🗑️</button>`
+          : '';
+
+        return `
+          <tr>
+            <td><strong>📄 ${formatOrthography(d.title)}</strong></td>
+            <td><span class="tag-category">${(d.category || 'Plano').toUpperCase()}</span></td>
+            <td>${d.version}</td>
+            <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; background:#3A5A40; margin-right:4px;" onclick="previewPdfDocument('${d.id}')">👁️ Vista Previa</button>
+              <a href="${d.file_url}" download="${cleanFileName}" class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; text-decoration:none;">⬇ Descargar</a>
+              ${adminBtns}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // CONVERTIR BASE64 A BLOB URL PARA VISTA PREVIA RÁPIDA DE PDF
+    function previewPdfDocument(docId) {
+      const doc = currentDocs.find(d => d.id === docId);
+      if (!doc || !doc.file_url) return;
+
+      document.getElementById('pdf-preview-title').innerText = `Vista Previa — ${formatOrthography(doc.title)}`;
+      const frame = document.getElementById('pdf-preview-frame');
+
+      if (currentPdfBlobUrl) {
+        URL.revokeObjectURL(currentPdfBlobUrl);
+        currentPdfBlobUrl = null;
+      }
+
+      if (doc.file_url.startsWith('data:application/pdf;base64,')) {
+        const base64Part = doc.file_url.split(',')[1];
+        const binaryStr = atob(base64Part);
+        const len = binaryStr.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryStr.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'application/pdf' });
+        currentPdfBlobUrl = URL.createObjectURL(blob);
+        frame.src = currentPdfBlobUrl;
+      } else {
+        frame.src = doc.file_url;
+      }
+
+      document.getElementById('modal-pdf-preview').classList.add('open');
+    }
+
+    function closePdfPreview() {
+      document.getElementById('modal-pdf-preview').classList.remove('open');
+      document.getElementById('pdf-preview-frame').src = '';
+    }
+
+    function openCreateDocModal() {
+      document.getElementById('modal-doc-heading').innerText = 'Subir Archivo PDF Oficial';
+      document.getElementById('form-doc-editing-id').value = '';
+      document.getElementById('form-doc-title').value = '';
+      document.getElementById('form-doc-cat').value = 'Plano';
+      document.getElementById('form-doc-ver').value = 'v1.0';
+      selectedPdfDataUrl = null;
+      document.getElementById('pdf-dropzone-label').innerText = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
+      document.getElementById('modal-doc').classList.add('open');
+    }
+
+    function openEditDocModal(docId) {
+      if (activeUser !== 'Admin') return;
+      const doc = currentDocs.find(d => d.id === docId);
+      if (!doc) return;
+
+      document.getElementById('modal-doc-heading').innerText = 'Editar Documento PDF';
+      document.getElementById('form-doc-editing-id').value = doc.id;
+      document.getElementById('form-doc-title').value = doc.title || '';
+      document.getElementById('form-doc-cat').value = doc.category || 'Plano';
+      document.getElementById('form-doc-ver').value = doc.version || 'v1.0';
+      selectedPdfDataUrl = doc.file_url;
+      document.getElementById('pdf-dropzone-label').innerText = '✔ Archivo PDF actual conservado (o selecciona otro para reemplazarlo)';
+      document.getElementById('modal-doc').classList.add('open');
+    }
+
+    async function submitDocument() {
+      if (!currentProject || activeUser !== 'Admin') return;
+      const editingId = document.getElementById('form-doc-editing-id').value;
+      const title = formatOrthography(document.getElementById('form-doc-title').value.trim());
+      const category = document.getElementById('form-doc-cat').value;
+      const version = document.getElementById('form-doc-ver').value.trim() || 'v1.0';
+
+      if (!title || !selectedPdfDataUrl) {
+        alert("Escribe el título y selecciona un archivo PDF.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-doc');
+      btn.innerText = "Guardando...";
+      btn.disabled = true;
+
+      if (editingId) {
+        await supabaseClient
+          .from('project_documents')
+          .update({ title, category, version, file_url: selectedPdfDataUrl })
+          .eq('id', editingId);
+      } else {
+        const { error } = await supabaseClient.from('project_documents').insert([{
+          project_id: currentProject.id,
+          title,
+          category,
+          version,
+          file_url: selectedPdfDataUrl
+        }]);
+
+        if (!error) {
+          await supabaseClient.from('project_audit_logs').insert([{
+            project_id: currentProject.id,
+            author_name: activeUser,
+            action_type: 'nuevo_documento',
+            description: `Se publicó el documento PDF "${title}" (${category.toUpperCase()} — ${version}).`
+          }]);
+        }
+      }
+
+      btn.innerText = "Guardar Documento";
+      btn.disabled = false;
+      closeModal('modal-doc');
+      loadActiveProjectData();
+    }
+
+    async function deleteDocument(docId) {
+      if (activeUser !== 'Admin') return;
+      if (!confirm("¿Deseas eliminar este documento PDF?")) return;
+      await supabaseClient.from('project_documents').delete().eq('id', docId);
+      loadActiveProjectData();
+    }
+
+    // GESTIÓN DE USUARIOS (AÑADIR, MODIFICAR Y ELIMINAR TANTAS VECES COMO QUIERA EL ADMIN)
+    function renderUsersTable() {
+      const tbody = document.getElementById('users-table-body');
+      if (!tbody) return;
+
+      const adminPass = localStorage.getItem('diego_admin_pass') || '1234';
+      const adminRow = `
+        <tr style="background:#F5F8F3;">
+          <td><strong>🔑 Admin</strong></td>
+          <td><code>${adminPass}</code></td>
+          <td>Administrador General</td>
+          <td>Todos los proyectos</td>
+          <td>
+            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="changeAdminPassword()">✎ Cambiar Contraseña</button>
+          </td>
+        </tr>
+      `;
+
+      const clientRows = allProjects.map(p => `
+        <tr>
+          <td><strong>👤 ${p.code}</strong></td>
+          <td><code>${p.password || '1234'}</code></td>
+          <td>${p.client_name}</td>
+          <td>${p.name}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openUserModal('${p.id}')">✎ Editar</button>
+            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${p.id}', '${p.code}')">🗑️ Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.innerHTML = adminRow + clientRows;
+    }
+
+    function changeAdminPassword() {
+      const current = localStorage.getItem('diego_admin_pass') || '1234';
+      const nueva = prompt("Ingresa la nueva contraseña para la cuenta Admin:", current);
+      if (nueva && nueva.trim()) {
+        localStorage.setItem('diego_admin_pass', nueva.trim());
+        renderUsersTable();
+      }
+    }
+
+    function openUserModal(projectId = null) {
+      if (activeUser !== 'Admin') return;
+      if (projectId) {
+        const proj = allProjects.find(p => p.id === projectId);
+        if (!proj) return;
+        document.getElementById('modal-user-heading').innerText = 'Modificar Usuario y Proyecto';
+        document.getElementById('form-user-editing-id').value = proj.id;
+        document.getElementById('form-user-code').value = proj.code || '';
+        document.getElementById('form-user-pass').value = proj.password || '1234';
+        document.getElementById('form-user-client').value = proj.client_name || '';
+        document.getElementById('form-user-project').value = proj.name || '';
+        document.getElementById('form-user-address').value = proj.address || '';
+      } else {
+        document.getElementById('modal-user-heading').innerText = 'Añadir Nuevo Usuario';
+        document.getElementById('form-user-editing-id').value = '';
+        document.getElementById('form-user-code').value = `Cliente${allProjects.length + 1}`;
+        document.getElementById('form-user-pass').value = '1234';
+        document.getElementById('form-user-client').value = '';
+        document.getElementById('form-user-project').value = '';
+        document.getElementById('form-user-address').value = '';
+      }
+      document.getElementById('modal-user').classList.add('open');
+    }
+
+    async function saveUserAccount() {
+      if (activeUser !== 'Admin') return;
+      const editingId = document.getElementById('form-user-editing-id').value;
+      const code = document.getElementById('form-user-code').value.trim().replace(/\s+/g, '');
+      const password = document.getElementById('form-user-pass').value.trim() || '1234';
+      const client_name = formatOrthography(document.getElementById('form-user-client').value.trim());
+      const name = formatOrthography(document.getElementById('form-user-project').value.trim());
+      const address = formatOrthography(document.getElementById('form-user-address').value.trim());
+
+      if (!code || !client_name || !name) {
+        alert("Completa el usuario, el nombre del cliente y el nombre del proyecto.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-user');
+      btn.innerText = "Guardando...";
+      btn.disabled = true;
+
+      const payload = { code, password, client_name, name, address };
+
+      let errorObj = null;
+      if (editingId) {
+        const { error } = await supabaseClient.from('projects').update(payload).eq('id', editingId);
+        errorObj = error;
+      } else {
+        const { error } = await supabaseClient.from('projects').insert([{
+          ...payload,
+          client_email: `${code.toLowerCase()}@obra.com`,
+          actual_progress: 0,
+          status: 'en_tiempo',
+          current_phase: 'Inicio de Obra'
+        }]);
+        errorObj = error;
+      }
+
+      btn.innerText = "Guardar Usuario";
+      btn.disabled = false;
+
+      if (errorObj) {
+        alert("Aviso al guardar usuario: " + errorObj.message + "\n(Asegúrate de haber ejecutado el comando ALTER TABLE projects ADD COLUMN IF NOT EXISTS password en Supabase).");
+        return;
+      }
+
+      closeModal('modal-user');
+      await loadProjects();
+    }
+
+    async function deleteUserAccount(projectId, code) {
+      if (activeUser !== 'Admin') return;
+      if (!confirm(`¿Deseas eliminar al usuario "${code}" y todos los informes de su proyecto?`)) return;
+      await supabaseClient.from('projects').delete().eq('id', projectId);
+      if (currentProject && currentProject.id === projectId) currentProject = null;
+      await loadProjects();
+    }
+
+    // MODIFICAR OBRA Y AVANCE DESDE CABECERA
     function openEditProjectModal() {
       if (!currentProject || activeUser !== 'Admin') return;
 
@@ -1486,11 +2352,11 @@
     async function saveProjectChanges() {
       if (!currentProject || activeUser !== 'Admin') return;
 
-      const name = document.getElementById('edit-proj-name').value.trim();
-      const client_name = document.getElementById('edit-proj-client').value.trim();
-      const address = document.getElementById('edit-proj-address').value.trim();
+      const name = formatOrthography(document.getElementById('edit-proj-name').value.trim());
+      const client_name = formatOrthography(document.getElementById('edit-proj-client').value.trim());
+      const address = formatOrthography(document.getElementById('edit-proj-address').value.trim());
       const actual_progress = parseFloat(document.getElementById('edit-proj-progress').value || 0);
-      const current_phase = document.getElementById('edit-proj-phase').value.trim();
+      const current_phase = formatOrthography(document.getElementById('edit-proj-phase').value.trim());
       const status = document.getElementById('edit-proj-status').value;
       const next_milestone_date = document.getElementById('edit-proj-date').value || null;
 
@@ -1503,294 +2369,18 @@
       btn.innerText = "Guardando...";
       btn.disabled = true;
 
-      const { error } = await supabaseClient
+      await supabaseClient
         .from('projects')
-        .update({
-          name,
-          client_name,
-          address,
-          actual_progress,
-          current_phase,
-          status,
-          next_milestone_date
-        })
+        .update({ name, client_name, address, actual_progress, current_phase, status, next_milestone_date })
         .eq('id', currentProject.id);
 
       btn.innerText = "Guardar Cambios";
       btn.disabled = false;
-
-      if (error) {
-        alert("Error al actualizar la obra: " + error.message);
-        return;
-      }
-
       closeModal('modal-edit-project');
       await loadProjects();
     }
 
-    // CARGA DE DATOS DEL PROYECTO ACTIVO
-    async function loadActiveProjectData() {
-      if (!currentProject) return;
-
-      // 1. Informes e imágenes
-      const { data: reports } = await supabaseClient
-        .from('daily_reports')
-        .select(`*, report_images(*)`)
-        .eq('project_id', currentProject.id)
-        .order('created_at', { ascending: false });
-
-      currentReports = reports || [];
-      renderReports(currentReports);
-      renderGalleryVaultByDate(currentReports);
-
-      // 2. Bitácora (Solo notificaciones de informes y documentos)
-      const { data: audits } = await supabaseClient
-        .from('project_audit_logs')
-        .select('*')
-        .eq('project_id', currentProject.id)
-        .in('action_type', ['nuevo_informe', 'nuevo_documento'])
-        .order('log_date', { ascending: false });
-      renderAudit(audits || []);
-
-      // 3. Documentos PDF
-      const { data: docs } = await supabaseClient
-        .from('project_documents')
-        .select('*')
-        .eq('project_id', currentProject.id)
-        .order('uploaded_at', { ascending: false });
-      renderDocuments(docs || []);
-    }
-
-    // RENDERIZAR INFORMES
-    function renderReports(items) {
-      const feed = document.getElementById('feed-timeline');
-      if (!items || items.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No hay informes publicados en este proyecto todavía.</div>`;
-        return;
-      }
-
-      feed.innerHTML = items.map(rep => {
-        const fecha = new Date(rep.created_at || rep.report_date).toLocaleDateString('es-ES', {
-          day: 'numeric', month: 'short', year: 'numeric'
-        });
-        const visto = rep.client_seen_at
-          ? `✔ Visto confirmado el ${new Date(rep.client_seen_at).toLocaleDateString('es-ES')}`
-          : 'Pendiente de confirmación de lectura';
-
-        const deleteBtn = activeUser === 'Admin'
-          ? `<button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${rep.id}')">🗑️ Eliminar</button>`
-          : '';
-
-        const fotosHtml = (rep.report_images && rep.report_images.length > 0)
-          ? `<div class="photo-grid">
-              ${rep.report_images.map((img, i) => `
-                <img src="${img.image_url}" class="photo-thumb" alt="Foto" onclick="openLightbox('${img.image_url}', '${rep.title.replace(/'/g, "")} — ${fecha}')">
-              `).join('')}
-             </div>`
-          : '';
-
-        const comments = Array.isArray(rep.comments) ? rep.comments : [];
-        const commentsHtml = comments.map(c => `<div style="font-size:12.5px; margin-top:5px; background:#fff; padding:6px 10px; border-radius:8px;"><strong>${c.author}:</strong> ${c.text} <span style="float:right; font-size:10.5px; color:#777;">${c.date || ''}</span></div>`).join('');
-
-        return `
-          <div class="report-card">
-            <div class="card-top">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="tag-day">${rep.day_label}</span>
-                <span class="tag-category">${rep.category}</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="card-date">${fecha}</span>
-                ${deleteBtn}
-              </div>
-            </div>
-
-            <div class="report-title">${rep.title}</div>
-            <div class="report-desc">${rep.description}</div>
-            ${fotosHtml}
-
-            <div class="interaction-bar">
-              <button class="btn-seen ${rep.client_seen_at ? 'active' : ''}" onclick="markSeen('${rep.id}')">
-                ${rep.client_seen_at ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
-              </button>
-              <span style="font-size:11.5px; color:var(--text-body); font-weight:500;">${visto}</span>
-            </div>
-
-            <div style="margin-top:12px; background:rgba(255,255,255,0.65); padding:10px 12px; border-radius:12px;">
-              <div style="font-size:12px; font-weight:700; color:var(--text-body);">💬 Comentarios (${comments.length}):</div>
-              ${commentsHtml || '<div style="font-size:11.5px; color:#777; margin-top:3px;">Sin comentarios todavía.</div>'}
-              <div style="display:flex; gap:6px; margin-top:8px;">
-                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
-                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function filterReports() {
-      const q = document.getElementById('feed-search').value.toLowerCase().trim();
-      if (!q) { renderReports(currentReports); return; }
-      const filtered = currentReports.filter(r => 
-        r.title.toLowerCase().includes(q) || 
-        r.description.toLowerCase().includes(q) || 
-        r.category.toLowerCase().includes(q) ||
-        r.day_label.toLowerCase().includes(q)
-      );
-      renderReports(filtered);
-    }
-
-    async function deleteReport(reportId) {
-      if (activeUser !== 'Admin') return;
-      if (!confirm("¿Deseas eliminar este informe y sus fotos asociadas?")) return;
-      await supabaseClient.from('daily_reports').delete().eq('id', reportId);
-      loadActiveProjectData();
-    }
-
-    async function markSeen(reportId) {
-      const report = currentReports.find(r => r.id === reportId);
-      const nuevoEstado = report && report.client_seen_at ? null : new Date().toISOString();
-      await supabaseClient.from('daily_reports').update({ client_seen_at: nuevoEstado }).eq('id', reportId);
-      loadActiveProjectData();
-    }
-
-    async function addComment(reportId) {
-      const input = document.getElementById(`comm-input-${reportId}`);
-      const val = input.value.trim();
-      if (!val) return;
-
-      const report = currentReports.find(r => r.id === reportId);
-      const comments = Array.isArray(report.comments) ? [...report.comments] : [];
-      comments.push({ author: activeUser, text: val, date: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) });
-
-      await supabaseClient.from('daily_reports').update({ comments }).eq('id', reportId);
-      input.value = '';
-      loadActiveProjectData();
-    }
-
-    // VAULT DE LA GALERÍA ORGANIZADO POR FECHAS (SIN ACOPLAR DÍAS DISTINTOS)
-    function renderGalleryVaultByDate(reports) {
-      const container = document.getElementById('gallery-vault-container');
-      const groupsByDate = {};
-
-      reports.forEach(rep => {
-        if (!rep.report_images || rep.report_images.length === 0) return;
-
-        // Fecha exacta de subida (día calendario)
-        const rawDate = rep.created_at ? new Date(rep.created_at) : new Date(rep.report_date + 'T12:00:00');
-        const dateKey = rawDate.toISOString().split('T')[0];
-        const formattedDate = rawDate.toLocaleDateString('es-ES', {
-          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
-
-        if (!groupsByDate[dateKey]) {
-          groupsByDate[dateKey] = {
-            label: formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1),
-            images: []
-          };
-        }
-
-        rep.report_images.forEach(img => {
-          groupsByDate[dateKey].images.push({
-            url: img.image_url,
-            title: rep.title,
-            dayLabel: rep.day_label,
-            category: rep.category,
-            dateLabel: formattedDate
-          });
-        });
-      });
-
-      const sortedKeys = Object.keys(groupsByDate).sort((a, b) => b.localeCompare(a));
-
-      if (sortedKeys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--msg-inner-cream); border-radius:16px;">No hay fotografías subidas en el Vault de este proyecto todavía.</div>`;
-        return;
-      }
-
-      container.innerHTML = sortedKeys.map(key => {
-        const group = groupsByDate[key];
-        return `
-          <div class="vault-date-group">
-            <div class="vault-date-header">
-              <div class="vault-date-title">
-                <span>📅 ${group.label}</span>
-              </div>
-              <span class="vault-date-count">${group.images.length} ${group.images.length === 1 ? 'fotografía' : 'fotografías'}</span>
-            </div>
-            <div class="photo-grid" style="margin-bottom:0;">
-              ${group.images.map(item => `
-                <div style="position:relative;">
-                  <img src="${item.url}" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.dayLabel} (${item.category}) — ${group.label}')">
-                  <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.75); color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; pointer-events:none;">${item.dayLabel} • ${item.category}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // BITÁCORA AUTOMÁTICA (EXCLUSIVA PARA INFORMES Y DOCUMENTOS SUBIDOS)
-    function renderAudit(entries) {
-      const list = document.getElementById('audit-list');
-      if (!entries || entries.length === 0) {
-        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted); background:var(--msg-inner-cream); padding:24px; border-radius:14px; text-align:center;">La bitácora registrará automáticamente cada vez que se suba un nuevo informe o documento PDF.</div>`;
-        return;
-      }
-
-      list.innerHTML = entries.map(ent => {
-        const badgeText = ent.action_type === 'nuevo_informe' ? '📋 INFORME SUBIDO' : '📄 DOCUMENTO SUBIDO';
-        return `
-          <div class="audit-entry">
-            <div class="audit-meta">
-              <span><strong>${badgeText}</strong> • Por ${ent.author_name}</span>
-              <span>${new Date(ent.log_date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</span>
-            </div>
-            <div class="audit-title">${ent.description}</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // CENTRO DOCUMENTAL CON DESCARGA Y VISUALIZACIÓN DIRECTA DE PDF
-    function renderDocuments(docs) {
-      const tbody = document.getElementById('docs-table-body');
-      if (!docs || docs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:24px;">No hay archivos PDF cargados en este proyecto.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = docs.map((d, idx) => {
-        const cleanFileName = (d.title || `documento_${idx + 1}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.pdf';
-        const deleteDocBtn = activeUser === 'Admin'
-          ? `<button class="btn-logout" style="padding:4px 8px; font-size:11px; margin-left:6px;" onclick="deleteDocument('${d.id}')">🗑️</button>`
-          : '';
-
-        return `
-          <tr>
-            <td><strong>📄 ${d.title}</strong></td>
-            <td><span class="tag-category">${d.category.toUpperCase()}</span></td>
-            <td>${d.version}</td>
-            <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
-            <td>
-              <a href="${d.file_url}" download="${cleanFileName}" class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; text-decoration:none;">⬇ Descargar PDF</a>
-              ${deleteDocBtn}
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    async function deleteDocument(docId) {
-      if (activeUser !== 'Admin') return;
-      if (!confirm("¿Eliminar este documento PDF?")) return;
-      await supabaseClient.from('project_documents').delete().eq('id', docId);
-      loadActiveProjectData();
-    }
-
-    // VISOR LIGHTBOX CON ZOOM INTERACTIVO
+    // VISOR LIGHTBOX ACELERADO POR HARDWARE (REQUESTANIMATIONFRAME)
     function openLightbox(url, captionText) {
       const modal = document.getElementById('lightbox-modal');
       const img = document.getElementById('lightbox-img');
@@ -1806,22 +2396,27 @@
     }
 
     function adjustZoom(delta) {
-      currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 4.5);
+      currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 5);
       if (currentZoom === 1) { panX = 0; panY = 0; }
-      applyLightboxTransform();
+      scheduleLightboxTransform();
     }
 
     function resetZoom() {
       currentZoom = 1;
       panX = 0;
       panY = 0;
-      applyLightboxTransform();
+      scheduleLightboxTransform();
     }
 
-    function applyLightboxTransform() {
-      const img = document.getElementById('lightbox-img');
-      img.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
-      document.getElementById('zoom-level-indicator').innerText = `${Math.round(currentZoom * 100)}%`;
+    function scheduleLightboxTransform() {
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        const img = document.getElementById('lightbox-img');
+        img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
+        document.getElementById('zoom-level-indicator').innerText = `${Math.round(currentZoom * 100)}%`;
+        rafPending = false;
+      });
     }
 
     function initLightboxEvents() {
@@ -1829,8 +2424,7 @@
 
       stage.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const delta = e.deltaY < 0 ? 0.25 : -0.25;
-        adjustZoom(delta);
+        adjustZoom(e.deltaY < 0 ? 0.3 : -0.3);
       }, { passive: false });
 
       stage.addEventListener('mousedown', (e) => {
@@ -1844,51 +2438,42 @@
         if (!isDraggingImg) return;
         panX = e.clientX - startDragX;
         panY = e.clientY - startDragY;
-        applyLightboxTransform();
+        scheduleLightboxTransform();
       });
 
-      window.addEventListener('mouseup', () => {
-        isDraggingImg = false;
-      });
+      window.addEventListener('mouseup', () => { isDraggingImg = false; });
 
-      // Soporte táctil en celulares para mover la imagen con zoom
       stage.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
           isDraggingImg = true;
           startDragX = e.touches[0].clientX - panX;
           startDragY = e.touches[0].clientY - panY;
         }
-      });
+      }, { passive: true });
 
       stage.addEventListener('touchmove', (e) => {
         if (!isDraggingImg || e.touches.length !== 1) return;
         panX = e.touches[0].clientX - startDragX;
         panY = e.touches[0].clientY - startDragY;
-        applyLightboxTransform();
-      });
+        scheduleLightboxTransform();
+      }, { passive: true });
 
-      stage.addEventListener('touchend', () => {
-        isDraggingImg = false;
-      });
+      stage.addEventListener('touchend', () => { isDraggingImg = false; });
     }
 
-    // ZONAS DRAG & DROP PARA FOTOS Y ARCHIVOS PDF
+    // CARGA DE IMÁGENES Y ARCHIVOS PDF
     function initDragAndDropZones() {
       const imgZone = document.getElementById('img-dropzone');
-      imgZone.addEventListener('dragover', (e) => { e.preventDefault(); imgZone.classList.add('dragover'); });
-      imgZone.addEventListener('dragleave', () => imgZone.classList.remove('dragover'));
+      imgZone.addEventListener('dragover', (e) => e.preventDefault());
       imgZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        imgZone.classList.remove('dragover');
         handleImageUpload(e.dataTransfer.files);
       });
 
       const pdfZone = document.getElementById('pdf-dropzone');
-      pdfZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfZone.classList.add('dragover'); });
-      pdfZone.addEventListener('dragleave', () => pdfZone.classList.remove('dragover'));
+      pdfZone.addEventListener('dragover', (e) => e.preventDefault());
       pdfZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        pdfZone.classList.remove('dragover');
         handlePdfFileSelect(e.dataTransfer.files);
       });
     }
@@ -1901,7 +2486,7 @@
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1280;
+            const MAX_WIDTH = 1200;
             let w = img.width;
             let h = img.height;
             if (w > MAX_WIDTH) { h *= MAX_WIDTH / w; w = MAX_WIDTH; }
@@ -1909,8 +2494,7 @@
             canvas.height = h;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
-            const comp = canvas.toDataURL('image/jpeg', 0.78);
-            uploadedImagesBase64.push(comp);
+            uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.76));
             renderPreviews();
           };
           img.src = e.target.result;
@@ -1934,142 +2518,30 @@
       renderPreviews();
     }
 
-    // SELECCIÓN DIRECTA DE ARCHIVO PDF
     function handlePdfFileSelect(files) {
       if (!files || files.length === 0) return;
       const file = files[0];
       if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert("Por favor selecciona un archivo en formato PDF.");
+        alert("Selecciona un archivo en formato PDF.");
         return;
       }
 
-      selectedPdfName = file.name;
       const label = document.getElementById('pdf-dropzone-label');
       label.innerText = `⏳ Procesando: ${file.name}...`;
 
       const reader = new FileReader();
       reader.onload = (e) => {
         selectedPdfDataUrl = e.target.result;
-        label.innerText = `✔ PDF listo para subir: ${file.name}`;
+        label.innerText = `✔ PDF listo: ${file.name}`;
         const titleInput = document.getElementById('form-doc-title');
         if (!titleInput.value.trim()) {
-          titleInput.value = file.name.replace(/\.pdf$/i, '');
+          titleInput.value = formatOrthography(file.name.replace(/\.pdf$/i, ''));
         }
       };
       reader.readAsDataURL(file);
     }
 
-    // PUBLICACIÓN DE INFORME + NOTIFICACIÓN AUTOMÁTICA EN BITÁCORA
-    async function submitDailyReport() {
-      if (!currentProject || activeUser !== 'Admin') return;
-      const day = document.getElementById('form-rep-day').value.trim();
-      const cat = document.getElementById('form-rep-cat').value.trim() || 'General';
-      const title = document.getElementById('form-rep-title').value.trim();
-      const desc = document.getElementById('form-rep-desc').value.trim();
-
-      if (!day || !title || !desc) {
-        alert("Completa la versión/día, el título y la descripción.");
-        return;
-      }
-
-      const btn = document.getElementById('btn-submit-rep');
-      btn.innerText = "Publicando...";
-      btn.disabled = true;
-
-      const { data: rep, error } = await supabaseClient.from('daily_reports').insert([{
-        project_id: currentProject.id,
-        day_label: day,
-        category: cat,
-        title,
-        description: desc,
-        report_date: new Date().toISOString().split('T')[0]
-      }]).select().single();
-
-      if (error) {
-        btn.innerText = "Publicar Informe";
-        btn.disabled = false;
-        alert("Error: " + error.message);
-        return;
-      }
-
-      if (uploadedImagesBase64.length > 0) {
-        const imgs = uploadedImagesBase64.map(uri => ({
-          report_id: rep.id,
-          image_url: uri,
-          zone: cat
-        }));
-        await supabaseClient.from('report_images').insert(imgs);
-      }
-
-      // Notificación automática exclusiva en Bitácora
-      await supabaseClient.from('project_audit_logs').insert([{
-        project_id: currentProject.id,
-        author_name: activeUser,
-        action_type: 'nuevo_informe',
-        description: `Se publicó el informe "${title}" (${day} — ${cat})${uploadedImagesBase64.length > 0 ? ` con ${uploadedImagesBase64.length} foto(s)` : ''}.`
-      }]);
-
-      btn.innerText = "Publicar Informe";
-      btn.disabled = false;
-      closeModal('modal-report');
-      document.getElementById('form-rep-day').value = '';
-      document.getElementById('form-rep-title').value = '';
-      document.getElementById('form-rep-desc').value = '';
-      uploadedImagesBase64 = [];
-      renderPreviews();
-      loadActiveProjectData();
-    }
-
-    // SUBIDA DE ARCHIVO PDF + NOTIFICACIÓN AUTOMÁTICA EN BITÁCORA
-    async function submitDocument() {
-      if (!currentProject || activeUser !== 'Admin') return;
-      const title = document.getElementById('form-doc-title').value.trim();
-      const category = document.getElementById('form-doc-cat').value;
-      const version = document.getElementById('form-doc-ver').value.trim() || 'v1.0';
-
-      if (!title || !selectedPdfDataUrl) {
-        alert("Por favor escribe el título y selecciona o arrastra un archivo PDF.");
-        return;
-      }
-
-      const btn = document.getElementById('btn-submit-doc');
-      btn.innerText = "Subiendo PDF...";
-      btn.disabled = true;
-
-      const { error } = await supabaseClient.from('project_documents').insert([{
-        project_id: currentProject.id,
-        title,
-        category,
-        version,
-        file_url: selectedPdfDataUrl
-      }]);
-
-      if (error) {
-        btn.innerText = "Subir PDF";
-        btn.disabled = false;
-        alert("Error al subir PDF: " + error.message);
-        return;
-      }
-
-      // Notificación automática exclusiva en Bitácora
-      await supabaseClient.from('project_audit_logs').insert([{
-        project_id: currentProject.id,
-        author_name: activeUser,
-        action_type: 'nuevo_documento',
-        description: `Se subió el documento PDF "${title}" (${category.toUpperCase()} — ${version}).`
-      }]);
-
-      btn.innerText = "Subir PDF";
-      btn.disabled = false;
-      selectedPdfDataUrl = null;
-      selectedPdfName = "";
-      document.getElementById('form-doc-title').value = '';
-      document.getElementById('pdf-dropzone-label').innerText = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
-      closeModal('modal-doc');
-      loadActiveProjectData();
-    }
-
-    // EXPORTACIÓN A PDF FORMAL
+    // IMPRESIÓN EJECUTIVA
     function printExecutiveReport() {
       if (!currentProject) return;
 
@@ -2084,8 +2556,8 @@
       const printBody = document.getElementById('print-reports-body');
       printBody.innerHTML = currentReports.slice(0, 8).map(r => `
         <div style="margin-bottom:14px; border-bottom:1px solid #eee; padding-bottom:8px;">
-          <div style="font-weight:bold; font-size:13px;">${r.day_label} — ${r.title} (${r.category})</div>
-          <div style="font-size:12px; color:#444; margin-top:3px;">${r.description}</div>
+          <div style="font-weight:bold; font-size:13px;">${r.report_date} — ${formatOrthography(r.title)} (${formatOrthography(r.category)})</div>
+          <div style="font-size:12px; color:#444; margin-top:3px;">${formatOrthography(r.description)}</div>
         </div>
       `).join('');
 
@@ -2094,7 +2566,7 @@
 
     // TIEMPO REAL
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra_v2')
+      supabaseClient.channel('realtime_obra_v3')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => loadProjects())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => loadActiveProjectData())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => loadActiveProjectData())
@@ -2102,7 +2574,6 @@
         .subscribe();
     }
 
-    // CAMBIO DE CATEGORÍA EN LA BARRA LATERAL CON SEÑALIZACIÓN ACTIVA
     function switchModule(mod) {
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.module-section').forEach(sec => sec.classList.remove('active-module'));
@@ -2121,8 +2592,6 @@
       document.getElementById('drawer-backdrop').classList.remove('open');
     }
 
-    function openCreateReportModal() { document.getElementById('modal-report').classList.add('open'); }
-    function openDocModal() { document.getElementById('modal-doc').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
   </script>
 </body>
