@@ -2,9 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' data: blob:; frame-src 'self' blob: data:; object-src 'self' blob: data:; connect-src 'self' https://euagegivizyfweymdiaa.supabase.co wss://euagegivizyfweymdiaa.supabase.co https://api.emailjs.com;">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>DIEGO — Seguimiento de Obra Privada</title>
-  
+
   <link rel="icon" type="image/jpeg" href="gato.jpg">
   <link rel="apple-touch-icon" href="gato.jpg">
 
@@ -15,34 +17,46 @@
 
   <style>
     :root {
-      --ios-bg: radial-gradient(circle at 30% 20%, #b8c1c8 0%, #858e96 100%);
-      --ios-glass: rgba(246, 247, 249, 0.86);
-      --ios-glass-border: rgba(255, 255, 255, 0.65);
-      
+      /* Superficie continua mate para Neumorfismo (WCAG AA/AAA) */
+      --neu-surface: #E3EAE0;
+      --neu-shadow-dark: #BCC6B8;
+      --neu-shadow-light: #F9FFF6;
+      --neu-error: #A63A2E;
+      --neu-focus: #3B5238;
+
+      /* Entorno general de la aplicación */
+      --ios-bg: #DCE3D9;
+      --ios-glass: rgba(244, 247, 242, 0.92);
+      --ios-glass-border: rgba(255, 255, 255, 0.72);
+
+      /* Barra lateral y barra superior al 70% de opacidad con desenfoque */
       --sidebar-bg: rgba(66, 79, 61, 0.70);
       --topbar-bg: rgba(245, 248, 243, 0.70);
       --sidebar-text: #EAEFE8;
       --sidebar-muted: #C2D0BC;
-      --sidebar-active-bg: rgba(255, 255, 255, 0.14);
+      --sidebar-active-bg: rgba(255, 255, 255, 0.15);
       --sidebar-indicator: #C88A6B;
-      
+
+      /* Paleta corporativa verde musgo / esmeralda suave */
+      --paw-emerald: #487A5B;
+      --paw-moss: #556850;
       --msg-pastel-green: #DCE6D8;
       --msg-pastel-border: #C4D4BE;
       --msg-inner-cream: #F5F8F3;
-      
-      --text-title: #2C352B;
-      --text-body: #465244;
-      --text-muted: #6E7D6B;
-      
-      --btn-olive: #556850;
-      --btn-olive-hover: #40503D;
 
-      --status-ok: #487A5B;
-      --status-ok-bg: #E5EFE8;
-      --status-warn: #B8823B;
-      --status-warn-bg: #FDF3E7;
-      --status-danger: #B95C50;
-      --status-danger-bg: #F9E8E6;
+      --text-title: #232B22;
+      --text-body: #3B4639;
+      --text-muted: #5A6857;
+
+      --btn-olive: #4A5D46;
+      --btn-olive-hover: #384935;
+
+      --status-ok: #3B6E4C;
+      --status-ok-bg: #E3EFE7;
+      --status-warn: #9E6B24;
+      --status-warn-bg: #FCF1E1;
+      --status-danger: #A63A2E;
+      --status-danger-bg: #F9E6E4;
     }
 
     *, *::before, *::after {
@@ -50,8 +64,6 @@
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
-      transition: none !important;
-      animation: none !important;
     }
 
     .hp-field {
@@ -63,18 +75,23 @@
       pointer-events: none;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .card-date, #label-actual, .vault-date-count, .docs-table td {
       font-variant-numeric: tabular-nums;
     }
 
+    /* 8. HABILITACIÓN DE ZOOM TÁCTIL LIBRE EN CELULARES (PINCH-TO-ZOOM) */
     html, body {
       width: 100%;
       max-width: 100vw;
       overflow-x: hidden;
       overscroll-behavior-x: none;
-      touch-action: pan-y;
+      touch-action: pan-x pan-y pinch-zoom;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--ios-bg);
+      background: var(--neu-surface);
       color: var(--text-title);
     }
 
@@ -86,93 +103,258 @@
       padding: 18px 14px;
     }
 
-    /* 1. PANTALLA DE ACCESO MINIMALISTA */
+    body.preloader-lock {
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       1. PANTALLA DE CARGA DE ENTRADA (LOADER DE PATITAS SVG — EJECUCIÓN ÚNICA)
+       ========================================================================== */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--neu-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    #preloader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .paw-trail {
+      position: relative;
+      width: 280px;
+      height: 110px;
+    }
+
+    .paw {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      opacity: 0;
+      transform: scale(0.65);
+      fill: var(--paw-emerald);
+      animation: pawStep 0.55s ease-out 1 forwards;
+    }
+
+    .paw svg {
+      width: 100%;
+      height: 100%;
+      fill: inherit;
+    }
+
+    .paw:nth-child(odd) {
+      top: 14px;
+      transform: rotate(78deg) scale(0.65);
+    }
+
+    .paw:nth-child(even) {
+      top: 54px;
+      fill: var(--paw-moss);
+      transform: rotate(98deg) scale(0.65);
+    }
+
+    .paw:nth-child(1) { left: 10px;  animation-delay: 0.08s; }
+    .paw:nth-child(2) { left: 54px;  animation-delay: 0.28s; }
+    .paw:nth-child(3) { left: 98px;  animation-delay: 0.48s; }
+    .paw:nth-child(4) { left: 142px; animation-delay: 0.68s; }
+    .paw:nth-child(5) { left: 186px; animation-delay: 0.88s; }
+    .paw:nth-child(6) { left: 230px; animation-delay: 1.08s; }
+
+    @keyframes pawStep {
+      0% {
+        opacity: 0;
+        transform: rotate(85deg) scale(0.5);
+      }
+      60% {
+        opacity: 1;
+        transform: rotate(85deg) scale(1.06);
+      }
+      100% {
+        opacity: 0.92;
+        transform: rotate(85deg) scale(1);
+      }
+    }
+
+    .preloader-label {
+      margin-top: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--paw-moss);
+    }
+
+    /* ==========================================================================
+       3. INTERFAZ DE ACCESO: NEUMORFISMO ESTRICTO Y ACCESIBILIDAD WCAG
+       ========================================================================== */
     .login-wrapper {
       width: 100%;
-      max-width: 380px;
+      max-width: 430px;
       margin: 0 auto;
-      background: rgba(250, 251, 252, 0.88);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.75);
-      border-radius: 26px;
-      box-shadow: 0 24px 60px rgba(35, 42, 48, 0.25);
-      padding: 34px 26px;
+      background: var(--neu-surface);
+      border-radius: 1.5rem;
+      box-shadow: 12px 12px 26px var(--neu-shadow-dark), -12px -12px 26px var(--neu-shadow-light);
+      padding: 36px 30px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
+    }
+
+    .login-avatar-frame {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 6px;
+      padding: 6px;
+      border-radius: 1.25rem;
+      background: var(--neu-surface);
+      box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .login-avatar-top {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      margin: 0 auto 4px;
+      width: 100%;
+      height: 100%;
+      border-radius: 1rem;
       object-fit: cover;
-      border: 2px solid var(--msg-pastel-border);
       background: #1C211B;
     }
 
     .login-brand {
-      font-size: 32px;
+      font-size: 30px;
       letter-spacing: 5px;
-      font-weight: 300;
+      font-weight: 600;
       color: var(--text-title);
       line-height: 1;
     }
+
     .login-tag {
-      font-size: 9.5px;
+      font-size: 10px;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1.3px;
       margin-top: 6px;
       line-height: 1.4;
+      font-weight: 600;
     }
 
     .login-form {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       text-align: left;
     }
 
-    .form-group-login label {
-      display: block;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--text-body);
-      margin-bottom: 6px;
+    .form-group-neu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .login-input {
+    .form-group-neu label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-title);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .req-star {
+      color: var(--neu-error);
+      font-weight: 800;
+    }
+
+    .neu-input {
       width: 100%;
-      background: #FFFFFF;
-      border: 1px solid #D5DFD2;
-      border-radius: 14px;
-      padding: 12px 15px;
+      background: var(--neu-surface);
+      border: 1.5px solid transparent;
+      border-radius: 1rem;
+      padding: 13px 16px;
       font-size: 14px;
       color: var(--text-title);
-      outline: none;
       font-family: inherit;
-    }
-    .login-input:focus {
-      border-color: var(--btn-olive);
+      box-shadow: inset 5px 5px 10px var(--neu-shadow-dark), inset -5px -5px 10px var(--neu-shadow-light);
+      outline: none;
     }
 
-    .btn-submit-login {
-      background: var(--btn-olive);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 14px;
-      padding: 13px;
+    .neu-input::placeholder {
+      color: #768473;
+      opacity: 0.85;
+    }
+
+    .neu-input:focus-visible {
+      border-color: var(--neu-focus);
+      box-shadow: inset 6px 6px 12px var(--neu-shadow-dark), inset -6px -6px 12px var(--neu-shadow-light);
+    }
+
+    .neu-input[aria-invalid="true"] {
+      border-color: var(--neu-error);
+      box-shadow: inset 4px 4px 8px rgba(166, 58, 46, 0.22), inset -4px -4px 8px var(--neu-shadow-light);
+    }
+
+    .field-help {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+      padding-left: 4px;
+    }
+
+    .field-error {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--neu-error);
+      padding-left: 4px;
+      min-height: 16px;
+    }
+
+    .btn-submit-neu {
+      width: 100%;
+      background: var(--neu-surface);
+      color: var(--text-title);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 1rem;
+      padding: 14px 18px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: 0.4px;
       cursor: pointer;
       margin-top: 6px;
+      box-shadow: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
     }
 
-    /* 2. VENTANA PRINCIPAL */
+    .btn-submit-neu:hover:not(:disabled) {
+      color: var(--paw-emerald);
+    }
+
+    .btn-submit-neu:active:not(:disabled) {
+      box-shadow: inset 5px 5px 10px var(--neu-shadow-dark), inset -5px -5px 10px var(--neu-shadow-light);
+    }
+
+    .btn-submit-neu:focus-visible {
+      outline: 2px solid var(--neu-focus);
+      outline-offset: 2px;
+    }
+
+    .btn-submit-neu:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+    }
+
+    /* ==========================================================================
+       2. VENTANA PRINCIPAL DE LA PLATAFORMA
+       ========================================================================== */
     .app-window {
       width: 100%;
       max-width: 1280px;
@@ -182,13 +364,13 @@
       background: var(--ios-glass);
       border: 1px solid var(--ios-glass-border);
       border-radius: 26px;
-      box-shadow: 0 30px 70px rgba(30, 36, 42, 0.28);
+      box-shadow: 0 24px 60px rgba(30, 36, 42, 0.22);
       display: none;
       overflow: hidden;
       position: relative;
+      touch-action: pan-x pan-y pinch-zoom;
     }
 
-    /* BARRA LATERAL AL 70% DE OPACIDAD Y DESENFOQUE TRASERO */
     .sidebar {
       width: 270px;
       background: var(--sidebar-bg);
@@ -213,6 +395,7 @@
       margin-bottom: 16px;
       padding-left: 6px;
     }
+
     .brand-title {
       font-size: 25px;
       font-weight: 300;
@@ -222,6 +405,7 @@
       padding-left: 10px;
       line-height: 1;
     }
+
     .brand-subtitle {
       font-size: 8px;
       letter-spacing: 1.2px;
@@ -239,6 +423,7 @@
       position: relative;
       z-index: 2;
     }
+
     .nav-item {
       position: relative;
       display: flex;
@@ -248,9 +433,10 @@
       border-radius: 10px;
       font-size: 13.5px;
       font-weight: 400;
-      color: rgba(234, 239, 232, 0.85);
+      color: rgba(234, 239, 232, 0.88);
       cursor: pointer;
     }
+
     .nav-item svg {
       width: 19px;
       height: 19px;
@@ -259,15 +445,18 @@
       fill: none;
       flex-shrink: 0;
     }
+
     .nav-item:hover:not(.active) {
       background: rgba(255, 255, 255, 0.08);
       color: #FFFFFF;
     }
+
     .nav-item.active {
       background: var(--sidebar-active-bg);
       color: #FFFFFF;
       font-weight: 600;
     }
+
     .nav-item.active::before {
       content: '';
       position: absolute;
@@ -279,7 +468,6 @@
       border-radius: 0 4px 4px 0;
     }
 
-    /* PIE DE BARRA LATERAL: CRÉDITOS + ILUSTRACIÓN BOTÁNICA */
     .sidebar-footer {
       position: relative;
       margin-top: 20px;
@@ -287,22 +475,25 @@
       border-top: 1px solid rgba(255, 255, 255, 0.14);
       z-index: 2;
     }
+
     .credits-block {
       position: relative;
       z-index: 3;
       font-size: 10.5px;
       line-height: 1.45;
-      color: rgba(234, 239, 232, 0.90);
+      color: rgba(234, 239, 232, 0.92);
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
+
     .credits-services {
       font-size: 9.5px;
       color: var(--sidebar-muted);
       letter-spacing: 0.2px;
       line-height: 1.5;
     }
+
     .credits-authors {
       background: rgba(0, 0, 0, 0.18);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -310,11 +501,13 @@
       padding: 8px 10px;
       font-size: 10px;
     }
+
     .credits-authors strong {
       color: #FFFFFF;
       display: block;
       font-weight: 600;
     }
+
     .plant-svg {
       position: absolute;
       bottom: -10px;
@@ -332,8 +525,8 @@
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       font-size: 18px;
       cursor: pointer;
       align-items: center;
@@ -348,6 +541,7 @@
       background: rgba(25, 32, 24, 0.5);
       z-index: 35;
     }
+
     .drawer-backdrop.open { display: block; }
 
     /* ÁREA PRINCIPAL */
@@ -360,9 +554,9 @@
       overflow-y: auto;
       overflow-x: hidden;
       padding: 22px 28px;
+      touch-action: pan-x pan-y pinch-zoom;
     }
 
-    /* BARRA DE TAREAS SUPERIOR AL 70% OPACIDAD Y DESENFOQUE */
     .top-header {
       position: sticky;
       top: 0;
@@ -387,6 +581,7 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .project-selector {
       background: #FFFFFF;
       border: 1px solid #CFD8CC;
@@ -405,7 +600,9 @@
       align-items: center;
       gap: 8px;
       margin-left: auto;
+      flex-wrap: wrap;
     }
+
     .user-meta-name {
       font-size: 14px;
       font-weight: 800;
@@ -413,27 +610,29 @@
       letter-spacing: 0.5px;
       color: var(--text-title);
     }
+
     .avatar-img {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--btn-olive);
       background: #1C211B;
       flex-shrink: 0;
     }
+
     .btn-logout {
       background: var(--status-danger-bg);
-      border: 1px solid rgba(185, 92, 80, 0.28);
-      padding: 6px 11px;
+      border: 1px solid rgba(166, 58, 46, 0.28);
+      padding: 7px 12px;
       border-radius: 14px;
       font-size: 11.5px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--status-danger);
       cursor: pointer;
     }
 
-    /* CABECERA EJECUTIVA */
+    /* CABECERA EJECUTIVA — VISIBILIDAD CONDICIONAL (DIRECTIVA 7) */
     .dashboard-header-card {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
@@ -441,6 +640,7 @@
       padding: 20px 22px;
       margin-bottom: 22px;
     }
+
     .project-main-meta {
       display: flex;
       justify-content: space-between;
@@ -449,12 +649,14 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .project-title {
       font-family: 'Playfair Display', serif;
       font-size: 25px;
       font-weight: 700;
       color: var(--text-title);
     }
+
     .project-subtitle {
       font-size: 12.5px;
       color: var(--text-muted);
@@ -479,9 +681,10 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .health-badge.en_tiempo { background: var(--status-ok-bg); color: var(--status-ok); border: 1px solid rgba(72, 122, 91, 0.3); }
-    .health-badge.atencion { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid rgba(184, 130, 59, 0.3); }
-    .health-badge.retraso { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(185, 92, 80, 0.3); }
+
+    .health-badge.en_tiempo { background: var(--status-ok-bg); color: var(--status-ok); border: 1px solid rgba(59, 110, 76, 0.3); }
+    .health-badge.atencion { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid rgba(158, 107, 36, 0.3); }
+    .health-badge.retraso { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(166, 58, 46, 0.3); }
 
     .btn-edit-project {
       background: #FFFFFF;
@@ -503,6 +706,7 @@
       padding: 14px 16px;
       border-radius: 16px;
     }
+
     .progress-meta-text {
       display: flex;
       justify-content: space-between;
@@ -511,6 +715,7 @@
       color: var(--text-title);
       margin-bottom: 8px;
     }
+
     .bar-shell {
       height: 12px;
       background: #E0E7DC;
@@ -518,6 +723,7 @@
       overflow: hidden;
       position: relative;
     }
+
     .bar-fill-actual {
       height: 100%;
       background: var(--btn-olive);
@@ -541,7 +747,6 @@
     .module-section { display: none; width: 100%; }
     .module-section.active-module { display: block; }
 
-    /* MÓDULO B: FEED DE INFORMES Y BUSCADOR DE FECHA */
     .feed-controls {
       display: flex;
       justify-content: space-between;
@@ -550,6 +755,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
     .search-group {
       display: flex;
       align-items: center;
@@ -557,6 +763,7 @@
       flex-wrap: wrap;
       flex: 1;
     }
+
     .search-feed {
       background: #FFFFFF;
       border: 1px solid #D5DFD2;
@@ -569,6 +776,7 @@
       outline: none;
       font-family: inherit;
     }
+
     .search-date-input {
       background: #FFFFFF;
       border: 1px solid #D5DFD2;
@@ -579,6 +787,7 @@
       outline: none;
       font-family: inherit;
     }
+
     .btn-clear-date {
       background: #EAEFE8;
       border: 1px solid #CFD8CC;
@@ -619,6 +828,7 @@
       border-radius: 20px 20px 20px 6px;
       padding: 18px 20px;
     }
+
     .card-top {
       display: flex;
       justify-content: space-between;
@@ -627,6 +837,7 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .tag-category {
       background: var(--btn-olive);
       color: #FFFFFF;
@@ -635,6 +846,7 @@
       padding: 4px 11px;
       border-radius: 12px;
     }
+
     .card-date {
       font-size: 12px;
       color: var(--text-title);
@@ -651,6 +863,7 @@
       color: var(--text-title);
       margin-bottom: 6px;
     }
+
     .report-desc {
       font-size: 13.5px;
       color: var(--text-body);
@@ -668,6 +881,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
+
     .photo-thumb {
       width: 100%;
       height: 115px;
@@ -698,16 +912,18 @@
       font-weight: 700;
       cursor: pointer;
     }
+
     .btn-seen.active {
       background: var(--btn-olive);
       color: #FFFFFF;
     }
+
     .btn-seen:disabled {
       opacity: 0.85;
       cursor: not-allowed;
     }
 
-    /* BAÚL DE GALERÍA ORGANIZADO POR FECHAS */
+    /* BAÚL DE GALERÍA */
     .vault-date-group {
       background: var(--msg-inner-cream);
       border: 1px solid var(--msg-pastel-border);
@@ -715,6 +931,7 @@
       padding: 18px 20px;
       margin-bottom: 18px;
     }
+
     .vault-date-header {
       display: flex;
       justify-content: space-between;
@@ -725,11 +942,13 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
     .vault-date-title {
       font-size: 14px;
       font-weight: 700;
       color: var(--text-title);
     }
+
     .vault-date-count {
       font-size: 11.5px;
       font-weight: 600;
@@ -739,7 +958,7 @@
       border-radius: 12px;
     }
 
-    /* BITÁCORA DE PUBLICACIONES */
+    /* BITÁCORA */
     .audit-timeline {
       position: relative;
       padding-left: 22px;
@@ -747,6 +966,7 @@
       flex-direction: column;
       gap: 12px;
     }
+
     .audit-timeline::before {
       content: '';
       position: absolute;
@@ -756,6 +976,7 @@
       width: 2px;
       background: #CFD9CB;
     }
+
     .audit-entry {
       position: relative;
       background: #FFFFFF;
@@ -763,6 +984,7 @@
       border-radius: 14px;
       padding: 14px 16px;
     }
+
     .audit-entry::before {
       content: '';
       position: absolute;
@@ -774,6 +996,7 @@
       background: var(--btn-olive);
       border: 2px solid #FFFFFF;
     }
+
     .audit-meta {
       display: flex;
       justify-content: space-between;
@@ -783,13 +1006,14 @@
       flex-wrap: wrap;
       gap: 6px;
     }
+
     .audit-title {
       font-size: 13.5px;
       font-weight: 700;
       color: var(--text-title);
     }
 
-    /* TABLAS RESPONSIVAS (DOCUMENTOS Y USUARIOS) */
+    /* TABLAS RESPONSIVAS */
     .table-responsive {
       width: 100%;
       overflow-x: auto;
@@ -797,24 +1021,36 @@
       border: 1px solid var(--msg-pastel-border);
       background: #FFFFFF;
     }
+
     .docs-table {
       width: 100%;
       border-collapse: collapse;
       min-width: 520px;
     }
+
     .docs-table th, .docs-table td {
       padding: 12px 14px;
       font-size: 13px;
       text-align: left;
       border-bottom: 1px solid #E6ECE2;
     }
+
     .docs-table th {
       background: var(--msg-inner-cream);
       font-weight: 700;
       color: var(--text-body);
     }
 
-    /* VISOR LIGHTBOX ULTRA RÁPIDO (SIN LAG DE BLUR) */
+    /* TARJETA DE AUTOSERVICIO DE PERFIL (DIRECTIVA 5) */
+    .profile-card {
+      max-width: 520px;
+      background: var(--neu-surface);
+      border-radius: 1.5rem;
+      padding: 28px 26px;
+      box-shadow: 10px 10px 22px var(--neu-shadow-dark), -10px -10px 22px var(--neu-shadow-light);
+    }
+
+    /* VISOR LIGHTBOX ACELERADO POR HARDWARE */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
@@ -826,8 +1062,8 @@
       z-index: 950;
       overflow: hidden;
       user-select: none;
-      touch-action: none;
     }
+
     .lightbox-overlay.open { display: flex; }
 
     .lightbox-toolbar {
@@ -843,6 +1079,7 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
     .lightbox-caption {
       color: #EAEFE8;
       font-size: 12.5px;
@@ -852,11 +1089,13 @@
       border-radius: 16px;
       pointer-events: auto;
     }
+
     .lightbox-controls {
       display: flex;
       gap: 6px;
       pointer-events: auto;
     }
+
     .lightbox-btn {
       background: #2C352B;
       color: #FFFFFF;
@@ -876,8 +1115,11 @@
       justify-content: center;
       overflow: hidden;
       cursor: grab;
+      touch-action: none;
     }
+
     .lightbox-stage:active { cursor: grabbing; }
+
     .lightbox-img {
       max-width: 90vw;
       max-height: 82vh;
@@ -898,6 +1140,7 @@
       z-index: 800;
       padding: 14px;
     }
+
     .modal-overlay.open { display: flex; }
 
     .modal-box {
@@ -910,12 +1153,14 @@
       max-height: 90vh;
       overflow-y: auto;
     }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 14px;
     }
+
     .modal-title { font-size: 16.5px; font-weight: 700; }
     .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
 
@@ -927,6 +1172,7 @@
       color: var(--text-body);
       margin-bottom: 5px;
     }
+
     .form-input, .form-textarea, .form-select {
       width: 100%;
       border: 1px solid #D5DFD2;
@@ -946,17 +1192,20 @@
       background: var(--msg-inner-cream);
       cursor: pointer;
     }
+
     .preview-container {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-top: 10px;
     }
+
     .preview-wrap {
       position: relative;
       width: 58px;
       height: 58px;
     }
+
     .preview-wrap img {
       width: 100%;
       height: 100%;
@@ -964,26 +1213,45 @@
       border-radius: 8px;
     }
 
+    .toast-banner {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #2C352B;
+      color: #FFFFFF;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      z-index: 980;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      display: none;
+    }
+
     /* REPORTE FORMAL IMPRIMIBLE */
     @media print {
       body { background: #FFFFFF; padding: 0; color: #000; }
-      .app-window, .sidebar, .top-header, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
+      #preloader, .app-window, .sidebar, .top-header, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
         display: none !important;
       }
       #print-report-template { display: block !important; }
     }
     #print-report-template { display: none; }
 
-    /* AJUSTE MÓVIL CENTRADO Y FIJO (SIN BAMBOLEO LATERAL) */
+    /* RESPONSIVIDAD MÓVIL CON ZOOM MULTITÁCTIL LIBRE */
     @media (max-width: 820px) {
       body {
         padding: 8px;
         align-items: flex-start;
       }
+      .login-wrapper {
+        padding: 28px 20px;
+        margin-top: 14px;
+      }
       .app-window {
         width: 100%;
         max-width: 100%;
-        height: calc(100vh - 16px);
+        height: auto;
         min-height: calc(100vh - 16px);
         border-radius: 18px;
         margin: 0 auto;
@@ -1023,37 +1291,129 @@
     }
   </style>
 </head>
-<body>
+<body class="preloader-lock">
 
-  <!-- 1. PANTALLA INICIAL DE ACCESO -->
-  <div class="login-wrapper" id="login-screen">
+  <!-- ========================================================================
+       1. SPRITE Y PANTALLA DE PRECARGA (6 PATITAS EN VERDE CORPORATIVO)
+       ======================================================================== -->
+  <svg style="display:none;" aria-hidden="true">
+    <symbol id="paw" viewBox="0 0 249 209.32">
+      <ellipse cx="27.917" cy="106.333" stroke-width="0" rx="27.917" ry="35.833"/>
+      <ellipse cx="84.75" cy="47.749" stroke-width="0" rx="34.75" ry="47.751"/>
+      <ellipse cx="162" cy="47.749" stroke-width="0" rx="34.75" ry="47.751"/>
+      <ellipse cx="221.083" cy="106.333" stroke-width="0" rx="27.917" ry="35.833"/>
+      <path stroke-width="0" d="M43.98 165.39s9.76-63.072 76.838-64.574c0 0 71.082-6.758 83.096 70.33 0 0 2.586 19.855-12.54 31.855 0 0-15.75 17.75-43.75-6.25 0 0-7.124-8.374-24.624-7.874 0 0-12.75-.125-21.5 6.625 0 0-16.375 18.376-37.75 12.75 0 0-28.29-7.72-19.77-42.862z"/>
+    </symbol>
+  </svg>
+
+  <div id="preloader" role="status" aria-live="polite" aria-label="Cargando plataforma DIEGO">
+    <div class="paw-trail">
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+      <div class="paw"><svg><use href="#paw"/></svg></div>
+    </div>
+    <div class="preloader-label">DIEGO • B+ Arquitectura</div>
+  </div>
+
+  <!-- ========================================================================
+       3. PANTALLA DE ACCESO NEUMÓRFICA ACCESIBLE (WCAG 2.1 AA)
+       ======================================================================== -->
+  <div class="login-wrapper" id="login-screen" role="region" aria-labelledby="login-heading">
     <div>
-      <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="login-avatar-top" alt="Icono DIEGO">
-      <div class="login-brand">DIEGO</div>
+      <div class="login-avatar-frame">
+        <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="login-avatar-top" alt="Logotipo corporativo DIEGO">
+      </div>
+      <h1 class="login-brand" id="login-heading">DIEGO</h1>
       <div class="login-tag">Daily Intelligent Electronic Graphic Organizer</div>
     </div>
 
-    <form class="login-form" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
-      <div class="form-group-login">
-        <label for="login-user">Usuario</label>
-        <input type="text" id="login-user" name="username" autocomplete="username" class="login-input" placeholder="Ej.: Admin, Cliente1..." required>
+    <form class="login-form" id="login-form-el" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on" novalidate>
+      <input type="text" id="hp-login" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <!-- Campo Usuario -->
+      <div class="form-group-neu">
+        <label for="login-user">
+          <span>Nombre de Usuario</span>
+          <span class="req-star" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="text"
+          id="login-user"
+          name="username"
+          autocomplete="username"
+          class="neu-input"
+          placeholder="Ej.: Admin, Cliente1"
+          maxlength="50"
+          required
+          aria-required="true"
+          aria-invalid="false"
+          aria-describedby="login-user-help login-user-error"
+        >
+        <span id="login-user-help" class="field-help">Identificador asignado a tu proyecto de obra (sin espacios).</span>
+        <span id="login-user-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <div class="form-group-login">
-        <label for="login-pass">Contraseña</label>
-        <input type="password" id="login-pass" name="password" autocomplete="current-password" class="login-input" placeholder="••••" required>
+      <!-- Campo Correo Electrónico -->
+      <div class="form-group-neu">
+        <label for="login-email">
+          <span>Correo Electrónico para Notificaciones</span>
+          <span class="req-star" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="email"
+          id="login-email"
+          name="email"
+          autocomplete="email"
+          class="neu-input"
+          placeholder="nombre@dominio.com"
+          maxlength="120"
+          required
+          aria-required="true"
+          aria-invalid="false"
+          aria-describedby="login-email-help login-email-error"
+        >
+        <span id="login-email-help" class="field-help">Recibirás alertas automáticas de bitácora e informes publicados.</span>
+        <span id="login-email-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <button type="submit" class="btn-submit-login">Iniciar Sesión</button>
+      <!-- Campo Contraseña -->
+      <div class="form-group-neu">
+        <label for="login-pass">
+          <span>Contraseña de Acceso</span>
+          <span class="req-star" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="password"
+          id="login-pass"
+          name="password"
+          autocomplete="current-password"
+          class="neu-input"
+          placeholder="••••••••"
+          maxlength="64"
+          required
+          aria-required="true"
+          aria-invalid="false"
+          aria-describedby="login-pass-help login-pass-error"
+        >
+        <span id="login-pass-help" class="field-help">Clave personal sincronizada en tiempo real con la base de datos.</span>
+        <span id="login-pass-error" class="field-error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <button type="submit" id="btn-login-submit" class="btn-submit-neu">Ingresar al Portal de Obra</button>
     </form>
   </div>
 
-  <!-- 2. VENTANA PRINCIPAL -->
+  <!-- ========================================================================
+       VENTANA PRINCIPAL DE LA PLATAFORMA
+       ======================================================================== -->
   <div class="app-window" id="app-screen">
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL AL 70% DE OPACIDAD CON DESENFOQUE Y CRÉDITOS -->
-    <aside class="sidebar" id="sidebar">
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
       <div>
         <div class="brand-section">
           <div class="brand-title">DIEGO</div>
@@ -1094,6 +1454,16 @@
             <span>Documentos</span>
           </li>
 
+          <!-- Pestaña de Autoservicio de Perfil (Para Clientes y Admin) -->
+          <li class="nav-item" id="nav-item-profile" onclick="switchModule('profile')">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Mi Perfil</span>
+          </li>
+
+          <!-- Gestión Total de Usuarios (Solo para Admin) -->
           <li class="nav-item" id="nav-item-users" style="display:none;" onclick="switchModule('users')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -1101,12 +1471,11 @@
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
-            <span>Usuarios</span>
+            <span>Usuarios (Admin)</span>
           </li>
         </ul>
       </div>
 
-      <!-- PIE DE BARRA LATERAL CON SERVICIOS, CRÉDITOS Y PLANTA BOTÁNICA -->
       <div class="sidebar-footer">
         <div class="credits-block">
           <div class="credits-services">
@@ -1122,7 +1491,7 @@
           </div>
         </div>
 
-        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.4"/>
           <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.1" opacity="0.7"/>
           <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
@@ -1137,13 +1506,13 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-viewport">
-      
-      <!-- BARRA SUPERIOR DE TAREAS (70% OPACIDAD Y DESENFOQUE) -->
+
+      <!-- BARRA SUPERIOR DE TAREAS -->
       <div class="top-header">
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">☰</button>
 
         <div class="project-selector-wrap" id="admin-project-selector" style="display:none;">
-          <label style="font-size:11.5px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
+          <label for="active-project-dropdown" style="font-size:11.5px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
           <select id="active-project-dropdown" class="project-selector" onchange="changeActiveProject(this.value)">
           </select>
         </div>
@@ -1151,16 +1520,16 @@
         <div class="user-pill">
           <button class="btn-action-primary" style="padding:6px 11px; font-size:11.5px;" onclick="printExecutiveReport()">🖨️ Exportar PDF</button>
           <span class="user-meta-name" id="user-display-tag">USUARIO</span>
-          <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Perfil">
+          <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Avatar de usuario">
           <button class="btn-logout" onclick="handleLogout()">Salir</button>
         </div>
       </div>
 
-      <!-- CABECERA EJECUTIVA -->
-      <div class="dashboard-header-card">
+      <!-- 7. CUADRO DE AVANCE DE LA OBRA (VISIBLE SOLO EN INFORMES Y BITÁCORA) -->
+      <div class="dashboard-header-card" id="dashboard-avance-card">
         <div class="project-main-meta">
           <div>
-            <h1 class="project-title" id="dash-project-name">Cargando proyecto...</h1>
+            <h2 class="project-title" id="dash-project-name">Cargando proyecto...</h2>
             <p class="project-subtitle" id="dash-project-desc">Seguimiento de Obra</p>
           </div>
           <div class="header-badges-group">
@@ -1189,7 +1558,7 @@
       <section class="module-section active-module" id="sec-feed">
         <div class="feed-controls">
           <div class="search-group">
-            <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar por título, categoría o fecha..." oninput="filterReports()">
+            <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar por título, categoría o fecha..." maxlength="100" oninput="filterReports()">
             <input type="date" id="feed-search-date" class="search-date-input" onchange="filterReports()" title="Filtrar por fecha exacta">
             <button class="btn-clear-date" onclick="clearDateSearch()">Limpiar fecha</button>
           </div>
@@ -1201,11 +1570,11 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 2: BAÚL DE GALERÍA ORGANIZADO POR FECHAS -->
+      <!-- SECCIÓN 2: BAÚL DE GALERÍA -->
       <section class="module-section" id="sec-gallery">
         <div style="margin-bottom:16px;">
           <h3 style="font-size:17px; font-weight:700;">Baúl de Galería</h3>
-          <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de publicación. Pulsa cualquier fotografía para abrir el visor con zoom de alta velocidad.</p>
+          <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de publicación. Pulsa cualquier fotografía para abrir el visor con zoom.</p>
         </div>
         <div id="gallery-vault-container"></div>
       </section>
@@ -1219,7 +1588,7 @@
         <div class="audit-timeline" id="audit-list"></div>
       </section>
 
-      <!-- SECCIÓN 4: CENTRO DOCUMENTAL CON VISTA PREVIA Y DESCARGA -->
+      <!-- SECCIÓN 4: CENTRO DOCUMENTAL -->
       <section class="module-section" id="sec-docs">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div>
@@ -1244,14 +1613,93 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 5: GESTIÓN DE USUARIOS (SOLO PARA ADMIN) -->
+      <!-- SECCIÓN 5: MI PERFIL (AUTOSERVICIO PARA CLIENTE Y ADMIN) -->
+      <section class="module-section" id="sec-profile">
+        <div style="margin-bottom:18px;">
+          <h3 style="font-size:18px; font-weight:700;">Mi Perfil y Credenciales</h3>
+          <p style="font-size:12.5px; color:var(--text-muted);">Actualiza tu identificador de usuario, tu correo electrónico de notificaciones, y tu contraseña personal. Los cambios se sincronizan al instante en todos tus dispositivos.</p>
+        </div>
+
+        <div class="profile-card">
+          <form onsubmit="event.preventDefault(); saveSelfProfile();" novalidate>
+            <input type="text" id="hp-profile" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <div class="form-group-neu" style="margin-bottom:14px;">
+              <label for="prof-code">
+                <span>Nombre de Usuario (Login)</span>
+                <span class="req-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="prof-code"
+                class="neu-input"
+                placeholder="Ej.: Cliente1"
+                maxlength="50"
+                required
+                aria-required="true"
+                aria-invalid="false"
+                aria-describedby="prof-code-help prof-code-error"
+              >
+              <span id="prof-code-help" class="field-help">Sin espacios. Usarás este identificador para iniciar sesión en PC y celular.</span>
+              <span id="prof-code-error" class="field-error" role="alert" aria-live="polite"></span>
+            </div>
+
+            <div class="form-group-neu" style="margin-bottom:14px;">
+              <label for="prof-email">
+                <span>Correo Electrónico Personal</span>
+                <span class="req-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="email"
+                id="prof-email"
+                class="neu-input"
+                placeholder="cliente@correo.com"
+                maxlength="120"
+                required
+                aria-required="true"
+                aria-invalid="false"
+                aria-describedby="prof-email-help prof-email-error"
+              >
+              <span id="prof-email-help" class="field-help">Recibirás aquí los reportes técnicos de avance y avisos de bitácora.</span>
+              <span id="prof-email-error" class="field-error" role="alert" aria-live="polite"></span>
+            </div>
+
+            <div class="form-group-neu" style="margin-bottom:18px;">
+              <label for="prof-pass">
+                <span>Nueva Contraseña</span>
+                <span class="req-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="prof-pass"
+                class="neu-input"
+                placeholder="Mínimo 4 caracteres"
+                maxlength="64"
+                required
+                aria-required="true"
+                aria-invalid="false"
+                aria-describedby="prof-pass-help prof-pass-error"
+              >
+              <span id="prof-pass-help" class="field-help">Al guardar, esta clave será exigida inmediatamente en todos tus dispositivos.</span>
+              <span id="prof-pass-error" class="field-error" role="alert" aria-live="polite"></span>
+            </div>
+
+            <button type="submit" id="btn-save-self-profile" class="btn-submit-neu">Actualizar Mis Credenciales</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 6: GESTIÓN DE USUARIOS Y CORREOS (SOLO ADMIN) -->
       <section class="module-section" id="sec-users">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div>
-            <h3 style="font-size:17px; font-weight:700;">Gestión de Usuarios y Accesos</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Añade, modifica o elimina usuarios clientes, sus contraseñas y sus proyectos asignados.</p>
+            <h3 style="font-size:17px; font-weight:700;">Gestión de Usuarios, Correos y Obras (Admin)</h3>
+            <p style="font-size:12.5px; color:var(--text-muted);">Control global de cuentas de clientes, contraseñas sincronizadas en vivo, y configuración del servicio de notificaciones por correo.</p>
           </div>
-          <button class="btn-action-primary" onclick="openUserModal()">+ Añadir Usuario</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-edit-project" style="display:inline-flex;" onclick="openEmailConfigModal()">✉️ Configurar Correo Automático</button>
+            <button class="btn-action-primary" onclick="openUserModal()">+ Añadir Usuario</button>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -1260,6 +1708,7 @@
               <tr>
                 <th>Usuario (Login)</th>
                 <th>Contraseña</th>
+                <th>Correo Electrónico</th>
                 <th>Cliente / Propietario</th>
                 <th>Proyecto Asignado</th>
                 <th>Acciones</th>
@@ -1273,8 +1722,11 @@
     </main>
   </div>
 
-  <!-- VISOR LIGHTBOX OPTIMIZADO (SIN LAG) -->
-  <div class="lightbox-overlay" id="lightbox-modal">
+  <!-- BANNER INFORMATIVO NO BLOQUEANTE -->
+  <div id="toast-banner" class="toast-banner" role="status" aria-live="polite"></div>
+
+  <!-- VISOR LIGHTBOX OPTIMIZADO -->
+  <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visor de fotografías">
     <div class="lightbox-toolbar">
       <div class="lightbox-caption" id="lightbox-caption">Evidencia Fotográfica</div>
       <div class="lightbox-controls">
@@ -1290,7 +1742,7 @@
   </div>
 
   <!-- VISOR MODAL DE VISTA PREVIA DE DOCUMENTOS PDF -->
-  <div class="modal-overlay" id="modal-pdf-preview">
+  <div class="modal-overlay" id="modal-pdf-preview" role="dialog" aria-modal="true">
     <div class="modal-box" style="max-width: 900px; height: 88vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <h3 class="modal-title" id="pdf-preview-title">Vista Previa del Documento</h3>
@@ -1306,7 +1758,7 @@
   </div>
 
   <!-- MODAL: MODIFICAR PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA -->
-  <div class="modal-overlay" id="modal-edit-project">
+  <div class="modal-overlay" id="modal-edit-project" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title">Modificar Obra, Cliente y Avance</h3>
@@ -1315,32 +1767,32 @@
       <input type="text" id="hp-project" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
-        <label>Nombre del Proyecto / Obra</label>
-        <input type="text" id="edit-proj-name" class="form-input" placeholder="Ej.: Residencia Mónaco — Villa 04">
+        <label for="edit-proj-name">Nombre del Proyecto / Obra *</label>
+        <input type="text" id="edit-proj-name" class="form-input" maxlength="140" placeholder="Ej.: Residencia Mónaco — Villa 04">
       </div>
 
       <div class="form-group">
-        <label>Nombre del Cliente / Propietario</label>
-        <input type="text" id="edit-proj-client" class="form-input" placeholder="Ej.: Familia Echeverría">
+        <label for="edit-proj-client">Nombre del Cliente / Propietario *</label>
+        <input type="text" id="edit-proj-client" class="form-input" maxlength="120" placeholder="Ej.: Familia Echeverría">
       </div>
 
       <div class="form-group">
-        <label>Ubicación / Dirección</label>
-        <input type="text" id="edit-proj-address" class="form-input" placeholder="Ej.: Costa del Este, Lote 12">
+        <label for="edit-proj-address">Ubicación / Dirección</label>
+        <input type="text" id="edit-proj-address" class="form-input" maxlength="180" placeholder="Ej.: Costa del Este, Lote 12">
       </div>
 
       <div class="form-group">
-        <label>Avance de la Obra (%): <strong id="edit-proj-progress-val">0%</strong></label>
+        <label for="edit-proj-progress">Avance de la Obra (%): <strong id="edit-proj-progress-val">0%</strong></label>
         <input type="range" id="edit-proj-progress" min="0" max="100" step="0.5" style="width:100%; accent-color:var(--btn-olive);" oninput="document.getElementById('edit-proj-progress-val').innerText = this.value + '%'">
       </div>
 
       <div class="form-group">
-        <label>Fase Actual</label>
-        <input type="text" id="edit-proj-phase" class="form-input" placeholder="Ej.: Impermeabilización general">
+        <label for="edit-proj-phase">Fase Actual</label>
+        <input type="text" id="edit-proj-phase" class="form-input" maxlength="100" placeholder="Ej.: Impermeabilización general">
       </div>
 
       <div class="form-group">
-        <label>Estado del Semáforo</label>
+        <label for="edit-proj-status">Estado del Semáforo</label>
         <select id="edit-proj-status" class="form-select">
           <option value="en_tiempo">En Tiempo (Verde)</option>
           <option value="atencion">Atención Requerida (Amarillo)</option>
@@ -1349,7 +1801,7 @@
       </div>
 
       <div class="form-group">
-        <label>Fecha de Final de Obra</label>
+        <label for="edit-proj-date">Fecha de Final de Obra</label>
         <input type="date" id="edit-proj-date" class="form-input">
       </div>
 
@@ -1360,8 +1812,8 @@
     </div>
   </div>
 
-  <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA (CON PERSISTENCIA DE IMÁGENES) -->
-  <div class="modal-overlay" id="modal-report">
+  <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA -->
+  <div class="modal-overlay" id="modal-report" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title" id="modal-report-heading">Publicar Informe de Obra</h3>
@@ -1371,23 +1823,23 @@
       <input type="text" id="hp-report" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
-        <label>Fecha del Informe (El horario se asignará automáticamente con la hora actual)</label>
+        <label for="form-rep-date">Fecha del Informe (El horario se asignará automáticamente con la hora actual) *</label>
         <input type="date" id="form-rep-date" class="form-input" required>
       </div>
 
       <div class="form-group">
-        <label>Categoría Técnica</label>
-        <input type="text" id="form-rep-cat" class="form-input" placeholder="Ej.: Impermeabilización, Enchape, Estructuras..." required>
+        <label for="form-rep-cat">Categoría Técnica *</label>
+        <input type="text" id="form-rep-cat" class="form-input" maxlength="80" placeholder="Ej.: Impermeabilización, Enchape, Estructuras..." required>
       </div>
 
       <div class="form-group">
-        <label>Título del Informe</label>
-        <input type="text" id="form-rep-title" class="form-input" placeholder="Ej.: Avances de enchape e impermeabilización de piscina" required>
+        <label for="form-rep-title">Título del Informe *</label>
+        <input type="text" id="form-rep-title" class="form-input" maxlength="160" placeholder="Ej.: Avances de enchape e impermeabilización de piscina" required>
       </div>
 
       <div class="form-group">
-        <label>Descripción Técnica</label>
-        <textarea id="form-rep-desc" class="form-textarea" rows="4" placeholder="Escribe las observaciones detalladas..." required></textarea>
+        <label for="form-rep-desc">Descripción Técnica *</label>
+        <textarea id="form-rep-desc" class="form-textarea" rows="4" maxlength="3000" placeholder="Escribe las observaciones detalladas..." required></textarea>
       </div>
 
       <div class="form-group">
@@ -1408,7 +1860,7 @@
   </div>
 
   <!-- MODAL: SUBIR O EDITAR DOCUMENTO PDF -->
-  <div class="modal-overlay" id="modal-doc">
+  <div class="modal-overlay" id="modal-doc" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title" id="modal-doc-heading">Subir Archivo PDF Oficial</h3>
@@ -1418,12 +1870,12 @@
       <input type="text" id="hp-doc" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
-        <label>Título del Documento</label>
-        <input type="text" id="form-doc-title" class="form-input" placeholder="Ej.: Cronograma General de Obra" required>
+        <label for="form-doc-title">Título del Documento *</label>
+        <input type="text" id="form-doc-title" class="form-input" maxlength="150" placeholder="Ej.: Cronograma General de Obra" required>
       </div>
 
       <div class="form-group">
-        <label>Categoría</label>
+        <label for="form-doc-cat">Categoría</label>
         <select id="form-doc-cat" class="form-select">
           <option value="Plano">Plano Técnico</option>
           <option value="Licencia">Licencia de Construcción</option>
@@ -1433,8 +1885,8 @@
       </div>
 
       <div class="form-group">
-        <label>Versión</label>
-        <input type="text" id="form-doc-ver" class="form-input" placeholder="v1.0" value="v1.0">
+        <label for="form-doc-ver">Versión</label>
+        <input type="text" id="form-doc-ver" class="form-input" maxlength="20" placeholder="v1.0" value="v1.0">
       </div>
 
       <div class="form-group">
@@ -1454,7 +1906,7 @@
   </div>
 
   <!-- MODAL: CREAR O EDITAR USUARIO / CLIENTE (SOLO ADMIN) -->
-  <div class="modal-overlay" id="modal-user">
+  <div class="modal-overlay" id="modal-user" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title" id="modal-user-heading">Añadir Nuevo Usuario</h3>
@@ -1464,33 +1916,71 @@
       <input type="text" id="hp-user" class="hp-field" tabindex="-1" autocomplete="off">
 
       <div class="form-group">
-        <label>Usuario de Inicio de Sesión (Sin espacios, ej.: Cliente1, Cliente5)</label>
-        <input type="text" id="form-user-code" class="form-input" placeholder="Ej.: Cliente5" required>
+        <label for="form-user-code">Usuario de Inicio de Sesión (Sin espacios, ej.: Cliente1, Cliente5) *</label>
+        <input type="text" id="form-user-code" class="form-input" maxlength="50" placeholder="Ej.: Cliente5" required>
       </div>
 
       <div class="form-group">
-        <label>Contraseña de Acceso</label>
-        <input type="text" id="form-user-pass" class="form-input" placeholder="Ej.: 1234" value="1234" required>
+        <label for="form-user-pass">Contraseña de Acceso *</label>
+        <input type="text" id="form-user-pass" class="form-input" maxlength="64" placeholder="Ej.: 1234" value="1234" required>
       </div>
 
       <div class="form-group">
-        <label>Nombre del Cliente / Propietario</label>
-        <input type="text" id="form-user-client" class="form-input" placeholder="Ej.: Familia Bustillo" required>
+        <label for="form-user-email">Correo Electrónico del Cliente *</label>
+        <input type="email" id="form-user-email" class="form-input" maxlength="120" placeholder="cliente@correo.com" required>
       </div>
 
       <div class="form-group">
-        <label>Nombre del Proyecto / Obra Asignada</label>
-        <input type="text" id="form-user-project" class="form-input" placeholder="Ej.: Proyecto Residencial Bocagrande" required>
+        <label for="form-user-client">Nombre del Cliente / Propietario *</label>
+        <input type="text" id="form-user-client" class="form-input" maxlength="120" placeholder="Ej.: Familia Bustillo" required>
       </div>
 
       <div class="form-group">
-        <label>Ubicación / Dirección</label>
-        <input type="text" id="form-user-address" class="form-input" placeholder="Ej.: Cartagena de Indias">
+        <label for="form-user-project">Nombre del Proyecto / Obra Asignada *</label>
+        <input type="text" id="form-user-project" class="form-input" maxlength="140" placeholder="Ej.: Proyecto Residencial Bocagrande" required>
+      </div>
+
+      <div class="form-group">
+        <label for="form-user-address">Ubicación / Dirección</label>
+        <input type="text" id="form-user-address" class="form-input" maxlength="180" placeholder="Ej.: Cartagena de Indias">
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
         <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-user')">Cancelar</button>
         <button class="btn-action-primary" id="btn-submit-user" onclick="saveUserAccount()">Guardar Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURACIÓN DE CORREO AUTOMÁTICO (EMAILJS / WEBHOOK) -->
+  <div class="modal-overlay" id="modal-email-config" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Configuración de Envío de Correos (EmailJS)</h3>
+        <button class="modal-close" onclick="closeModal('modal-email-config')">✕</button>
+      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+        Al publicar un informe o registrar en bitácora, el sistema despacha un correo con saludo horario al cliente y copia a Gina Bustillo (<strong>proyectos.ginabustillo@gmail.com</strong>) y Sixto Fernández (<strong>Dynatic.solution@gmail.com</strong>).
+      </p>
+
+      <div class="form-group">
+        <label for="cfg-ejs-service">EmailJS Service ID</label>
+        <input type="text" id="cfg-ejs-service" class="form-input" maxlength="80" placeholder="Ej.: service_diego">
+      </div>
+
+      <div class="form-group">
+        <label for="cfg-ejs-template">EmailJS Template ID</label>
+        <input type="text" id="cfg-ejs-template" class="form-input" maxlength="80" placeholder="Ej.: template_bitacora">
+      </div>
+
+      <div class="form-group">
+        <label for="cfg-ejs-key">EmailJS Public Key</label>
+        <input type="text" id="cfg-ejs-key" class="form-input" maxlength="100" placeholder="Ej.: user_xxxxxxxxx">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-email-config')">Cerrar</button>
+        <button class="btn-action-primary" onclick="saveEmailConfig()">Guardar Configuración</button>
       </div>
     </div>
   </div>
@@ -1523,6 +2013,7 @@
   </div>
 
   <script>
+    // Respaldo SVG del icono corporativo
     const CAT_FALLBACK_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#0B0D0A"/>
@@ -1536,13 +2027,18 @@
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    let activeUser = localStorage.getItem('diego_active_user') || null;
+    const ADMIN_CC_EMAILS = ["proyectos.ginabustillo@gmail.com", "Dynatic.solution@gmail.com"];
+
+    // Estado de sesión sincronizado en tiempo real con Supabase
+    let activeUser = sessionStorage.getItem('diego_session_user') || null;
+    let activeProjectId = sessionStorage.getItem('diego_session_project_id') || null;
+    let currentModule = 'feed';
+
     let allProjects = [];
     let currentProject = null;
     let currentReports = [];
     let currentDocs = [];
 
-    // Estados separados para garantizar persistencia de imágenes al editar informes
     let existingReportImages = [];
     let removedImageIds = [];
     let uploadedImagesBase64 = [];
@@ -1550,7 +2046,6 @@
     let selectedPdfDataUrl = null;
     let currentPdfBlobUrl = null;
 
-    // Variables del Visor de Imágenes acelerado por GPU
     let currentZoom = 1;
     let panX = 0;
     let panY = 0;
@@ -1558,8 +2053,34 @@
     let startDragX = 0;
     let startDragY = 0;
     let rafPending = false;
+    let lockoutTimerInterval = null;
 
-    // Sanitización DOM y Honeypot
+    // =========================================================================
+    // 1. GESTIÓN DE PRECARGA (LOADER DE 6 PATITAS — EJECUCIÓN ÚNICA)
+    // =========================================================================
+    function initPreloader() {
+      const preloader = document.getElementById('preloader');
+      if (!preloader) return;
+
+      const dismissPreloader = () => {
+        if (preloader.classList.contains('loaded')) return;
+        preloader.classList.add('loaded');
+        preloader.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('preloader-lock');
+      };
+
+      const lastPaw = preloader.querySelector('.paw:nth-child(6)');
+      if (lastPaw) {
+        lastPaw.addEventListener('animationend', () => {
+          setTimeout(dismissPreloader, 180);
+        }, { once: true });
+      }
+      setTimeout(dismissPreloader, 2100);
+    }
+
+    // =========================================================================
+    // 2. SEGURIDAD NATIVA: SANITIZACIÓN, HONEYPOTS Y FUERZA BRUTA
+    // =========================================================================
     function escapeHtml(raw) {
       if (!raw) return '';
       return String(raw)
@@ -1575,7 +2096,86 @@
       return Boolean(el && el.value.trim() !== '');
     }
 
-    // Corrección ortográfica limpia (texto puro para BD y escapado para DOM)
+    function isValidEmailFormat(email) {
+      if (!email || email.length > 120) return false;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function setFieldValidationState(inputId, errorId, errorMsg) {
+      const input = document.getElementById(inputId);
+      const errorEl = document.getElementById(errorId);
+      if (!input || !errorEl) return;
+
+      if (errorMsg) {
+        input.setAttribute('aria-invalid', 'true');
+        errorEl.textContent = errorMsg;
+      } else {
+        input.setAttribute('aria-invalid', 'false');
+        errorEl.textContent = '';
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-banner');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 4200);
+    }
+
+    // Protección contra Fuerza Bruta en sessionStorage (5 intentos -> 30s bloqueo)
+    function checkBruteForceLockout() {
+      const btn = document.getElementById('btn-login-submit');
+      const lockoutUntil = parseInt(sessionStorage.getItem('diego_lockout_until') || '0', 10);
+      const now = Date.now();
+
+      if (lockoutUntil > now) {
+        const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = `Acceso bloqueado (${remainingSecs}s)`;
+        }
+        setFieldValidationState('login-pass', 'login-pass-error', `Demasiados intentos fallidos. Espera ${remainingSecs} segundos.`);
+        if (!lockoutTimerInterval) {
+          lockoutTimerInterval = setInterval(checkBruteForceLockout, 1000);
+        }
+        return true;
+      }
+
+      if (lockoutTimerInterval) {
+        clearInterval(lockoutTimerInterval);
+        lockoutTimerInterval = null;
+        sessionStorage.removeItem('diego_lockout_until');
+        sessionStorage.setItem('diego_login_attempts', '0');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Ingresar al Portal de Obra';
+        }
+        setFieldValidationState('login-pass', 'login-pass-error', '');
+      }
+      return false;
+    }
+
+    function recordFailedLoginAttempt() {
+      let attempts = parseInt(sessionStorage.getItem('diego_login_attempts') || '0', 10) + 1;
+      sessionStorage.setItem('diego_login_attempts', String(attempts));
+
+      if (attempts >= 5) {
+        sessionStorage.setItem('diego_lockout_until', String(Date.now() + 30000));
+        checkBruteForceLockout();
+      } else {
+        const restantes = 5 - attempts;
+        setFieldValidationState('login-pass', 'login-pass-error', `Credenciales incorrectas. Intentos restantes antes de bloqueo: ${restantes}.`);
+      }
+    }
+
+    function resetLoginAttempts() {
+      sessionStorage.removeItem('diego_login_attempts');
+      sessionStorage.removeItem('diego_lockout_until');
+    }
+
     function cleanOrthographyRaw(text) {
       if (!text) return '';
       let clean = String(text).trim();
@@ -1601,73 +2201,254 @@
       return escapeHtml(cleanOrthographyRaw(text));
     }
 
+    // =========================================================================
+    // 4. NOTIFICACIONES AUTOMÁTICAS POR CORREO (SALUDO SEGÚN HORA LOCAL)
+    // =========================================================================
+    function getLocalGreeting() {
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 12) return 'Buenos días';
+      if (hour >= 12 && hour < 19) return 'Buenas tardes';
+      return 'Buenas noches';
+    }
+
+    async function sendWorkNotificationEmail({ actionLabel, summaryText, detailText }) {
+      try {
+        if (!currentProject) return;
+
+        const greeting = getLocalGreeting();
+        const clientEmail = (currentProject.client_email || '').trim();
+        const portalUrl = window.location.href;
+        const recipientList = [clientEmail, ...ADMIN_CC_EMAILS].filter(Boolean).join(', ');
+
+        const fullMessage = `${greeting}, ${currentProject.client_name || currentProject.code}:\n\n` +
+          `Se ha registrado una nueva actualización en el proyecto "${currentProject.name}" (${actionLabel}):\n\n` +
+          `• Resumen: ${summaryText}\n` +
+          `• Detalle técnico: ${detailText}\n` +
+          `• Fase actual: ${currentProject.current_phase || 'En ejecución'} (${Number(currentProject.actual_progress || 0).toFixed(1)}% de avance)\n\n` +
+          `Enlace directo para revisión y confirmación de lectura:\n${portalUrl}\n\n` +
+          `Atentamente,\nDirección de Obra — B+ Arquitectura Estudio (Gina Bustillo: proyectos.ginabustillo@gmail.com) & Dynatic (Sixto Fernández: Dynatic.solution@gmail.com)`;
+
+        const serviceId = localStorage.getItem('diego_ejs_service') || '';
+        const templateId = localStorage.getItem('diego_ejs_template') || '';
+        const publicKey = localStorage.getItem('diego_ejs_key') || '';
+
+        if (serviceId && templateId && publicKey) {
+          await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service_id: serviceId,
+              template_id: templateId,
+              user_id: publicKey,
+              template_params: {
+                to_email: clientEmail || ADMIN_CC_EMAILS[0],
+                cc_emails: ADMIN_CC_EMAILS.join(', '),
+                greeting: greeting,
+                client_name: currentProject.client_name || currentProject.code,
+                project_name: currentProject.name,
+                action_type: actionLabel,
+                summary: summaryText,
+                details: detailText,
+                portal_url: portalUrl,
+                message: fullMessage,
+                contact_info: 'B+ Arquitectura Estudio (proyectos.ginabustillo@gmail.com) | Dynatic (Dynatic.solution@gmail.com)'
+              }
+            })
+          });
+          showToast(`✉️ Notificación enviada a ${recipientList}`);
+        } else {
+          showToast(`✔ Publicado. Notificación preparada para: ${recipientList}`);
+        }
+      } catch (err) {
+        // Fallo silencioso garantizado para no interrumpir jamás el flujo de Supabase
+        console.warn('Aviso silencioso de notificación por correo:', err);
+      }
+    }
+
+    function openEmailConfigModal() {
+      document.getElementById('cfg-ejs-service').value = localStorage.getItem('diego_ejs_service') || '';
+      document.getElementById('cfg-ejs-template').value = localStorage.getItem('diego_ejs_template') || '';
+      document.getElementById('cfg-ejs-key').value = localStorage.getItem('diego_ejs_key') || '';
+      document.getElementById('modal-email-config').classList.add('open');
+    }
+
+    function saveEmailConfig() {
+      localStorage.setItem('diego_ejs_service', document.getElementById('cfg-ejs-service').value.trim());
+      localStorage.setItem('diego_ejs_template', document.getElementById('cfg-ejs-template').value.trim());
+      localStorage.setItem('diego_ejs_key', document.getElementById('cfg-ejs-key').value.trim());
+      closeModal('modal-email-config');
+      showToast('Configuración de correo guardada correctamente.');
+    }
+
+    // =========================================================================
+    // 6. SINCRONIZACIÓN INMEDIATA DE CONTRASEÑAS Y USUARIOS (PC Y CELULAR)
+    // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('diego_saved_username');
-      if (savedUser) document.getElementById('login-user').value = savedUser;
-      initSession();
+      initPreloader();
+      checkBruteForceLockout();
       initLightboxEvents();
       initDragAndDropZones();
+      verifyLiveSessionOnBoot();
+      setupRealtimeSubscriptions();
     });
 
-    async function initSession() {
+    async function verifyLiveSessionOnBoot() {
       if (!activeUser) {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('app-screen').style.display = 'none';
+        showLoginView();
         return;
       }
 
+      // Consulta fresca a Supabase para validar que el usuario siga existiendo y sincronizar su estado
+      const { data: projects, error } = await supabaseClient.from('projects').select('*');
+      if (error) {
+        showLoginView();
+        return;
+      }
+
+      if (activeUser.toLowerCase() === 'admin') {
+        enterAuthenticatedView();
+        return;
+      }
+
+      const matched = (projects || []).find(p => p.id === activeProjectId || p.code.toLowerCase() === activeUser.toLowerCase());
+      if (!matched) {
+        forceSessionInvalidation('Tu cuenta fue actualizada. Inicia sesión nuevamente.');
+        return;
+      }
+
+      activeUser = matched.code;
+      activeProjectId = matched.id;
+      sessionStorage.setItem('diego_session_user', activeUser);
+      sessionStorage.setItem('diego_session_project_id', activeProjectId);
+      enterAuthenticatedView();
+    }
+
+    function showLoginView() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app-screen').style.display = 'none';
+    }
+
+    async function enterAuthenticatedView() {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display = 'flex';
-      document.getElementById('user-display-tag').innerText = activeUser.toUpperCase();
-
+      document.getElementById('user-display-tag').textContent = activeUser.toUpperCase();
       await loadProjects();
-      setupRealtimeSubscriptions();
+      switchModule(currentModule || 'feed');
     }
 
     async function handleLogin() {
-      const user = document.getElementById('login-user').value.trim();
-      const pass = document.getElementById('login-pass').value.trim();
+      if (isHoneypotTriggered('hp-login')) return;
+      if (checkBruteForceLockout()) return;
 
-      const adminPass = localStorage.getItem('diego_admin_pass') || '1234';
-      if (user === 'Admin' && pass === adminPass) {
-        activeUser = 'Admin';
-        localStorage.setItem('diego_active_user', 'Admin');
-        localStorage.setItem('diego_saved_username', 'Admin');
-        document.getElementById('login-pass').value = '';
-        initSession();
+      const userRaw = document.getElementById('login-user').value.trim();
+      const emailRaw = document.getElementById('login-email').value.trim();
+      const passRaw = document.getElementById('login-pass').value.trim();
+
+      setFieldValidationState('login-user', 'login-user-error', '');
+      setFieldValidationState('login-email', 'login-email-error', '');
+      setFieldValidationState('login-pass', 'login-pass-error', '');
+
+      let hasValidationError = false;
+      if (!userRaw || userRaw.length > 50 || /\s/.test(userRaw)) {
+        setFieldValidationState('login-user', 'login-user-error', 'Ingresa un usuario válido sin espacios (máx. 50 caracteres).');
+        hasValidationError = true;
+      }
+      if (!isValidEmailFormat(emailRaw)) {
+        setFieldValidationState('login-email', 'login-email-error', 'Ingresa un correo electrónico válido (ej. nombre@dominio.com).');
+        hasValidationError = true;
+      }
+      if (!passRaw || passRaw.length > 64) {
+        setFieldValidationState('login-pass', 'login-pass-error', 'Ingresa tu contraseña de acceso.');
+        hasValidationError = true;
+      }
+      if (hasValidationError) return;
+
+      const btn = document.getElementById('btn-login-submit');
+      btn.disabled = true;
+      btn.textContent = 'Verificando en tiempo real...';
+
+      // Consulta fresca en tiempo real a Supabase (sin caché local de contraseñas)
+      const { data: projects, error } = await supabaseClient.from('projects').select('*');
+      btn.disabled = false;
+      btn.textContent = 'Ingresar al Portal de Obra';
+
+      if (error) {
+        setFieldValidationState('login-pass', 'login-pass-error', 'Error de conexión con el servidor. Intenta de nuevo.');
         return;
       }
 
-      const { data: projects } = await supabaseClient.from('projects').select('*');
-      const matchedAccount = (projects || []).find(p => p.code.toLowerCase() === user.toLowerCase());
+      const list = projects || [];
+
+      // Verificar si existe fila de Admin en Supabase o usar credencial predeterminada sincronizada
+      const adminRow = list.find(p => p.code.toLowerCase() === 'admin');
+      if (userRaw.toLowerCase() === 'admin') {
+        const expectedAdminPass = adminRow ? (adminRow.password || '1234') : '1234';
+        if (passRaw !== expectedAdminPass) {
+          recordFailedLoginAttempt();
+          return;
+        }
+        resetLoginAttempts();
+        activeUser = 'Admin';
+        activeProjectId = adminRow ? adminRow.id : null;
+        sessionStorage.setItem('diego_session_user', 'Admin');
+        sessionStorage.setItem('diego_session_email', emailRaw);
+        document.getElementById('login-pass').value = '';
+        await enterAuthenticatedView();
+        return;
+      }
+
+      const matchedAccount = list.find(p => p.code.toLowerCase() === userRaw.toLowerCase());
       const expectedPass = matchedAccount ? (matchedAccount.password || '1234') : null;
 
-      if (!matchedAccount || pass !== expectedPass) {
-        alert("Usuario o contraseña incorrectos. Verifica tus datos de acceso.");
+      if (!matchedAccount || passRaw !== expectedPass) {
+        recordFailedLoginAttempt();
         return;
+      }
+
+      resetLoginAttempts();
+
+      // Si el cliente ingresó su correo electrónico, asociarlo y actualizarlo en Supabase
+      if (emailRaw && emailRaw !== matchedAccount.client_email) {
+        await supabaseClient.from('projects').update({ client_email: emailRaw }).eq('id', matchedAccount.id);
+        matchedAccount.client_email = emailRaw;
       }
 
       activeUser = matchedAccount.code;
-      localStorage.setItem('diego_active_user', activeUser);
-      localStorage.setItem('diego_saved_username', activeUser);
+      activeProjectId = matchedAccount.id;
+      sessionStorage.setItem('diego_session_user', activeUser);
+      sessionStorage.setItem('diego_session_project_id', activeProjectId);
+      sessionStorage.setItem('diego_session_email', emailRaw);
       document.getElementById('login-pass').value = '';
-      initSession();
+      await enterAuthenticatedView();
     }
 
-    function handleLogout() {
-      if (confirm("¿Deseas salir de tu cuenta?")) {
-        activeUser = null;
-        localStorage.removeItem('diego_active_user');
-        document.getElementById('app-screen').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'flex';
+    function forceSessionInvalidation(reasonMsg) {
+      activeUser = null;
+      activeProjectId = null;
+      sessionStorage.removeItem('diego_session_user');
+      sessionStorage.removeItem('diego_session_project_id');
+      showLoginView();
+      if (reasonMsg) {
+        setFieldValidationState('login-pass', 'login-pass-error', reasonMsg);
       }
     }
 
+    function handleLogout() {
+      if (confirm('¿Deseas cerrar tu sesión actual?')) {
+        forceSessionInvalidation('');
+      }
+    }
+
+    // =========================================================================
+    // CARGA MULTITENANT DE PROYECTOS Y PERFIL DE AUTOSERVICIO
+    // =========================================================================
     async function loadProjects() {
       const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
       if (error) return;
 
-      allProjects = data || [];
+      // Filtrar eventual fila interna de Admin del listado de obras si existiera
+      const rawList = data || [];
+      allProjects = rawList.filter(p => p.code.toLowerCase() !== 'admin');
       const prevSelectedId = currentProject ? currentProject.id : null;
 
       if (activeUser === 'Admin') {
@@ -1682,7 +2463,7 @@
 
         currentProject = allProjects.find(p => p.id === prevSelectedId) || allProjects[0] || null;
         if (currentProject) dropdown.value = currentProject.id;
-        renderUsersTable();
+        renderUsersTable(rawList);
       } else {
         document.getElementById('admin-project-selector').style.display = 'none';
         document.getElementById('btn-create-report').style.display = 'none';
@@ -1690,35 +2471,156 @@
         document.getElementById('btn-edit-project').style.display = 'none';
         document.getElementById('nav-item-users').style.display = 'none';
 
-        currentProject = allProjects.find(p => p.code.toLowerCase() === activeUser.toLowerCase()) || null;
+        const found = allProjects.find(p => p.id === activeProjectId || p.code.toLowerCase() === activeUser.toLowerCase());
+        if (!found) {
+          forceSessionInvalidation('Tu cuenta fue modificada por el administrador. Inicia sesión nuevamente.');
+          return;
+        }
+        currentProject = found;
+        activeUser = found.code;
+        activeProjectId = found.id;
+        sessionStorage.setItem('diego_session_user', activeUser);
+        sessionStorage.setItem('diego_session_project_id', activeProjectId);
+        document.getElementById('user-display-tag').textContent = activeUser.toUpperCase();
       }
 
+      populateSelfProfileForm(rawList);
       renderHeaderDashboard();
       await loadActiveProjectData();
     }
 
     function changeActiveProject(projectId) {
+      if (activeUser !== 'Admin') return;
       currentProject = allProjects.find(p => p.id === projectId) || null;
       renderHeaderDashboard();
       loadActiveProjectData();
     }
 
+    // 5. AUTOSERVICIO DE PERFIL (CLIENTES Y ADMIN)
+    function populateSelfProfileForm(rawList) {
+      const codeInput = document.getElementById('prof-code');
+      const emailInput = document.getElementById('prof-email');
+      const passInput = document.getElementById('prof-pass');
+      if (!codeInput || !emailInput || !passInput) return;
+
+      if (activeUser === 'Admin') {
+        const adminRow = (rawList || []).find(p => p.code.toLowerCase() === 'admin');
+        codeInput.value = 'Admin';
+        codeInput.disabled = true;
+        emailInput.value = adminRow ? (adminRow.client_email || ADMIN_CC_EMAILS[0]) : (sessionStorage.getItem('diego_session_email') || ADMIN_CC_EMAILS[0]);
+        passInput.value = adminRow ? (adminRow.password || '1234') : '1234';
+      } else if (currentProject) {
+        codeInput.disabled = false;
+        codeInput.value = currentProject.code || '';
+        emailInput.value = currentProject.client_email || '';
+        passInput.value = currentProject.password || '1234';
+      }
+    }
+
+    async function saveSelfProfile() {
+      if (isHoneypotTriggered('hp-profile')) return;
+
+      const newCode = document.getElementById('prof-code').value.trim().replace(/\s+/g, '');
+      const newEmail = document.getElementById('prof-email').value.trim();
+      const newPass = document.getElementById('prof-pass').value.trim();
+
+      setFieldValidationState('prof-code', 'prof-code-error', '');
+      setFieldValidationState('prof-email', 'prof-email-error', '');
+      setFieldValidationState('prof-pass', 'prof-pass-error', '');
+
+      let invalid = false;
+      if (!newCode || newCode.length > 50) {
+        setFieldValidationState('prof-code', 'prof-code-error', 'Ingresa un nombre de usuario válido sin espacios.');
+        invalid = true;
+      }
+      if (!isValidEmailFormat(newEmail)) {
+        setFieldValidationState('prof-email', 'prof-email-error', 'Ingresa un correo electrónico válido.');
+        invalid = true;
+      }
+      if (!newPass || newPass.length < 4 || newPass.length > 64) {
+        setFieldValidationState('prof-pass', 'prof-pass-error', 'La contraseña debe tener entre 4 y 64 caracteres.');
+        invalid = true;
+      }
+      if (invalid) return;
+
+      const btn = document.getElementById('btn-save-self-profile');
+      btn.disabled = true;
+      btn.textContent = 'Sincronizando en Supabase...';
+
+      if (activeUser === 'Admin') {
+        const { data: existingAdmin } = await supabaseClient.from('projects').select('*').ilike('code', 'Admin').maybeSingle();
+        if (existingAdmin) {
+          await supabaseClient.from('projects').update({
+            client_email: newEmail,
+            password: newPass
+          }).eq('id', existingAdmin.id);
+        } else {
+          await supabaseClient.from('projects').insert([{
+            code: 'Admin',
+            name: 'Administración General DIEGO',
+            client_name: 'Administrador',
+            client_email: newEmail,
+            password: newPass,
+            actual_progress: 100,
+            status: 'en_tiempo',
+            current_phase: 'Dirección'
+          }]);
+        }
+        btn.disabled = false;
+        btn.textContent = 'Actualizar Mis Credenciales';
+        showToast('✔ Credenciales de Administrador sincronizadas en todos los dispositivos.');
+        await loadProjects();
+        return;
+      }
+
+      if (!currentProject) {
+        btn.disabled = false;
+        btn.textContent = 'Actualizar Mis Credenciales';
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('projects')
+        .update({
+          code: newCode,
+          client_email: newEmail,
+          password: newPass
+        })
+        .eq('id', currentProject.id);
+
+      btn.disabled = false;
+      btn.textContent = 'Actualizar Mis Credenciales';
+
+      if (error) {
+        setFieldValidationState('prof-code', 'prof-code-error', 'No se pudo actualizar: ' + error.message);
+        return;
+      }
+
+      activeUser = newCode;
+      sessionStorage.setItem('diego_session_user', newCode);
+      sessionStorage.setItem('diego_session_email', newEmail);
+      document.getElementById('user-display-tag').textContent = newCode.toUpperCase();
+      showToast('✔ Tus credenciales se actualizaron y sincronizaron en tiempo real.');
+      await loadProjects();
+    }
+
+    // CABECERA EJECUTIVA
     function renderHeaderDashboard() {
       if (!currentProject) return;
 
-      document.getElementById('dash-project-name').innerText = cleanOrthographyRaw(currentProject.name);
-      document.getElementById('dash-project-desc').innerText = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} — ${cleanOrthographyRaw(currentProject.address || 'Ubicación registrada')}`;
+      document.getElementById('dash-project-name').textContent = cleanOrthographyRaw(currentProject.name);
+      document.getElementById('dash-project-desc').textContent = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} (${currentProject.client_email || 'Sin correo'}) — ${cleanOrthographyRaw(currentProject.address || 'Ubicación registrada')}`;
 
       const badge = document.getElementById('dash-health-badge');
       badge.className = `health-badge ${currentProject.status}`;
-      badge.innerText = currentProject.status === 'en_tiempo' ? 'En Tiempo' : (currentProject.status === 'atencion' ? 'Atención Requerida' : 'Retraso');
+      badge.textContent = currentProject.status === 'en_tiempo' ? 'En Tiempo' : (currentProject.status === 'atencion' ? 'Atención Requerida' : 'Retraso');
 
       const actual = Number(currentProject.actual_progress || 0);
-      document.getElementById('label-actual').innerText = `${actual.toFixed(1)}%`;
+      document.getElementById('label-actual').textContent = `${actual.toFixed(1)}%`;
       document.getElementById('bar-actual').style.width = `${Math.min(actual, 100)}%`;
 
-      document.getElementById('dash-phase').innerText = cleanOrthographyRaw(currentProject.current_phase || 'En ejecución');
-      document.getElementById('dash-milestone-date').innerText = currentProject.next_milestone_date 
+      document.getElementById('dash-phase').textContent = cleanOrthographyRaw(currentProject.current_phase || 'En ejecución');
+      document.getElementById('dash-milestone-date').textContent = currentProject.next_milestone_date
         ? new Date(currentProject.next_milestone_date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : 'Por definir';
     }
@@ -1790,8 +2692,8 @@
 
         const adminActions = activeUser === 'Admin'
           ? `<div style="display:flex; gap:6px;">
-              <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openEditReportModal('${rep.id}')">✎ Editar</button>
-              <button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${rep.id}')">🗑️ Eliminar</button>
+              <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openEditReportModal('${escapeHtml(rep.id)}')">✎ Editar</button>
+              <button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${escapeHtml(rep.id)}')">🗑️ Eliminar</button>
              </div>`
           : '';
 
@@ -1799,7 +2701,7 @@
         const fotosHtml = (rep.report_images && rep.report_images.length > 0)
           ? `<div class="photo-grid">
               ${rep.report_images.map(img => `
-                <img src="${img.image_url}" loading="lazy" decoding="async" class="photo-thumb" alt="Evidencia" onclick="openLightbox('${img.image_url}', '${safeCaption}')">
+                <img src="${escapeHtml(img.image_url)}" loading="lazy" decoding="async" class="photo-thumb" alt="Evidencia de obra" onclick="openLightbox('${escapeHtml(img.image_url)}', '${safeCaption}')">
               `).join('')}
              </div>`
           : '';
@@ -1827,7 +2729,7 @@
             ${fotosHtml}
 
             <div class="interaction-bar">
-              <button class="btn-seen ${yaVisto ? 'active' : ''}" ${disableSeenBtn} onclick="toggleSeenStatus('${rep.id}')">
+              <button class="btn-seen ${yaVisto ? 'active' : ''}" ${disableSeenBtn} onclick="toggleSeenStatus('${escapeHtml(rep.id)}')">
                 ${yaVisto ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
               </button>
               <span style="font-size:11.5px; color:var(--text-body); font-weight:500;">${vistoTexto}</span>
@@ -1837,8 +2739,8 @@
               <div style="font-size:12px; font-weight:700; color:var(--text-body);">💬 Comentarios (${comments.length}):</div>
               ${commentsHtml || '<div style="font-size:11.5px; color:#777; margin-top:3px;">Sin comentarios todavía.</div>'}
               <div style="display:flex; gap:6px; margin-top:8px;">
-                <input type="text" id="comm-input-${rep.id}" class="form-input" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
-                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${rep.id}')">Enviar</button>
+                <input type="text" id="comm-input-${escapeHtml(rep.id)}" class="form-input" maxlength="500" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
+                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${escapeHtml(rep.id)}')">Enviar</button>
               </div>
             </div>
           </div>
@@ -1888,8 +2790,9 @@
 
     async function addComment(reportId) {
       const input = document.getElementById(`comm-input-${reportId}`);
+      if (!input) return;
       const val = input.value.trim();
-      if (!val) return;
+      if (!val || val.length > 500) return;
 
       const report = currentReports.find(r => r.id === reportId);
       const comments = Array.isArray(report.comments) ? [...report.comments] : [];
@@ -1904,9 +2807,9 @@
       loadActiveProjectData();
     }
 
-    // CREAR Y EDITAR INFORMES (CON CONSERVACIÓN ESTRICTA DE IMÁGENES PREEXISTENTES)
+    // CREAR Y EDITAR INFORMES (CON PERSISTENCIA DE IMÁGENES Y DISPARADOR DE CORREO)
     function openCreateReportModal() {
-      document.getElementById('modal-report-heading').innerText = 'Publicar Informe de Obra';
+      document.getElementById('modal-report-heading').textContent = 'Publicar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = '';
       document.getElementById('form-rep-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('form-rep-cat').value = '';
@@ -1924,7 +2827,7 @@
       const rep = currentReports.find(r => r.id === reportId);
       if (!rep) return;
 
-      document.getElementById('modal-report-heading').innerText = 'Editar Informe de Obra';
+      document.getElementById('modal-report-heading').textContent = 'Editar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = rep.id;
       document.getElementById('form-rep-date').value = rep.report_date || new Date(rep.created_at).toISOString().split('T')[0];
       document.getElementById('form-rep-cat').value = cleanOrthographyRaw(rep.category || '');
@@ -1942,14 +2845,14 @@
       const wrap = document.getElementById('rep-img-previews');
       const existingHtml = existingReportImages.map(img => `
         <div class="preview-wrap" title="Imagen guardada en el informe">
-          <img src="${img.url}">
-          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeExistingImg('${img.id}')">✕</button>
+          <img src="${escapeHtml(img.url)}" alt="Previsualización existente">
+          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeExistingImg('${escapeHtml(img.id)}')">✕</button>
         </div>
       `).join('');
 
       const newHtml = uploadedImagesBase64.map((src, i) => `
         <div class="preview-wrap" title="Nueva imagen por añadir">
-          <img src="${src}">
+          <img src="${escapeHtml(src)}" alt="Previsualización nueva">
           <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeImgPreview(${i})">✕</button>
         </div>
       `).join('');
@@ -1974,18 +2877,18 @@
 
       const editingId = document.getElementById('form-rep-editing-id').value;
       const report_date = document.getElementById('form-rep-date').value || new Date().toISOString().split('T')[0];
-      const category = cleanOrthographyRaw(document.getElementById('form-rep-cat').value.trim() || 'General');
-      const title = cleanOrthographyRaw(document.getElementById('form-rep-title').value.trim());
-      const description = cleanOrthographyRaw(document.getElementById('form-rep-desc').value.trim());
+      const category = cleanOrthographyRaw(document.getElementById('form-rep-cat').value.trim().slice(0, 80) || 'General');
+      const title = cleanOrthographyRaw(document.getElementById('form-rep-title').value.trim().slice(0, 160));
+      const description = cleanOrthographyRaw(document.getElementById('form-rep-desc').value.trim().slice(0, 3000));
       const currentTimeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
       if (!title || !description) {
-        alert("Completa el título y la descripción del informe.");
+        alert('Completa el título y la descripción del informe.');
         return;
       }
 
       const btn = document.getElementById('btn-submit-rep');
-      btn.innerText = "Guardando...";
+      btn.textContent = 'Guardando...';
       btn.disabled = true;
 
       if (editingId) {
@@ -2027,16 +2930,24 @@
             await supabaseClient.from('report_images').insert(imgs);
           }
 
+          const auditSummary = `Se publicó el informe "${title}" (${category} — ${report_date}).`;
           await supabaseClient.from('project_audit_logs').insert([{
             project_id: currentProject.id,
             author_name: activeUser,
             action_type: 'nuevo_informe',
-            description: `Se publicó el informe "${title}" (${category} — ${report_date}).`
+            description: auditSummary
           }]);
+
+          // Disparar notificación automática por correo
+          sendWorkNotificationEmail({
+            actionLabel: `Nuevo Informe de Obra (${category})`,
+            summaryText: `${title} — Fecha: ${report_date}`,
+            detailText: description
+          });
         }
       }
 
-      btn.innerText = "Guardar Informe";
+      btn.textContent = 'Guardar Informe';
       btn.disabled = false;
       closeModal('modal-report');
       existingReportImages = [];
@@ -2048,12 +2959,12 @@
 
     async function deleteReport(reportId) {
       if (activeUser !== 'Admin') return;
-      if (!confirm("¿Deseas eliminar este informe y sus fotografías asociadas?")) return;
+      if (!confirm('¿Deseas eliminar este informe y sus fotografías asociadas?')) return;
       await supabaseClient.from('daily_reports').delete().eq('id', reportId);
       loadActiveProjectData();
     }
 
-    // BAÚL DE GALERÍA ORGANIZADO POR FECHA SELECCIONADA
+    // BAÚL DE GALERÍA POR FECHA
     function renderGalleryVaultByDate(reports) {
       const container = document.getElementById('gallery-vault-container');
       const groupsByDate = {};
@@ -2102,7 +3013,7 @@
             <div class="photo-grid" style="margin-bottom:0;">
               ${group.images.map(item => `
                 <div style="position:relative;">
-                  <img src="${item.url}" loading="lazy" decoding="async" class="photo-thumb" onclick="openLightbox('${item.url}', '${item.category.replace(/'/g, "")} — ${group.label.replace(/'/g, "")}')">
+                  <img src="${escapeHtml(item.url)}" loading="lazy" decoding="async" class="photo-thumb" alt="Fotografía de galería" onclick="openLightbox('${escapeHtml(item.url)}', '${item.category.replace(/'/g, "")} — ${group.label.replace(/'/g, "")}')">
                   <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.82); color:#fff; font-size:10px; padding:3px 8px; border-radius:6px; pointer-events:none;">${item.category}</span>
                 </div>
               `).join('')}
@@ -2134,7 +3045,7 @@
       }).join('');
     }
 
-    // CENTRO DOCUMENTAL: VISTA PREVIA MULTIPÁGINA Y DESCARGA NATIVA EN MÓVIL Y PC
+    // CENTRO DOCUMENTAL: VISTA PREVIA MULTIPÁGINA Y DESCARGA NATIVA
     function pdfDataUrlToBlobUrl(fileUrl) {
       if (!fileUrl) return '';
       if (!fileUrl.startsWith('data:')) return fileUrl;
@@ -2161,7 +3072,7 @@
         return;
       }
 
-      document.getElementById('pdf-preview-title').innerText = `Vista Previa — ${cleanOrthographyRaw(doc.title)}`;
+      document.getElementById('pdf-preview-title').textContent = `Vista Previa — ${cleanOrthographyRaw(doc.title)}`;
       document.getElementById('pdf-native-open-btn').href = currentPdfBlobUrl;
       document.getElementById('pdf-preview-frame').setAttribute('data', currentPdfBlobUrl);
       document.getElementById('modal-pdf-preview').classList.add('open');
@@ -2198,8 +3109,8 @@
 
       tbody.innerHTML = docs.map((d, idx) => {
         const adminBtns = activeUser === 'Admin'
-          ? `<button class="btn-edit-project" style="display:inline-flex; padding:5px 9px; font-size:11px; margin-left:4px;" onclick="openEditDocModal('${d.id}')">✎ Editar</button>
-             <button class="btn-logout" style="padding:5px 9px; font-size:11px; margin-left:4px;" onclick="deleteDocument('${d.id}')">🗑️</button>`
+          ? `<button class="btn-edit-project" style="display:inline-flex; padding:5px 9px; font-size:11px; margin-left:4px;" onclick="openEditDocModal('${escapeHtml(d.id)}')">✎ Editar</button>
+             <button class="btn-logout" style="padding:5px 9px; font-size:11px; margin-left:4px;" onclick="deleteDocument('${escapeHtml(d.id)}')">🗑️</button>`
           : '';
 
         return `
@@ -2209,8 +3120,8 @@
             <td>${escapeHtml(d.version)}</td>
             <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
             <td style="white-space:nowrap;">
-              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; background:#3A5A40; margin-right:4px;" onclick="previewPdfDocument('${d.id}')">👁️ Vista Previa</button>
-              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px;" onclick="downloadPdfDocument('${d.id}', ${idx})">⬇ Descargar</button>
+              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; background:#3A5A40; margin-right:4px;" onclick="previewPdfDocument('${escapeHtml(d.id)}')">👁️ Vista Previa</button>
+              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px;" onclick="downloadPdfDocument('${escapeHtml(d.id)}', ${idx})">⬇ Descargar</button>
               ${adminBtns}
             </td>
           </tr>
@@ -2219,13 +3130,13 @@
     }
 
     function openCreateDocModal() {
-      document.getElementById('modal-doc-heading').innerText = 'Subir Archivo PDF Oficial';
+      document.getElementById('modal-doc-heading').textContent = 'Subir Archivo PDF Oficial';
       document.getElementById('form-doc-editing-id').value = '';
       document.getElementById('form-doc-title').value = '';
       document.getElementById('form-doc-cat').value = 'Plano';
       document.getElementById('form-doc-ver').value = 'v1.0';
       selectedPdfDataUrl = null;
-      document.getElementById('pdf-dropzone-label').innerText = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
+      document.getElementById('pdf-dropzone-label').textContent = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
       document.getElementById('modal-doc').classList.add('open');
     }
 
@@ -2234,13 +3145,13 @@
       const doc = currentDocs.find(d => d.id === docId);
       if (!doc) return;
 
-      document.getElementById('modal-doc-heading').innerText = 'Editar Documento PDF';
+      document.getElementById('modal-doc-heading').textContent = 'Editar Documento PDF';
       document.getElementById('form-doc-editing-id').value = doc.id;
       document.getElementById('form-doc-title').value = cleanOrthographyRaw(doc.title || '');
       document.getElementById('form-doc-cat').value = doc.category || 'Plano';
       document.getElementById('form-doc-ver').value = doc.version || 'v1.0';
       selectedPdfDataUrl = doc.file_url;
-      document.getElementById('pdf-dropzone-label').innerText = '✔ Archivo PDF actual conservado (o selecciona otro para reemplazarlo)';
+      document.getElementById('pdf-dropzone-label').textContent = '✔ Archivo PDF actual conservado (o selecciona otro para reemplazarlo)';
       document.getElementById('modal-doc').classList.add('open');
     }
 
@@ -2249,17 +3160,17 @@
       if (isHoneypotTriggered('hp-doc')) return;
 
       const editingId = document.getElementById('form-doc-editing-id').value;
-      const title = cleanOrthographyRaw(document.getElementById('form-doc-title').value.trim());
+      const title = cleanOrthographyRaw(document.getElementById('form-doc-title').value.trim().slice(0, 150));
       const category = document.getElementById('form-doc-cat').value;
-      const version = document.getElementById('form-doc-ver').value.trim() || 'v1.0';
+      const version = document.getElementById('form-doc-ver').value.trim().slice(0, 20) || 'v1.0';
 
       if (!title || !selectedPdfDataUrl) {
-        alert("Escribe el título y selecciona un archivo PDF.");
+        alert('Escribe el título y selecciona un archivo PDF.');
         return;
       }
 
       const btn = document.getElementById('btn-submit-doc');
-      btn.innerText = "Guardando...";
+      btn.textContent = 'Guardando...';
       btn.disabled = true;
 
       if (editingId) {
@@ -2277,16 +3188,23 @@
         }]);
 
         if (!error) {
+          const auditDocDesc = `Se publicó el documento PDF "${title}" (${category.toUpperCase()} — ${version}).`;
           await supabaseClient.from('project_audit_logs').insert([{
             project_id: currentProject.id,
             author_name: activeUser,
             action_type: 'nuevo_documento',
-            description: `Se publicó el documento PDF "${title}" (${category.toUpperCase()} — ${version}).`
+            description: auditDocDesc
           }]);
+
+          sendWorkNotificationEmail({
+            actionLabel: `Nuevo Documento Oficial (${category})`,
+            summaryText: `${title} — Versión ${version}`,
+            detailText: auditDocDesc
+          });
         }
       }
 
-      btn.innerText = "Guardar Documento";
+      btn.textContent = 'Guardar Documento';
       btn.disabled = false;
       closeModal('modal-doc');
       loadActiveProjectData();
@@ -2294,25 +3212,29 @@
 
     async function deleteDocument(docId) {
       if (activeUser !== 'Admin') return;
-      if (!confirm("¿Deseas eliminar este documento PDF?")) return;
+      if (!confirm('¿Deseas eliminar este documento PDF?')) return;
       await supabaseClient.from('project_documents').delete().eq('id', docId);
       loadActiveProjectData();
     }
 
-    // GESTIÓN DE USUARIOS (ADMIN)
-    function renderUsersTable() {
+    // GESTIÓN TOTAL DE USUARIOS Y CORREOS (PANEL ADMIN)
+    function renderUsersTable(rawList) {
       const tbody = document.getElementById('users-table-body');
       if (!tbody) return;
 
-      const adminPass = localStorage.getItem('diego_admin_pass') || '1234';
+      const adminRowData = (rawList || []).find(p => p.code.toLowerCase() === 'admin');
+      const adminPass = adminRowData ? (adminRowData.password || '1234') : '1234';
+      const adminEmail = adminRowData ? (adminRowData.client_email || ADMIN_CC_EMAILS[0]) : ADMIN_CC_EMAILS[0];
+
       const adminRow = `
         <tr style="background:#F5F8F3;">
           <td><strong>🔑 Admin</strong></td>
           <td><code>${escapeHtml(adminPass)}</code></td>
-          <td>Administrador General</td>
+          <td>${escapeHtml(adminEmail)}</td>
+          <td>Dirección General (Gina Bustillo / Sixto Fernández)</td>
           <td>Todos los proyectos</td>
           <td>
-            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="changeAdminPassword()">✎ Cambiar Contraseña</button>
+            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="switchModule('profile')">✎ Mi Perfil Admin</button>
           </td>
         </tr>
       `;
@@ -2321,11 +3243,12 @@
         <tr>
           <td><strong>👤 ${escapeHtml(p.code)}</strong></td>
           <td><code>${escapeHtml(p.password || '1234')}</code></td>
+          <td>${escapeHtml(p.client_email || 'Sin correo')}</td>
           <td>${escapeHtml(p.client_name)}</td>
           <td>${escapeHtml(p.name)}</td>
           <td style="white-space:nowrap;">
-            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openUserModal('${p.id}')">✎ Editar</button>
-            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${p.id}', '${escapeHtml(p.code)}')">🗑️ Eliminar</button>
+            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openUserModal('${escapeHtml(p.id)}')">✎ Editar</button>
+            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${escapeHtml(p.id)}', '${escapeHtml(p.code)}')">🗑️ Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -2333,32 +3256,25 @@
       tbody.innerHTML = adminRow + clientRows;
     }
 
-    function changeAdminPassword() {
-      const current = localStorage.getItem('diego_admin_pass') || '1234';
-      const nueva = prompt("Ingresa la nueva contraseña para la cuenta Admin:", current);
-      if (nueva && nueva.trim()) {
-        localStorage.setItem('diego_admin_pass', nueva.trim());
-        renderUsersTable();
-      }
-    }
-
     function openUserModal(projectId = null) {
       if (activeUser !== 'Admin') return;
       if (projectId) {
         const proj = allProjects.find(p => p.id === projectId);
         if (!proj) return;
-        document.getElementById('modal-user-heading').innerText = 'Modificar Usuario y Proyecto';
+        document.getElementById('modal-user-heading').textContent = 'Modificar Usuario, Correo y Proyecto';
         document.getElementById('form-user-editing-id').value = proj.id;
         document.getElementById('form-user-code').value = proj.code || '';
         document.getElementById('form-user-pass').value = proj.password || '1234';
+        document.getElementById('form-user-email').value = proj.client_email || '';
         document.getElementById('form-user-client').value = cleanOrthographyRaw(proj.client_name || '');
         document.getElementById('form-user-project').value = cleanOrthographyRaw(proj.name || '');
         document.getElementById('form-user-address').value = cleanOrthographyRaw(proj.address || '');
       } else {
-        document.getElementById('modal-user-heading').innerText = 'Añadir Nuevo Usuario';
+        document.getElementById('modal-user-heading').textContent = 'Añadir Nuevo Usuario';
         document.getElementById('form-user-editing-id').value = '';
         document.getElementById('form-user-code').value = `Cliente${allProjects.length + 1}`;
         document.getElementById('form-user-pass').value = '1234';
+        document.getElementById('form-user-email').value = '';
         document.getElementById('form-user-client').value = '';
         document.getElementById('form-user-project').value = '';
         document.getElementById('form-user-address').value = '';
@@ -2371,22 +3287,23 @@
       if (isHoneypotTriggered('hp-user')) return;
 
       const editingId = document.getElementById('form-user-editing-id').value;
-      const code = document.getElementById('form-user-code').value.trim().replace(/\s+/g, '');
-      const password = document.getElementById('form-user-pass').value.trim() || '1234';
-      const client_name = cleanOrthographyRaw(document.getElementById('form-user-client').value.trim());
-      const name = cleanOrthographyRaw(document.getElementById('form-user-project').value.trim());
-      const address = cleanOrthographyRaw(document.getElementById('form-user-address').value.trim());
+      const code = document.getElementById('form-user-code').value.trim().replace(/\s+/g, '').slice(0, 50);
+      const password = document.getElementById('form-user-pass').value.trim().slice(0, 64) || '1234';
+      const client_email = document.getElementById('form-user-email').value.trim().slice(0, 120);
+      const client_name = cleanOrthographyRaw(document.getElementById('form-user-client').value.trim().slice(0, 120));
+      const name = cleanOrthographyRaw(document.getElementById('form-user-project').value.trim().slice(0, 140));
+      const address = cleanOrthographyRaw(document.getElementById('form-user-address').value.trim().slice(0, 180));
 
-      if (!code || !client_name || !name) {
-        alert("Completa el usuario, el nombre del cliente y el nombre del proyecto.");
+      if (!code || !client_name || !name || !isValidEmailFormat(client_email)) {
+        alert('Completa el usuario, un correo electrónico válido, el nombre del cliente y el nombre del proyecto.');
         return;
       }
 
       const btn = document.getElementById('btn-submit-user');
-      btn.innerText = "Guardando...";
+      btn.textContent = 'Guardando...';
       btn.disabled = true;
 
-      const payload = { code, password, client_name, name, address };
+      const payload = { code, password, client_email, client_name, name, address };
 
       let errorObj = null;
       if (editingId) {
@@ -2395,7 +3312,6 @@
       } else {
         const { error } = await supabaseClient.from('projects').insert([{
           ...payload,
-          client_email: `${code.toLowerCase()}@obra.com`,
           actual_progress: 0,
           status: 'en_tiempo',
           current_phase: 'Inicio de Obra'
@@ -2403,15 +3319,16 @@
         errorObj = error;
       }
 
-      btn.innerText = "Guardar Usuario";
+      btn.textContent = 'Guardar Usuario';
       btn.disabled = false;
 
       if (errorObj) {
-        alert("Aviso al guardar usuario: " + errorObj.message);
+        alert('Aviso al guardar usuario: ' + errorObj.message);
         return;
       }
 
       closeModal('modal-user');
+      showToast('✔ Usuario y credenciales sincronizados en Supabase.');
       await loadProjects();
     }
 
@@ -2430,10 +3347,10 @@
       document.getElementById('edit-proj-name').value = cleanOrthographyRaw(currentProject.name || '');
       document.getElementById('edit-proj-client').value = cleanOrthographyRaw(currentProject.client_name || '');
       document.getElementById('edit-proj-address').value = cleanOrthographyRaw(currentProject.address || '');
-      
+
       const prog = Number(currentProject.actual_progress || 0);
       document.getElementById('edit-proj-progress').value = prog;
-      document.getElementById('edit-proj-progress-val').innerText = prog + '%';
+      document.getElementById('edit-proj-progress-val').textContent = prog + '%';
 
       document.getElementById('edit-proj-phase').value = cleanOrthographyRaw(currentProject.current_phase || '');
       document.getElementById('edit-proj-status').value = currentProject.status || 'en_tiempo';
@@ -2446,21 +3363,21 @@
       if (!currentProject || activeUser !== 'Admin') return;
       if (isHoneypotTriggered('hp-project')) return;
 
-      const name = cleanOrthographyRaw(document.getElementById('edit-proj-name').value.trim());
-      const client_name = cleanOrthographyRaw(document.getElementById('edit-proj-client').value.trim());
-      const address = cleanOrthographyRaw(document.getElementById('edit-proj-address').value.trim());
+      const name = cleanOrthographyRaw(document.getElementById('edit-proj-name').value.trim().slice(0, 140));
+      const client_name = cleanOrthographyRaw(document.getElementById('edit-proj-client').value.trim().slice(0, 120));
+      const address = cleanOrthographyRaw(document.getElementById('edit-proj-address').value.trim().slice(0, 180));
       const actual_progress = parseFloat(document.getElementById('edit-proj-progress').value || 0);
-      const current_phase = cleanOrthographyRaw(document.getElementById('edit-proj-phase').value.trim());
+      const current_phase = cleanOrthographyRaw(document.getElementById('edit-proj-phase').value.trim().slice(0, 100));
       const status = document.getElementById('edit-proj-status').value;
       const next_milestone_date = document.getElementById('edit-proj-date').value || null;
 
       if (!name || !client_name) {
-        alert("El nombre del proyecto y el nombre del cliente son obligatorios.");
+        alert('El nombre del proyecto y el nombre del cliente son obligatorios.');
         return;
       }
 
       const btn = document.getElementById('btn-save-project');
-      btn.innerText = "Guardando...";
+      btn.textContent = 'Guardando...';
       btn.disabled = true;
 
       await supabaseClient
@@ -2468,7 +3385,7 @@
         .update({ name, client_name, address, actual_progress, current_phase, status, next_milestone_date })
         .eq('id', currentProject.id);
 
-      btn.innerText = "Guardar Cambios";
+      btn.textContent = 'Guardar Cambios';
       btn.disabled = false;
       closeModal('modal-edit-project');
       await loadProjects();
@@ -2478,7 +3395,7 @@
     function openLightbox(url, captionText) {
       const modal = document.getElementById('lightbox-modal');
       const img = document.getElementById('lightbox-img');
-      document.getElementById('lightbox-caption').innerText = captionText || 'Evidencia Fotográfica';
+      document.getElementById('lightbox-caption').textContent = captionText || 'Evidencia Fotográfica';
       img.src = url;
       resetZoom();
       modal.classList.add('open');
@@ -2508,7 +3425,7 @@
       requestAnimationFrame(() => {
         const img = document.getElementById('lightbox-img');
         img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
-        document.getElementById('zoom-level-indicator').innerText = `${Math.round(currentZoom * 100)}%`;
+        document.getElementById('zoom-level-indicator').textContent = `${Math.round(currentZoom * 100)}%`;
         rafPending = false;
       });
     }
@@ -2601,20 +3518,20 @@
       if (!files || files.length === 0) return;
       const file = files[0];
       if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert("Selecciona un archivo en formato PDF.");
+        alert('Selecciona un archivo en formato PDF.');
         return;
       }
 
       const label = document.getElementById('pdf-dropzone-label');
-      label.innerText = `⏳ Procesando: ${file.name}...`;
+      label.textContent = `⏳ Procesando: ${file.name}...`;
 
       const reader = new FileReader();
       reader.onload = (e) => {
         selectedPdfDataUrl = e.target.result;
-        label.innerText = `✔ PDF listo: ${file.name}`;
+        label.textContent = `✔ PDF listo: ${file.name}`;
         const titleInput = document.getElementById('form-doc-title');
         if (!titleInput.value.trim()) {
-          titleInput.value = cleanOrthographyRaw(file.name.replace(/\.pdf$/i, ''));
+          titleInput.value = cleanOrthographyRaw(file.name.replace(/\.pdf$/i, '')).slice(0, 150);
         }
       };
       reader.readAsDataURL(file);
@@ -2624,13 +3541,13 @@
     function printExecutiveReport() {
       if (!currentProject) return;
 
-      document.getElementById('print-date').innerText = `Fecha de emisión: ${new Date().toLocaleDateString('es-ES')}`;
-      document.getElementById('print-project-code').innerText = `CUENTA: ${currentProject.code}`;
-      document.getElementById('print-project-name').innerText = cleanOrthographyRaw(currentProject.name);
-      document.getElementById('print-project-client').innerText = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} | ${cleanOrthographyRaw(currentProject.address || '')}`;
-      document.getElementById('print-actual').innerText = `Avance de la Obra: ${currentProject.actual_progress}%`;
-      document.getElementById('print-phase').innerText = `Fase Actual: ${cleanOrthographyRaw(currentProject.current_phase)}`;
-      document.getElementById('print-milestone').innerText = `Final de Obra: ${currentProject.next_milestone_date || 'Por definir'}`;
+      document.getElementById('print-date').textContent = `Fecha de emisión: ${new Date().toLocaleDateString('es-ES')}`;
+      document.getElementById('print-project-code').textContent = `CUENTA: ${currentProject.code}`;
+      document.getElementById('print-project-name').textContent = cleanOrthographyRaw(currentProject.name);
+      document.getElementById('print-project-client').textContent = `Cliente: ${cleanOrthographyRaw(currentProject.client_name)} | ${cleanOrthographyRaw(currentProject.address || '')}`;
+      document.getElementById('print-actual').textContent = `Avance de la Obra: ${currentProject.actual_progress}%`;
+      document.getElementById('print-phase').textContent = `Fase Actual: ${cleanOrthographyRaw(currentProject.current_phase)}`;
+      document.getElementById('print-milestone').textContent = `Final de Obra: ${currentProject.next_milestone_date || 'Por definir'}`;
 
       const printBody = document.getElementById('print-reports-body');
       printBody.innerHTML = currentReports.slice(0, 8).map(r => `
@@ -2643,22 +3560,43 @@
       window.print();
     }
 
-    // TIEMPO REAL
+    // SUSCRIPCIÓN REALTIME EN VIVO (SINCRONIZACIÓN ENTRE PC Y CELULAR)
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra_v4')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => loadProjects())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => loadActiveProjectData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => loadActiveProjectData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_documents' }, () => loadActiveProjectData())
+      supabaseClient.channel('realtime_obra_v5')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+          if (activeUser) loadProjects();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, () => {
+          if (activeUser) loadActiveProjectData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_audit_logs' }, () => {
+          if (activeUser) loadActiveProjectData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_documents' }, () => {
+          if (activeUser) loadActiveProjectData();
+        })
         .subscribe();
     }
 
+    // 7. NAVEGACIÓN Y VISIBILIDAD CONDICIONAL DEL CUADRO "AVANCE DE LA OBRA"
     function switchModule(mod) {
+      currentModule = mod;
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.module-section').forEach(sec => sec.classList.remove('active-module'));
 
       document.getElementById(`nav-item-${mod}`)?.classList.add('active');
       document.getElementById(`sec-${mod}`)?.classList.add('active-module');
+
+      // Mostrar el bloque de Avance de la Obra EXCLUSIVAMENTE en Informes ('feed') y Bitácora ('audit')
+      const avanceCard = document.getElementById('dashboard-avance-card');
+      if (avanceCard) {
+        if (mod === 'feed' || mod === 'audit') {
+          avanceCard.classList.remove('hidden');
+        } else {
+          avanceCard.classList.add('hidden');
+        }
+      }
+
       closeSidebar();
     }
 
@@ -2666,12 +3604,23 @@
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('drawer-backdrop').classList.toggle('open');
     }
+
     function closeSidebar() {
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('drawer-backdrop').classList.remove('open');
     }
 
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModal(id) {
+      document.getElementById(id)?.classList.remove('open');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+        closePdfPreview();
+        document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+      }
+    });
   </script>
 </body>
 </html>
