@@ -12,51 +12,40 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+    /* ==========================================================================
+       1. ADN NEUMÓRFICO ESTRICTO — SUPERFICIE CONTINUA MATE Y SOMBRAS DUALES
+       ========================================================================== */
     :root {
-      /* Superficie continua mate para Neumorfismo (WCAG AA/AAA) */
-      --neu-surface: #E3EAE0;
-      --neu-shadow-dark: #BCC6B8;
-      --neu-shadow-light: #F9FFF6;
-      --neu-error: #A63A2E;
-      --neu-focus: #3B5238;
+      --neu-surface: #E6EEE6;
+      --neu-light: #FFFFFF;
+      --neu-dark: #C2CDC2;
+      --neu-dark-deep: #A9B6A9;
 
-      /* Entorno general de la aplicación */
-      --ios-bg: #DCE3D9;
-      --ios-glass: rgba(244, 247, 242, 0.92);
-      --ios-glass-border: rgba(255, 255, 255, 0.72);
+      --neu-elevated: 8px 8px 16px var(--neu-dark), -8px -8px 16px var(--neu-light);
+      --neu-elevated-sm: 5px 5px 10px var(--neu-dark), -5px -5px 10px var(--neu-light);
+      --neu-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+      --neu-inset-deep: inset 6px 6px 12px var(--neu-dark-deep), inset -6px -6px 12px var(--neu-light);
 
-      /* Barra lateral y barra superior al 70% de opacidad con desenfoque */
-      --sidebar-bg: rgba(66, 79, 61, 0.70);
-      --topbar-bg: rgba(245, 248, 243, 0.70);
-      --sidebar-text: #EAEFE8;
-      --sidebar-muted: #C2D0BC;
-      --sidebar-active-bg: rgba(255, 255, 255, 0.15);
-      --sidebar-indicator: #C88A6B;
+      --radius-xl: 1.75rem;
+      --radius-lg: 1.35rem;
+      --radius-md: 1.25rem;
 
-      /* Paleta corporativa verde musgo / esmeralda suave */
-      --paw-emerald: #487A5B;
-      --paw-moss: #556850;
-      --msg-pastel-green: #DCE6D8;
-      --msg-pastel-border: #C4D4BE;
-      --msg-inner-cream: #F5F8F3;
+      --brand-emerald: #3B6E4C;
+      --brand-moss: #485E45;
+      --accent-terracotta: #C88A6B;
 
-      --text-title: #232B22;
-      --text-body: #3B4639;
-      --text-muted: #5A6857;
+      --text-title: #1E261E;
+      --text-body: #344034;
+      --text-muted: #576657;
 
-      --btn-olive: #4A5D46;
-      --btn-olive-hover: #384935;
-
-      --status-ok: #3B6E4C;
-      --status-ok-bg: #E3EFE7;
-      --status-warn: #9E6B24;
-      --status-warn-bg: #FCF1E1;
+      --status-ok: #2E6B42;
+      --status-warn: #94611B;
       --status-danger: #A63A2E;
-      --status-danger-bg: #F9E6E4;
+      --focus-ring: #2E6B42;
     }
 
     *, *::before, *::after {
@@ -79,11 +68,10 @@
       display: none !important;
     }
 
-    .card-date, #label-actual, .vault-date-count, .docs-table td {
+    .card-date, #label-actual, .vault-date-count, .docs-table td, #lightbox-counter {
       font-variant-numeric: tabular-nums;
     }
 
-    /* 8. HABILITACIÓN DE ZOOM TÁCTIL LIBRE EN CELULARES (PINCH-TO-ZOOM) */
     html, body {
       width: 100%;
       max-width: 100vw;
@@ -100,7 +88,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 18px 14px;
+      padding: 16px;
     }
 
     body.preloader-lock {
@@ -108,7 +96,7 @@
     }
 
     /* ==========================================================================
-       1. PANTALLA DE CARGA DE ENTRADA (LOADER DE PATITAS SVG — EJECUCIÓN ÚNICA)
+       3. PANTALLA DE CARGA OMNIPRESENTE (LOADER PATITAS SVG)
        ========================================================================== */
     #preloader {
       position: fixed;
@@ -119,7 +107,9 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      transition: opacity 0.45s ease, visibility 0.45s ease;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
     #preloader.loaded {
@@ -139,9 +129,11 @@
       width: 34px;
       height: 34px;
       opacity: 0;
-      transform: scale(0.65);
-      fill: var(--paw-emerald);
-      animation: pawStep 0.55s ease-out 1 forwards;
+      fill: var(--brand-emerald);
+    }
+
+    #preloader.run-paws .paw {
+      animation: pawStep 0.48s ease-out 1 forwards;
     }
 
     .paw svg {
@@ -157,66 +149,57 @@
 
     .paw:nth-child(even) {
       top: 54px;
-      fill: var(--paw-moss);
+      fill: var(--brand-moss);
       transform: rotate(98deg) scale(0.65);
     }
 
-    .paw:nth-child(1) { left: 10px;  animation-delay: 0.08s; }
-    .paw:nth-child(2) { left: 54px;  animation-delay: 0.28s; }
-    .paw:nth-child(3) { left: 98px;  animation-delay: 0.48s; }
-    .paw:nth-child(4) { left: 142px; animation-delay: 0.68s; }
-    .paw:nth-child(5) { left: 186px; animation-delay: 0.88s; }
-    .paw:nth-child(6) { left: 230px; animation-delay: 1.08s; }
+    .paw:nth-child(1) { left: 10px;  animation-delay: 0.05s; }
+    .paw:nth-child(2) { left: 54px;  animation-delay: 0.22s; }
+    .paw:nth-child(3) { left: 98px;  animation-delay: 0.39s; }
+    .paw:nth-child(4) { left: 142px; animation-delay: 0.56s; }
+    .paw:nth-child(5) { left: 186px; animation-delay: 0.73s; }
+    .paw:nth-child(6) { left: 230px; animation-delay: 0.90s; }
 
     @keyframes pawStep {
-      0% {
-        opacity: 0;
-        transform: rotate(85deg) scale(0.5);
-      }
-      60% {
-        opacity: 1;
-        transform: rotate(85deg) scale(1.06);
-      }
-      100% {
-        opacity: 0.92;
-        transform: rotate(85deg) scale(1);
-      }
+      0% { opacity: 0; transform: rotate(85deg) scale(0.5); }
+      60% { opacity: 1; transform: rotate(85deg) scale(1.06); }
+      100% { opacity: 0.94; transform: rotate(85deg) scale(1); }
     }
 
     .preloader-label {
-      margin-top: 14px;
-      font-size: 11px;
+      margin-top: 16px;
+      font-size: 11.5px;
       font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--paw-moss);
+      color: var(--brand-moss);
     }
 
     /* ==========================================================================
-       3. INTERFAZ DE ACCESO: NEUMORFISMO ESTRICTO Y ACCESIBILIDAD WCAG
+       2. MÓDULO DE ACCESO NEUMÓRFICO Y ACCESIBILIDAD WCAG 2.1 AA
        ========================================================================== */
     .login-wrapper {
       width: 100%;
-      max-width: 430px;
+      max-width: 420px;
       margin: 0 auto;
       background: var(--neu-surface);
-      border-radius: 1.5rem;
-      box-shadow: 12px 12px 26px var(--neu-shadow-dark), -12px -12px 26px var(--neu-shadow-light);
-      padding: 36px 30px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
+      padding: 36px 28px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 22px;
     }
 
     .login-avatar-frame {
-      width: 74px;
-      height: 74px;
-      margin: 0 auto 6px;
-      padding: 6px;
-      border-radius: 1.25rem;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 8px;
+      padding: 8px;
+      border-radius: var(--radius-lg);
       background: var(--neu-surface);
-      box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+      box-shadow: var(--neu-elevated-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -233,7 +216,7 @@
     .login-brand {
       font-size: 30px;
       letter-spacing: 5px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-title);
       line-height: 1;
     }
@@ -242,9 +225,8 @@
       font-size: 10px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1.3px;
+      letter-spacing: 1.4px;
       margin-top: 6px;
-      line-height: 1.4;
       font-weight: 600;
     }
 
@@ -262,109 +244,161 @@
     }
 
     .form-group-neu label {
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-title);
       display: flex;
       align-items: center;
       gap: 4px;
+      padding-left: 4px;
     }
 
     .req-star {
-      color: var(--neu-error);
+      color: var(--status-danger);
       font-weight: 800;
     }
 
-    .neu-input {
+    .neu-input, .neu-select, .neu-textarea {
       width: 100%;
+      min-height: 48px;
       background: var(--neu-surface);
-      border: 1.5px solid transparent;
-      border-radius: 1rem;
-      padding: 13px 16px;
-      font-size: 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 14.5px;
       color: var(--text-title);
       font-family: inherit;
-      box-shadow: inset 5px 5px 10px var(--neu-shadow-dark), inset -5px -5px 10px var(--neu-shadow-light);
+      box-shadow: var(--neu-inset);
       outline: none;
     }
 
-    .neu-input::placeholder {
-      color: #768473;
-      opacity: 0.85;
+    .neu-textarea {
+      min-height: 110px;
+      resize: vertical;
     }
 
-    .neu-input:focus-visible {
-      border-color: var(--neu-focus);
-      box-shadow: inset 6px 6px 12px var(--neu-shadow-dark), inset -6px -6px 12px var(--neu-shadow-light);
+    .neu-input:focus-visible, .neu-select:focus-visible, .neu-textarea:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: -2px;
+      box-shadow: var(--neu-inset-deep);
     }
 
     .neu-input[aria-invalid="true"] {
-      border-color: var(--neu-error);
-      box-shadow: inset 4px 4px 8px rgba(166, 58, 46, 0.22), inset -4px -4px 8px var(--neu-shadow-light);
+      outline: 2px solid var(--status-danger);
+      outline-offset: -2px;
+    }
+
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .password-input-wrap .neu-input {
+      padding-right: 56px;
+    }
+
+    .btn-eye-toggle {
+      position: absolute;
+      right: 4px;
+      width: 48px;
+      height: 48px;
+      border: none;
+      background: transparent;
+      color: var(--text-body);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-eye-toggle:focus-visible {
+      outline: 2px solid var(--focus-ring);
+    }
+
+    .btn-eye-toggle svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
     }
 
     .field-help {
       font-size: 11px;
       color: var(--text-muted);
       line-height: 1.35;
-      padding-left: 4px;
+      padding-left: 6px;
     }
 
     .field-error {
       font-size: 11.5px;
       font-weight: 700;
-      color: var(--neu-error);
-      padding-left: 4px;
+      color: var(--status-danger);
+      padding-left: 6px;
       min-height: 16px;
     }
 
-    .btn-submit-neu {
-      width: 100%;
+    .btn-neu {
+      min-height: 48px;
       background: var(--neu-surface);
       color: var(--text-title);
-      border: 1.5px solid rgba(255, 255, 255, 0.45);
-      border-radius: 1rem;
-      padding: 14px 18px;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      font-size: 13.5px;
+      font-weight: 700;
       cursor: pointer;
-      margin-top: 6px;
-      box-shadow: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
+      box-shadow: var(--neu-elevated-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
     }
 
-    .btn-submit-neu:hover:not(:disabled) {
-      color: var(--paw-emerald);
+    .btn-neu:hover:not(:disabled) {
+      color: var(--brand-emerald);
     }
 
-    .btn-submit-neu:active:not(:disabled) {
-      box-shadow: inset 5px 5px 10px var(--neu-shadow-dark), inset -5px -5px 10px var(--neu-shadow-light);
+    .btn-neu:active:not(:disabled), .btn-neu.active {
+      box-shadow: var(--neu-inset);
+      color: var(--brand-emerald);
     }
 
-    .btn-submit-neu:focus-visible {
-      outline: 2px solid var(--neu-focus);
+    .btn-neu:focus-visible {
+      outline: 2px solid var(--focus-ring);
       outline-offset: 2px;
     }
 
-    .btn-submit-neu:disabled {
+    .btn-neu:disabled {
       opacity: 0.55;
       cursor: not-allowed;
-      box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+      box-shadow: var(--neu-inset);
+    }
+
+    .btn-neu-primary {
+      color: var(--brand-emerald);
+      font-weight: 800;
+    }
+
+    .btn-neu-danger {
+      color: var(--status-danger);
     }
 
     /* ==========================================================================
-       2. VENTANA PRINCIPAL DE LA PLATAFORMA
+       ESTRUCTURA PRINCIPAL MULTITENANT (SUPERFICIE CONTINUA NEUMÓRFICA)
        ========================================================================== */
     .app-window {
       width: 100%;
-      max-width: 1280px;
-      height: 92vh;
-      min-height: 680px;
+      max-width: 1320px;
+      min-height: 88vh;
       margin: 0 auto;
-      background: var(--ios-glass);
-      border: 1px solid var(--ios-glass-border);
-      border-radius: 26px;
-      box-shadow: 0 24px 60px rgba(30, 36, 42, 0.22);
+      background: var(--neu-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
       display: none;
       overflow: hidden;
       position: relative;
@@ -372,108 +406,103 @@
     }
 
     .sidebar {
-      width: 270px;
-      background: var(--sidebar-bg);
-      backdrop-filter: blur(24px) saturate(150%);
-      -webkit-backdrop-filter: blur(24px) saturate(150%);
-      border-right: 1px solid rgba(255, 255, 255, 0.18);
-      color: var(--sidebar-text);
+      width: 280px;
+      background: var(--neu-surface);
+      color: var(--text-title);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 24px 16px 16px 16px;
+      padding: 26px 18px 18px 18px;
       position: relative;
       flex-shrink: 0;
       z-index: 40;
-      overflow-y: auto;
-      overflow-x: hidden;
+      box-shadow: 6px 0 14px var(--neu-dark);
     }
 
     .brand-section {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding-bottom: 16px;
-      margin-bottom: 16px;
-      padding-left: 6px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--neu-inset);
     }
 
     .brand-title {
-      font-size: 25px;
-      font-weight: 300;
+      font-size: 24px;
+      font-weight: 700;
       letter-spacing: 4px;
-      color: #FFFFFF;
-      border-left: 2px solid #FFFFFF;
-      padding-left: 10px;
+      color: var(--brand-emerald);
       line-height: 1;
     }
 
     .brand-subtitle {
-      font-size: 8px;
-      letter-spacing: 1.2px;
-      color: var(--sidebar-muted);
-      margin-top: 8px;
+      font-size: 8.5px;
+      letter-spacing: 1.1px;
+      color: var(--text-muted);
+      margin-top: 6px;
       text-transform: uppercase;
       line-height: 1.35;
+      font-weight: 600;
     }
 
     .nav-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
       position: relative;
       z-index: 2;
     }
 
     .nav-item {
       position: relative;
+      min-height: 48px;
       display: flex;
       align-items: center;
       gap: 13px;
-      padding: 11px 14px;
-      border-radius: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
       font-size: 13.5px;
-      font-weight: 400;
-      color: rgba(234, 239, 232, 0.88);
+      font-weight: 600;
+      color: var(--text-body);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
       cursor: pointer;
     }
 
     .nav-item svg {
-      width: 19px;
-      height: 19px;
+      width: 20px;
+      height: 20px;
       stroke: currentColor;
-      stroke-width: 1.7;
+      stroke-width: 1.8;
       fill: none;
       flex-shrink: 0;
     }
 
-    .nav-item:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.08);
-      color: #FFFFFF;
-    }
-
     .nav-item.active {
-      background: var(--sidebar-active-bg);
-      color: #FFFFFF;
-      font-weight: 600;
+      box-shadow: var(--neu-inset);
+      color: var(--brand-emerald);
+      font-weight: 800;
     }
 
     .nav-item.active::before {
       content: '';
       position: absolute;
-      left: 0;
-      top: 6px;
-      bottom: 6px;
-      width: 4.5px;
-      background: var(--sidebar-indicator);
-      border-radius: 0 4px 4px 0;
+      left: 6px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      background: var(--accent-terracotta);
+      border-radius: 4px;
     }
 
     .sidebar-footer {
       position: relative;
-      margin-top: 20px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      margin-top: 24px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--neu-inset);
       z-index: 2;
+      overflow: hidden;
     }
 
     .credits-block {
@@ -481,7 +510,7 @@
       z-index: 3;
       font-size: 10.5px;
       line-height: 1.45;
-      color: rgba(234, 239, 232, 0.92);
+      color: var(--text-body);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -489,56 +518,58 @@
 
     .credits-services {
       font-size: 9.5px;
-      color: var(--sidebar-muted);
-      letter-spacing: 0.2px;
+      color: var(--text-muted);
       line-height: 1.5;
+      font-weight: 600;
     }
 
     .credits-authors {
-      background: rgba(0, 0, 0, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 10px;
+      padding-top: 6px;
+      font-size: 10.5px;
     }
 
     .credits-authors strong {
-      color: #FFFFFF;
+      color: var(--brand-emerald);
       display: block;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .plant-svg {
       position: absolute;
-      bottom: -10px;
-      right: -18px;
-      width: 175px;
-      height: 190px;
-      opacity: 0.24;
+      bottom: -12px;
+      right: -14px;
+      width: 150px;
+      height: 165px;
+      opacity: 0.22;
       pointer-events: none;
       z-index: 1;
     }
 
     .mobile-menu-btn {
       display: none;
-      background: var(--btn-olive);
-      color: #FFFFFF;
+      width: 48px;
+      height: 48px;
       border: none;
-      border-radius: 10px;
-      width: 42px;
-      height: 42px;
-      font-size: 18px;
+      border-radius: var(--radius-md);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      color: var(--text-title);
+      font-size: 20px;
       cursor: pointer;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
+    .mobile-menu-btn:active {
+      box-shadow: var(--neu-inset);
+    }
+
     .drawer-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(25, 32, 24, 0.5);
+      background: rgba(30, 38, 30, 0.45);
       z-index: 35;
     }
 
@@ -553,52 +584,34 @@
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 22px 28px;
+      padding: 24px 28px;
       touch-action: pan-x pan-y pinch-zoom;
     }
 
     .top-header {
-      position: sticky;
-      top: 0;
-      z-index: 25;
-      background: var(--topbar-bg);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
-      padding: 10px 14px;
+      background: var(--neu-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--neu-elevated-sm);
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      gap: 10px;
+      margin-bottom: 24px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .project-selector-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-    }
-
-    .project-selector {
-      background: #FFFFFF;
-      border: 1px solid #CFD8CC;
-      color: var(--text-title);
-      padding: 7px 12px;
-      border-radius: 12px;
-      font-size: 12.5px;
-      font-weight: 600;
-      outline: none;
-      font-family: inherit;
-      max-width: 100%;
     }
 
     .user-pill {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       margin-left: auto;
       flex-wrap: wrap;
     }
@@ -612,138 +625,117 @@
     }
 
     .avatar-img {
-      width: 36px;
-      height: 36px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--btn-olive);
-      background: #1C211B;
+      padding: 3px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
       flex-shrink: 0;
     }
 
-    .btn-logout {
-      background: var(--status-danger-bg);
-      border: 1px solid rgba(166, 58, 46, 0.28);
-      padding: 7px 12px;
-      border-radius: 14px;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--status-danger);
-      cursor: pointer;
-    }
-
-    /* CABECERA EJECUTIVA — VISIBILIDAD CONDICIONAL (DIRECTIVA 7) */
+    /* CABECERA EJECUTIVA */
     .dashboard-header-card {
-      background: var(--msg-inner-cream);
-      border: 1px solid var(--msg-pastel-border);
-      border-radius: 20px;
-      padding: 20px 22px;
-      margin-bottom: 22px;
+      background: var(--neu-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
+      padding: 24px;
+      margin-bottom: 26px;
     }
 
     .project-main-meta {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 14px;
-      gap: 12px;
+      margin-bottom: 18px;
+      gap: 14px;
       flex-wrap: wrap;
     }
 
     .project-title {
       font-family: 'Playfair Display', serif;
-      font-size: 25px;
+      font-size: 26px;
       font-weight: 700;
       color: var(--text-title);
     }
 
     .project-subtitle {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--text-muted);
-      margin-top: 3px;
+      margin-top: 4px;
+      font-weight: 500;
     }
 
     .header-badges-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .health-badge {
+      min-height: 40px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 14px;
-      font-size: 11px;
-      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-size: 11.5px;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
     }
 
-    .health-badge.en_tiempo { background: var(--status-ok-bg); color: var(--status-ok); border: 1px solid rgba(59, 110, 76, 0.3); }
-    .health-badge.atencion { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid rgba(158, 107, 36, 0.3); }
-    .health-badge.retraso { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(166, 58, 46, 0.3); }
-
-    .btn-edit-project {
-      background: #FFFFFF;
-      border: 1px solid var(--msg-pastel-border);
-      color: var(--text-title);
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      gap: 6px;
-    }
+    .health-badge.en_tiempo { color: var(--status-ok); }
+    .health-badge.atencion { color: var(--status-warn); }
+    .health-badge.retraso { color: var(--status-danger); }
 
     .single-progress-container {
-      background: rgba(255, 255, 255, 0.78);
-      border: 1px solid #E2EADF;
-      padding: 14px 16px;
-      border-radius: 16px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
     }
 
     .progress-meta-text {
       display: flex;
       justify-content: space-between;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--text-title);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .bar-shell {
-      height: 12px;
-      background: #E0E7DC;
-      border-radius: 8px;
+      height: 14px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset-deep);
+      border-radius: 10px;
       overflow: hidden;
       position: relative;
     }
 
     .bar-fill-actual {
       height: 100%;
-      background: var(--btn-olive);
-      border-radius: 8px;
+      background: var(--brand-emerald);
+      border-radius: 10px;
     }
 
     .milestone-strip {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 12px;
-      font-size: 12.5px;
+      margin-top: 16px;
+      font-size: 13px;
       color: var(--text-body);
-      border-top: 1px solid #E6ECE2;
-      padding-top: 10px;
+      padding-top: 12px;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
 
-    /* SECCIONES DE MÓDULOS */
+    /* SECCIONES Y TARJETAS DE INFORMES */
     .module-section { display: none; width: 100%; }
     .module-section.active-module { display: block; }
 
@@ -751,314 +743,324 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      gap: 10px;
+      margin-bottom: 20px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .search-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
       flex: 1;
-    }
-
-    .search-feed {
-      background: #FFFFFF;
-      border: 1px solid #D5DFD2;
-      border-radius: 14px;
-      padding: 8px 14px;
-      font-size: 13px;
-      min-width: 220px;
-      flex: 1;
-      max-width: 340px;
-      outline: none;
-      font-family: inherit;
-    }
-
-    .search-date-input {
-      background: #FFFFFF;
-      border: 1px solid #D5DFD2;
-      border-radius: 14px;
-      padding: 7px 12px;
-      font-size: 12.5px;
-      color: var(--text-title);
-      outline: none;
-      font-family: inherit;
-    }
-
-    .btn-clear-date {
-      background: #EAEFE8;
-      border: 1px solid #CFD8CC;
-      color: var(--text-body);
-      padding: 7px 11px;
-      border-radius: 12px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-action-primary {
-      background: var(--btn-olive);
-      color: #FFFFFF;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 14px;
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .timeline {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding-bottom: 24px;
+      gap: 22px;
+      padding-bottom: 28px;
     }
 
     .report-card {
-      content-visibility: auto;
-      contain-intrinsic-size: 260px;
-      background: var(--msg-pastel-green);
-      border: 1px solid var(--msg-pastel-border);
-      border-radius: 20px 20px 20px 6px;
-      padding: 18px 20px;
+      background: var(--neu-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
+      padding: 22px 24px;
     }
 
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
+      margin-bottom: 14px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .tag-category {
-      background: var(--btn-olive);
-      color: #FFFFFF;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 11px;
-      border-radius: 12px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      color: var(--brand-emerald);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
     }
 
     .card-date {
       font-size: 12px;
-      color: var(--text-title);
-      font-weight: 600;
-      background: var(--msg-inner-cream);
-      padding: 4px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--msg-pastel-border);
+      color: var(--text-body);
+      font-weight: 700;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
     }
 
     .report-title {
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
       color: var(--text-title);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .report-desc {
-      font-size: 13.5px;
+      font-size: 14px;
       color: var(--text-body);
-      line-height: 1.6;
+      line-height: 1.65;
       white-space: pre-line;
-      background: rgba(255, 255, 255, 0.62);
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 14px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 14px 18px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 18px;
     }
 
+    /* ==========================================================================
+       5. CONTENEDOR TIPO ÁLBUM EN PILA ESTILO iPHONE (INFORMES DE OBRA)
+       ========================================================================== */
+    .ios-album-stack-wrapper {
+      margin: 12px 0 20px 6px;
+      display: inline-block;
+    }
+
+    .ios-album-stack {
+      position: relative;
+      width: 230px;
+      height: 175px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+    }
+
+    .ios-album-stack:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 6px;
+      border-radius: var(--radius-lg);
+    }
+
+    .ios-stack-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      padding: 5px;
+    }
+
+    .ios-stack-layer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: calc(var(--radius-lg) - 4px);
+      display: block;
+    }
+
+    .ios-stack-layer.layer-3 {
+      transform: rotate(7deg) translate(12px, -6px) scale(0.92);
+      z-index: 1;
+      opacity: 0.78;
+    }
+
+    .ios-stack-layer.layer-2 {
+      transform: rotate(-5deg) translate(-10px, -4px) scale(0.95);
+      z-index: 2;
+      opacity: 0.88;
+    }
+
+    .ios-stack-layer.layer-1 {
+      transform: rotate(0deg);
+      z-index: 3;
+      box-shadow: var(--neu-elevated);
+    }
+
+    .ios-stack-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 4;
+      background: rgba(30, 38, 30, 0.84);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+    }
+
+    /* CUADRÍCULA EXPANDIDA PARA EL BAÚL DE GALERÍA GENERAL */
     .photo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 14px;
       margin-bottom: 14px;
     }
 
-    .photo-thumb {
+    .photo-thumb-btn {
+      position: relative;
       width: 100%;
-      height: 115px;
-      border-radius: 12px;
-      object-fit: cover;
+      height: 135px;
+      border: none;
+      padding: 6px;
+      border-radius: var(--radius-md);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
       cursor: zoom-in;
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      background: #E5ECE2;
+      overflow: hidden;
+    }
+
+    .photo-thumb-btn:focus-visible {
+      outline: 2px solid var(--focus-ring);
+    }
+
+    .photo-thumb-btn img {
+      width: 100%;
+      height: 100%;
+      border-radius: calc(var(--radius-md) - 4px);
+      object-fit: cover;
+      display: block;
     }
 
     .interaction-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      border-top: 1px solid rgba(74, 90, 70, 0.14);
+      gap: 12px;
       padding-top: 12px;
       flex-wrap: wrap;
     }
 
-    .btn-seen {
-      background: var(--msg-inner-cream);
-      border: 1.5px solid var(--btn-olive);
-      color: var(--text-title);
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+    .comments-box-neu {
+      margin-top: 16px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 14px 16px;
+      border-radius: var(--radius-lg);
     }
 
-    .btn-seen.active {
-      background: var(--btn-olive);
-      color: #FFFFFF;
+    .comment-pill {
+      font-size: 13px;
+      margin-top: 8px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
     }
 
-    .btn-seen:disabled {
-      opacity: 0.85;
-      cursor: not-allowed;
-    }
-
-    /* BAÚL DE GALERÍA */
+    /* BAÚL DE GALERÍA Y BITÁCORA */
     .vault-date-group {
-      background: var(--msg-inner-cream);
-      border: 1px solid var(--msg-pastel-border);
-      border-radius: 18px;
-      padding: 18px 20px;
-      margin-bottom: 18px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      margin-bottom: 22px;
     }
 
     .vault-date-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #E1E9DD;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 8px;
     }
 
     .vault-date-title {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 800;
       color: var(--text-title);
     }
 
     .vault-date-count {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: #E8F0E5;
-      padding: 3px 10px;
-      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brand-emerald);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
     }
 
-    /* BITÁCORA */
     .audit-timeline {
-      position: relative;
-      padding-left: 22px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    .audit-timeline::before {
-      content: '';
-      position: absolute;
-      left: 6px;
-      top: 6px;
-      bottom: 6px;
-      width: 2px;
-      background: #CFD9CB;
+      gap: 14px;
     }
 
     .audit-entry {
-      position: relative;
-      background: #FFFFFF;
-      border: 1px solid var(--msg-pastel-border);
-      border-radius: 14px;
-      padding: 14px 16px;
-    }
-
-    .audit-entry::before {
-      content: '';
-      position: absolute;
-      left: -21px;
-      top: 18px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--btn-olive);
-      border: 2px solid #FFFFFF;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
     }
 
     .audit-meta {
       display: flex;
       justify-content: space-between;
-      font-size: 11.5px;
+      font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
       gap: 6px;
     }
 
     .audit-title {
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-title);
     }
 
-    /* TABLAS RESPONSIVAS */
+    /* TABLAS NEUMÓRFICAS */
     .table-responsive {
       width: 100%;
       overflow-x: auto;
-      border-radius: 14px;
-      border: 1px solid var(--msg-pastel-border);
-      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      padding: 8px;
     }
 
     .docs-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 520px;
+      min-width: 540px;
     }
 
     .docs-table th, .docs-table td {
-      padding: 12px 14px;
+      padding: 14px 16px;
       font-size: 13px;
       text-align: left;
-      border-bottom: 1px solid #E6ECE2;
     }
 
     .docs-table th {
-      background: var(--msg-inner-cream);
-      font-weight: 700;
-      color: var(--text-body);
+      font-weight: 800;
+      color: var(--brand-emerald);
     }
 
-    /* TARJETA DE AUTOSERVICIO DE PERFIL (DIRECTIVA 5) */
     .profile-card {
-      max-width: 520px;
+      max-width: 540px;
       background: var(--neu-surface);
-      border-radius: 1.5rem;
-      padding: 28px 26px;
-      box-shadow: 10px 10px 22px var(--neu-shadow-dark), -10px -10px 22px var(--neu-shadow-light);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--neu-elevated);
     }
 
-    /* VISOR LIGHTBOX ACELERADO POR HARDWARE */
+    /* ==========================================================================
+       4 & 5. VISOR LIGHTBOX MULTITÁCTIL CON FLECHAS GRANDES Y TIRA DE MINIATURAS
+       ========================================================================== */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(16, 20, 16, 0.96);
+      background: rgba(18, 23, 18, 0.96);
       display: none;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       z-index: 950;
       overflow: hidden;
       user-select: none;
@@ -1067,49 +1069,66 @@
     .lightbox-overlay.open { display: flex; }
 
     .lightbox-toolbar {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      left: 16px;
+      width: 100%;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 960;
-      pointer-events: none;
+      gap: 10px;
       flex-wrap: wrap;
-      gap: 8px;
+      background: rgba(18, 23, 18, 0.75);
     }
 
     .lightbox-caption {
       color: #EAEFE8;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 7px 14px;
-      border-radius: 16px;
-      pointer-events: auto;
+      max-width: 45%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lightbox-counter {
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 6px 14px;
+      border-radius: 999px;
+      letter-spacing: 0.8px;
     }
 
     .lightbox-controls {
       display: flex;
-      gap: 6px;
-      pointer-events: auto;
+      gap: 8px;
     }
 
     .lightbox-btn {
-      background: #2C352B;
+      min-width: 48px;
+      min-height: 48px;
+      background: #2A342A;
       color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 800;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-btn:focus-visible {
+      outline: 2px solid #FFFFFF;
     }
 
     .lightbox-stage {
+      position: relative;
+      flex: 1;
       width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1121,19 +1140,91 @@
     .lightbox-stage:active { cursor: grabbing; }
 
     .lightbox-img {
-      max-width: 90vw;
-      max-height: 82vh;
-      border-radius: 8px;
+      max-width: 84vw;
+      max-height: 68vh;
+      border-radius: 12px;
       transform-origin: center center;
       will-change: transform;
       pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
-    /* MODALES */
+    .lightbox-nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(42, 52, 42, 0.88);
+      color: #FFFFFF;
+      font-size: 26px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 965;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .lightbox-nav-arrow:hover {
+      background: var(--brand-emerald);
+    }
+
+    .lightbox-nav-arrow:focus-visible {
+      outline: 3px solid #FFFFFF;
+    }
+
+    .lightbox-nav-arrow.prev { left: 16px; }
+    .lightbox-nav-arrow.next { right: 16px; }
+
+    .lightbox-thumb-strip {
+      width: 100%;
+      min-height: 84px;
+      background: rgba(18, 23, 18, 0.88);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow-x: auto;
+      z-index: 960;
+    }
+
+    .lightbox-thumb-item {
+      width: 58px;
+      height: 58px;
+      border-radius: 12px;
+      border: 3px solid transparent;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      overflow: hidden;
+      opacity: 0.55;
+    }
+
+    .lightbox-thumb-item.active-thumb {
+      border-color: #529468;
+      opacity: 1;
+      box-shadow: 0 0 0 2px #E6EEE6;
+    }
+
+    .lightbox-thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* MODALES NEUMÓRFICOS */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(28, 35, 27, 0.65);
+      background: rgba(24, 30, 24, 0.62);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1145,11 +1236,11 @@
 
     .modal-box {
       width: 100%;
-      max-width: 520px;
-      background: #FAFBF9;
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      max-width: 540px;
+      background: var(--neu-surface);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -1158,52 +1249,48 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
 
-    .modal-title { font-size: 16.5px; font-weight: 700; }
-    .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
+    .modal-title { font-size: 17px; font-weight: 800; }
 
-    .form-group { margin-bottom: 12px; }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
+    .modal-close {
+      width: 48px;
+      height: 48px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
       color: var(--text-body);
-      margin-bottom: 5px;
-    }
-
-    .form-input, .form-textarea, .form-select {
-      width: 100%;
-      border: 1px solid #D5DFD2;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 13.5px;
-      font-family: inherit;
-      outline: none;
-      background: #FFFFFF;
     }
 
     .dropzone {
-      border: 2px dashed #B8C7B4;
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: var(--radius-lg);
+      padding: 20px;
       text-align: center;
-      background: var(--msg-inner-cream);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
       cursor: pointer;
     }
 
     .preview-container {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .preview-wrap {
       position: relative;
-      width: 58px;
-      height: 58px;
+      width: 64px;
+      height: 64px;
+      padding: 4px;
+      border-radius: 12px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
     }
 
     .preview-wrap img {
@@ -1215,86 +1302,61 @@
 
     .toast-banner {
       position: fixed;
-      bottom: 18px;
-      right: 18px;
-      background: #2C352B;
-      color: #FFFFFF;
-      padding: 11px 16px;
-      border-radius: 12px;
-      font-size: 12.5px;
-      font-weight: 600;
+      bottom: 20px;
+      right: 20px;
+      background: var(--neu-surface);
+      color: var(--text-title);
+      box-shadow: var(--neu-elevated);
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 700;
       z-index: 980;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
       display: none;
     }
 
-    /* REPORTE FORMAL IMPRIMIBLE */
     @media print {
       body { background: #FFFFFF; padding: 0; color: #000; }
-      #preloader, .app-window, .sidebar, .top-header, .btn-action-primary, .interaction-bar, .mobile-menu-btn {
+      #preloader, .app-window, .sidebar, .top-header, .btn-neu, .interaction-bar, .mobile-menu-btn {
         display: none !important;
       }
       #print-report-template { display: block !important; }
     }
     #print-report-template { display: none; }
 
-    /* RESPONSIVIDAD MÓVIL CON ZOOM MULTITÁCTIL LIBRE */
     @media (max-width: 820px) {
-      body {
-        padding: 8px;
-        align-items: flex-start;
-      }
-      .login-wrapper {
-        padding: 28px 20px;
-        margin-top: 14px;
-      }
+      body { padding: 10px; align-items: flex-start; }
+      .login-wrapper { padding: 28px 20px; margin-top: 12px; }
       .app-window {
         width: 100%;
         max-width: 100%;
-        height: auto;
-        min-height: calc(100vh - 16px);
-        border-radius: 18px;
-        margin: 0 auto;
+        min-height: calc(100vh - 20px);
+        border-radius: var(--radius-lg);
       }
       .sidebar {
         position: fixed;
         top: 0;
         left: 0;
-        width: 265px;
+        width: 275px;
         height: 100vh;
         display: none;
       }
-      .sidebar.open {
-        display: flex;
-      }
-      .mobile-menu-btn {
-        display: inline-flex;
-      }
-      .main-viewport {
-        padding: 12px;
-        width: 100%;
-      }
-      .top-header {
-        padding: 8px 10px;
-        margin-bottom: 14px;
-      }
-      .search-feed {
-        min-width: 100%;
-        max-width: 100%;
-      }
-      .project-title {
-        font-size: 21px;
-      }
-      .report-card {
-        padding: 14px;
-      }
+      .sidebar.open { display: flex; }
+      .mobile-menu-btn { display: inline-flex; }
+      .main-viewport { padding: 14px; }
+      .project-title { font-size: 21px; }
+      .report-card { padding: 18px; }
+      .lightbox-nav-arrow { width: 48px; height: 48px; font-size: 22px; }
+      .lightbox-nav-arrow.prev { left: 8px; }
+      .lightbox-nav-arrow.next { right: 8px; }
+      .lightbox-caption { display: none; }
     }
   </style>
 </head>
 <body class="preloader-lock">
 
   <!-- ========================================================================
-       1. SPRITE Y PANTALLA DE PRECARGA (6 PATITAS EN VERDE CORPORATIVO)
+       1 & 3. SPRITE Y PANTALLA DE PRECARGA (LOADER DE 6 PATITAS EN VERDE)
        ======================================================================== -->
   <svg style="display:none;" aria-hidden="true">
     <symbol id="paw" viewBox="0 0 249 209.32">
@@ -1306,7 +1368,7 @@
     </symbol>
   </svg>
 
-  <div id="preloader" role="status" aria-live="polite" aria-label="Cargando plataforma DIEGO">
+  <div id="preloader" class="run-paws" role="status" aria-live="polite" aria-label="Cargando plataforma DIEGO">
     <div class="paw-trail">
       <div class="paw"><svg><use href="#paw"/></svg></div>
       <div class="paw"><svg><use href="#paw"/></svg></div>
@@ -1319,7 +1381,7 @@
   </div>
 
   <!-- ========================================================================
-       3. PANTALLA DE ACCESO NEUMÓRFICA ACCESIBLE (WCAG 2.1 AA)
+       2. MÓDULO DE ACCESO NEUMÓRFICO (SIN PLACEHOLDERS FICTICIOS + OJO SVG)
        ======================================================================== -->
   <div class="login-wrapper" id="login-screen" role="region" aria-labelledby="login-heading">
     <div>
@@ -1333,10 +1395,10 @@
     <form class="login-form" id="login-form-el" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on" novalidate>
       <input type="text" id="hp-login" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <!-- Campo Usuario -->
+      <!-- Usuario -->
       <div class="form-group-neu">
         <label for="login-user">
-          <span>Nombre de Usuario</span>
+          <span>Usuario</span>
           <span class="req-star" aria-hidden="true">*</span>
         </label>
         <input
@@ -1345,21 +1407,21 @@
           name="username"
           autocomplete="username"
           class="neu-input"
-          placeholder="Ej.: Admin, Cliente1"
           maxlength="50"
           required
           aria-required="true"
           aria-invalid="false"
           aria-describedby="login-user-help login-user-error"
+          oninput="handleUserRoleInput(this.value)"
         >
-        <span id="login-user-help" class="field-help">Identificador asignado a tu proyecto de obra (sin espacios).</span>
+        <span id="login-user-help" class="field-help">Ingresa tu identificador asignado.</span>
         <span id="login-user-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <!-- Campo Correo Electrónico -->
-      <div class="form-group-neu">
+      <!-- Correo (Ocultado automáticamente si Usuario === Admin) -->
+      <div class="form-group-neu" id="login-email-group">
         <label for="login-email">
-          <span>Correo Electrónico para Notificaciones</span>
+          <span>Correo</span>
           <span class="req-star" aria-hidden="true">*</span>
         </label>
         <input
@@ -1368,41 +1430,52 @@
           name="email"
           autocomplete="email"
           class="neu-input"
-          placeholder="nombre@dominio.com"
           maxlength="120"
           required
           aria-required="true"
           aria-invalid="false"
           aria-describedby="login-email-help login-email-error"
         >
-        <span id="login-email-help" class="field-help">Recibirás alertas automáticas de bitácora e informes publicados.</span>
+        <span id="login-email-help" class="field-help">Correo para alertas de informes y bitácora.</span>
         <span id="login-email-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <!-- Campo Contraseña -->
+      <!-- Contraseña con alternador de visibilidad SVG -->
       <div class="form-group-neu">
         <label for="login-pass">
-          <span>Contraseña de Acceso</span>
+          <span>Contraseña</span>
           <span class="req-star" aria-hidden="true">*</span>
         </label>
-        <input
-          type="password"
-          id="login-pass"
-          name="password"
-          autocomplete="current-password"
-          class="neu-input"
-          placeholder="••••••••"
-          maxlength="64"
-          required
-          aria-required="true"
-          aria-invalid="false"
-          aria-describedby="login-pass-help login-pass-error"
-        >
-        <span id="login-pass-help" class="field-help">Clave personal sincronizada en tiempo real con la base de datos.</span>
+        <div class="password-input-wrap">
+          <input
+            type="password"
+            id="login-pass"
+            name="password"
+            autocomplete="current-password"
+            class="neu-input"
+            maxlength="64"
+            required
+            aria-required="true"
+            aria-invalid="false"
+            aria-describedby="login-pass-help login-pass-error"
+          >
+          <button
+            type="button"
+            class="btn-eye-toggle"
+            aria-label="Mostrar u ocultar contraseña"
+            onclick="togglePasswordVisibility('login-pass', 'eye-icon-login')"
+          >
+            <svg id="eye-icon-login" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <span id="login-pass-help" class="field-help">Clave personal sincronizada en tiempo real.</span>
         <span id="login-pass-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <button type="submit" id="btn-login-submit" class="btn-submit-neu">Ingresar al Portal de Obra</button>
+      <button type="submit" id="btn-login-submit" class="btn-neu btn-neu-primary" style="width:100%; margin-top:6px;">Ingresar al Portal</button>
     </form>
   </div>
 
@@ -1412,7 +1485,7 @@
   <div class="app-window" id="app-screen">
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL -->
+    <!-- BARRA LATERAL NEUMÓRFICA -->
     <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
       <div>
         <div class="brand-section">
@@ -1421,7 +1494,7 @@
         </div>
 
         <ul class="nav-list">
-          <li class="nav-item active" id="nav-item-feed" onclick="switchModule('feed')">
+          <li class="nav-item active" id="nav-item-feed" role="button" tabindex="0" onclick="switchModule('feed')" onkeydown="if(event.key==='Enter')switchModule('feed')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 10.5L12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9z"/>
               <path d="M9 21V14h6v7"/>
@@ -1429,14 +1502,14 @@
             <span>Informes de Obra</span>
           </li>
 
-          <li class="nav-item" id="nav-item-gallery" onclick="switchModule('gallery')">
+          <li class="nav-item" id="nav-item-gallery" role="button" tabindex="0" onclick="switchModule('gallery')" onkeydown="if(event.key==='Enter')switchModule('gallery')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
             </svg>
             <span>Baúl de Galería</span>
           </li>
 
-          <li class="nav-item" id="nav-item-audit" onclick="switchModule('audit')">
+          <li class="nav-item" id="nav-item-audit" role="button" tabindex="0" onclick="switchModule('audit')" onkeydown="if(event.key==='Enter')switchModule('audit')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="4" width="16" height="16" rx="2"/>
               <line x1="8" y1="9" x2="16" y2="9"/>
@@ -1446,7 +1519,7 @@
             <span>Bitácora</span>
           </li>
 
-          <li class="nav-item" id="nav-item-docs" onclick="switchModule('docs')">
+          <li class="nav-item" id="nav-item-docs" role="button" tabindex="0" onclick="switchModule('docs')" onkeydown="if(event.key==='Enter')switchModule('docs')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
@@ -1454,8 +1527,7 @@
             <span>Documentos</span>
           </li>
 
-          <!-- Pestaña de Autoservicio de Perfil (Para Clientes y Admin) -->
-          <li class="nav-item" id="nav-item-profile" onclick="switchModule('profile')">
+          <li class="nav-item" id="nav-item-profile" role="button" tabindex="0" onclick="switchModule('profile')" onkeydown="if(event.key==='Enter')switchModule('profile')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
@@ -1463,8 +1535,7 @@
             <span>Mi Perfil</span>
           </li>
 
-          <!-- Gestión Total de Usuarios (Solo para Admin) -->
-          <li class="nav-item" id="nav-item-users" style="display:none;" onclick="switchModule('users')">
+          <li class="nav-item" id="nav-item-users" style="display:none;" role="button" tabindex="0" onclick="switchModule('users')" onkeydown="if(event.key==='Enter')switchModule('users')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -1491,15 +1562,13 @@
           </div>
         </div>
 
-        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.4"/>
-          <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.1" opacity="0.7"/>
-          <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 62 120 Q 88 68 114 14" stroke-width="0.7" opacity="0.75"/>
-          <path d="M 38 162 C 32 118, 42 78, 52 42 C 58 84, 52 126, 38 162 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 78 108 C 102 82, 134 62, 166 52 C 142 78, 112 98, 78 108 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 56 142 C 96 122, 145 118, 192 128 C 148 142, 102 146, 56 142 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
-          <path d="M 35 184 C 66 158, 102 146, 138 142 C 110 168, 74 182, 35 184 Z" stroke-width="1.2" fill="rgba(220,229,216,0.03)"/>
+        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#3B6E4C" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.6"/>
+          <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.2"/>
+          <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.3"/>
+          <path d="M 38 162 C 32 118, 42 78, 52 42 C 58 84, 52 126, 38 162 Z" stroke-width="1.3"/>
+          <path d="M 78 108 C 102 82, 134 62, 166 52 C 142 78, 112 98, 78 108 Z" stroke-width="1.3"/>
+          <path d="M 56 142 C 96 122, 145 118, 192 128 C 148 142, 102 146, 56 142 Z" stroke-width="1.3"/>
         </svg>
       </div>
     </aside>
@@ -1508,32 +1577,32 @@
     <main class="main-viewport">
 
       <!-- BARRA SUPERIOR DE TAREAS -->
-      <div class="top-header">
+      <header class="top-header">
         <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">☰</button>
 
         <div class="project-selector-wrap" id="admin-project-selector" style="display:none;">
-          <label for="active-project-dropdown" style="font-size:11.5px; font-weight:700; color:var(--text-body);">CLIENTE / PROYECTO:</label>
-          <select id="active-project-dropdown" class="project-selector" onchange="changeActiveProject(this.value)">
+          <label for="active-project-dropdown" style="font-size:12px; font-weight:800; color:var(--text-body);">OBRA ACTIVA:</label>
+          <select id="active-project-dropdown" class="neu-select" style="width:auto; min-width:220px;" onchange="changeActiveProject(this.value)">
           </select>
         </div>
 
         <div class="user-pill">
-          <button class="btn-action-primary" style="padding:6px 11px; font-size:11.5px;" onclick="printExecutiveReport()">🖨️ Exportar PDF</button>
+          <button class="btn-neu" onclick="printExecutiveReport()" aria-label="Exportar reporte ejecutivo en PDF">🖨️ Exportar PDF</button>
           <span class="user-meta-name" id="user-display-tag">USUARIO</span>
           <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Avatar de usuario">
-          <button class="btn-logout" onclick="handleLogout()">Salir</button>
+          <button class="btn-neu btn-neu-danger" onclick="handleLogout()" aria-label="Cerrar sesión">Salir</button>
         </div>
-      </div>
+      </header>
 
-      <!-- 7. CUADRO DE AVANCE DE LA OBRA (VISIBLE SOLO EN INFORMES Y BITÁCORA) -->
+      <!-- CUADRO DE AVANCE DE LA OBRA (VISIBLE SOLO EN INFORMES Y BITÁCORA) -->
       <div class="dashboard-header-card" id="dashboard-avance-card">
         <div class="project-main-meta">
           <div>
-            <h2 class="project-title" id="dash-project-name">Cargando proyecto...</h2>
+            <h2 class="project-title" id="dash-project-name">Sincronizando proyecto...</h2>
             <p class="project-subtitle" id="dash-project-desc">Seguimiento de Obra</p>
           </div>
           <div class="header-badges-group">
-            <button class="btn-edit-project" id="btn-edit-project" onclick="openEditProjectModal()">✎ Modificar Obra y Avance</button>
+            <button class="btn-neu" id="btn-edit-project" style="display:none;" onclick="openEditProjectModal()">✎ Modificar Obra y Avance</button>
             <div id="dash-health-badge" class="health-badge en_tiempo">En Tiempo</div>
           </div>
         </div>
@@ -1554,15 +1623,15 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 1: INFORMES DE OBRA -->
-      <section class="module-section active-module" id="sec-feed">
+      <!-- SECCIÓN 1: INFORMES DE OBRA (CON ÁLBUM APILADO TIPO iPHONE) -->
+      <section class="module-section active-module" id="sec-feed" aria-label="Informes de Obra">
         <div class="feed-controls">
           <div class="search-group">
-            <input type="text" id="feed-search" class="search-feed" placeholder="🔍 Buscar por título, categoría o fecha..." maxlength="100" oninput="filterReports()">
-            <input type="date" id="feed-search-date" class="search-date-input" onchange="filterReports()" title="Filtrar por fecha exacta">
-            <button class="btn-clear-date" onclick="clearDateSearch()">Limpiar fecha</button>
+            <input type="text" id="feed-search" class="neu-input" style="max-width:320px;" aria-label="Buscar informes por texto" maxlength="100" oninput="filterReports()">
+            <input type="date" id="feed-search-date" class="neu-input" style="width:auto;" aria-label="Filtrar informes por fecha" onchange="filterReports()">
+            <button class="btn-neu" onclick="clearDateSearch()">Limpiar filtro</button>
           </div>
-          <button class="btn-action-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Nuevo Informe</button>
+          <button class="btn-neu btn-neu-primary" id="btn-create-report" style="display:none;" onclick="openCreateReportModal()">+ Nuevo Informe</button>
         </div>
 
         <div class="timeline" id="feed-timeline">
@@ -1570,32 +1639,32 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 2: BAÚL DE GALERÍA -->
-      <section class="module-section" id="sec-gallery">
-        <div style="margin-bottom:16px;">
-          <h3 style="font-size:17px; font-weight:700;">Baúl de Galería</h3>
-          <p style="font-size:12.5px; color:var(--text-muted);">Archivo histórico organizado automáticamente por fecha de publicación. Pulsa cualquier fotografía para abrir el visor con zoom.</p>
+      <!-- SECCIÓN 2: BAÚL DE GALERÍA (CUADRÍCULA EXPANDIDA POR FECHAS) -->
+      <section class="module-section" id="sec-gallery" aria-label="Baúl de Galería">
+        <div style="margin-bottom:18px;">
+          <h3 style="font-size:18px; font-weight:800;">Baúl de Galería</h3>
+          <p style="font-size:13px; color:var(--text-muted);">Cuadrícula completa organizada por fecha de publicación. Toca cualquier fotografía para abrir el visor con navegación y zoom multitáctil.</p>
         </div>
         <div id="gallery-vault-container"></div>
       </section>
 
       <!-- SECCIÓN 3: BITÁCORA DE PUBLICACIONES -->
-      <section class="module-section" id="sec-audit">
-        <div style="margin-bottom:16px;">
-          <h3 style="font-size:17px; font-weight:700;">Bitácora de Publicaciones</h3>
-          <p style="font-size:12.5px; color:var(--text-muted);">Registro cronológico automático de cada informe y documento oficial subido al proyecto.</p>
+      <section class="module-section" id="sec-audit" aria-label="Bitácora de Publicaciones">
+        <div style="margin-bottom:18px;">
+          <h3 style="font-size:18px; font-weight:800;">Bitácora de Publicaciones</h3>
+          <p style="font-size:13px; color:var(--text-muted);">Registro cronológico automático de cada informe y documento oficial subido al proyecto.</p>
         </div>
         <div class="audit-timeline" id="audit-list"></div>
       </section>
 
       <!-- SECCIÓN 4: CENTRO DOCUMENTAL -->
-      <section class="module-section" id="sec-docs">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <section class="module-section" id="sec-docs" aria-label="Centro Documental">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
           <div>
-            <h3 style="font-size:17px; font-weight:700;">Centro Documental</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF con vista previa multipágina y descarga directa.</p>
+            <h3 style="font-size:18px; font-weight:800;">Centro Documental</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Planos vigentes, licencias y actas en formato PDF con vista previa multipágina y descarga directa.</p>
           </div>
-          <button class="btn-action-primary" id="btn-add-doc" style="display:none;" onclick="openCreateDocModal()">+ Subir Archivo PDF</button>
+          <button class="btn-neu btn-neu-primary" id="btn-add-doc" style="display:none;" onclick="openCreateDocModal()">+ Subir Archivo PDF</button>
         </div>
         <div class="table-responsive">
           <table class="docs-table">
@@ -1613,92 +1682,67 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 5: MI PERFIL (AUTOSERVICIO PARA CLIENTE Y ADMIN) -->
-      <section class="module-section" id="sec-profile">
+      <!-- SECCIÓN 5: MI PERFIL -->
+      <section class="module-section" id="sec-profile" aria-label="Mi Perfil">
         <div style="margin-bottom:18px;">
-          <h3 style="font-size:18px; font-weight:700;">Mi Perfil y Credenciales</h3>
-          <p style="font-size:12.5px; color:var(--text-muted);">Actualiza tu identificador de usuario, tu correo electrónico de notificaciones, y tu contraseña personal. Los cambios se sincronizan al instante en todos tus dispositivos.</p>
+          <h3 style="font-size:18px; font-weight:800;">Mi Perfil y Credenciales</h3>
+          <p style="font-size:13px; color:var(--text-muted);">Actualiza tu usuario, correo y contraseña personal. Sincronización inmediata en todos tus dispositivos.</p>
         </div>
 
         <div class="profile-card">
           <form onsubmit="event.preventDefault(); saveSelfProfile();" novalidate>
             <input type="text" id="hp-profile" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-            <div class="form-group-neu" style="margin-bottom:14px;">
+            <div class="form-group-neu" style="margin-bottom:16px;">
               <label for="prof-code">
-                <span>Nombre de Usuario (Login)</span>
+                <span>Usuario</span>
                 <span class="req-star" aria-hidden="true">*</span>
               </label>
-              <input
-                type="text"
-                id="prof-code"
-                class="neu-input"
-                placeholder="Ej.: Cliente1"
-                maxlength="50"
-                required
-                aria-required="true"
-                aria-invalid="false"
-                aria-describedby="prof-code-help prof-code-error"
-              >
-              <span id="prof-code-help" class="field-help">Sin espacios. Usarás este identificador para iniciar sesión en PC y celular.</span>
+              <input type="text" id="prof-code" class="neu-input" maxlength="50" required aria-required="true" aria-invalid="false" aria-describedby="prof-code-error">
               <span id="prof-code-error" class="field-error" role="alert" aria-live="polite"></span>
             </div>
 
-            <div class="form-group-neu" style="margin-bottom:14px;">
+            <div class="form-group-neu" style="margin-bottom:16px;">
               <label for="prof-email">
-                <span>Correo Electrónico Personal</span>
+                <span>Correo</span>
                 <span class="req-star" aria-hidden="true">*</span>
               </label>
-              <input
-                type="email"
-                id="prof-email"
-                class="neu-input"
-                placeholder="cliente@correo.com"
-                maxlength="120"
-                required
-                aria-required="true"
-                aria-invalid="false"
-                aria-describedby="prof-email-help prof-email-error"
-              >
-              <span id="prof-email-help" class="field-help">Recibirás aquí los reportes técnicos de avance y avisos de bitácora.</span>
+              <input type="email" id="prof-email" class="neu-input" maxlength="120" required aria-required="true" aria-invalid="false" aria-describedby="prof-email-error">
               <span id="prof-email-error" class="field-error" role="alert" aria-live="polite"></span>
             </div>
 
-            <div class="form-group-neu" style="margin-bottom:18px;">
+            <div class="form-group-neu" style="margin-bottom:20px;">
               <label for="prof-pass">
-                <span>Nueva Contraseña</span>
+                <span>Contraseña</span>
                 <span class="req-star" aria-hidden="true">*</span>
               </label>
-              <input
-                type="text"
-                id="prof-pass"
-                class="neu-input"
-                placeholder="Mínimo 4 caracteres"
-                maxlength="64"
-                required
-                aria-required="true"
-                aria-invalid="false"
-                aria-describedby="prof-pass-help prof-pass-error"
-              >
-              <span id="prof-pass-help" class="field-help">Al guardar, esta clave será exigida inmediatamente en todos tus dispositivos.</span>
+              <div class="password-input-wrap">
+                <input type="password" id="prof-pass" class="neu-input" maxlength="64" required aria-required="true" aria-invalid="false" aria-describedby="prof-pass-error">
+                <button type="button" class="btn-eye-toggle" aria-label="Mostrar u ocultar contraseña" onclick="togglePasswordVisibility('prof-pass', 'eye-icon-prof')">
+                  <svg id="eye-icon-prof" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
               <span id="prof-pass-error" class="field-error" role="alert" aria-live="polite"></span>
             </div>
 
-            <button type="submit" id="btn-save-self-profile" class="btn-submit-neu">Actualizar Mis Credenciales</button>
+            <button type="submit" id="btn-save-self-profile" class="btn-neu btn-neu-primary" style="width:100%;">Guardar Credenciales</button>
           </form>
         </div>
       </section>
 
-      <!-- SECCIÓN 6: GESTIÓN DE USUARIOS Y CORREOS (SOLO ADMIN) -->
-      <section class="module-section" id="sec-users">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <!-- SECCIÓN 6: GESTIÓN DE USUARIOS (SOLO ADMIN) -->
+      <section class="module-section" id="sec-users" aria-label="Gestión de Usuarios">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
           <div>
-            <h3 style="font-size:17px; font-weight:700;">Gestión de Usuarios, Correos y Obras (Admin)</h3>
-            <p style="font-size:12.5px; color:var(--text-muted);">Control global de cuentas de clientes, contraseñas sincronizadas en vivo, y configuración del servicio de notificaciones por correo.</p>
+            <h3 style="font-size:18px; font-weight:800;">Gestión de Usuarios y Obras (Admin)</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Control global de cuentas de clientes, contraseñas y servicio de notificaciones.</p>
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn-edit-project" style="display:inline-flex;" onclick="openEmailConfigModal()">✉️ Configurar Correo Automático</button>
-            <button class="btn-action-primary" onclick="openUserModal()">+ Añadir Usuario</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-neu" onclick="openEmailConfigModal()">✉️ Configurar Correo</button>
+            <button class="btn-neu btn-neu-primary" onclick="openUserModal()">+ Añadir Usuario</button>
           </div>
         </div>
 
@@ -1706,11 +1750,11 @@
           <table class="docs-table">
             <thead>
               <tr>
-                <th>Usuario (Login)</th>
+                <th>Usuario</th>
                 <th>Contraseña</th>
-                <th>Correo Electrónico</th>
-                <th>Cliente / Propietario</th>
-                <th>Proyecto Asignado</th>
+                <th>Correo</th>
+                <th>Cliente</th>
+                <th>Proyecto</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -1722,161 +1766,169 @@
     </main>
   </div>
 
-  <!-- BANNER INFORMATIVO NO BLOQUEANTE -->
+  <!-- BANNER INFORMATIVO -->
   <div id="toast-banner" class="toast-banner" role="status" aria-live="polite"></div>
 
-  <!-- VISOR LIGHTBOX OPTIMIZADO -->
-  <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visor de fotografías">
+  <!-- ========================================================================
+       4 & 5. VISOR LIGHTBOX CON FLECHAS LATERALES, MINIATURAS, CONTADOR Y PINCH-ZOOM
+       ======================================================================== -->
+  <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visor de álbum fotográfico">
     <div class="lightbox-toolbar">
       <div class="lightbox-caption" id="lightbox-caption">Evidencia Fotográfica</div>
+      <div class="lightbox-counter" id="lightbox-counter" aria-live="polite">1 / 1</div>
       <div class="lightbox-controls">
-        <button class="lightbox-btn" onclick="adjustZoom(-0.4)" title="Alejar">－</button>
-        <button class="lightbox-btn" onclick="resetZoom()" id="zoom-level-indicator" title="Restaurar">100%</button>
-        <button class="lightbox-btn" onclick="adjustZoom(0.4)" title="Acercar">＋</button>
-        <button class="lightbox-btn" style="background:var(--status-danger);" onclick="closeLightbox()">✕ Cerrar</button>
+        <button class="lightbox-btn" onclick="adjustZoom(-0.4)" aria-label="Alejar imagen">－</button>
+        <button class="lightbox-btn" onclick="resetZoom()" id="zoom-level-indicator" aria-label="Restablecer zoom">100%</button>
+        <button class="lightbox-btn" onclick="adjustZoom(0.4)" aria-label="Acercar imagen">＋</button>
+        <button class="lightbox-btn" style="background:var(--status-danger);" onclick="closeLightbox()" aria-label="Cerrar visor">✕</button>
       </div>
     </div>
+
     <div class="lightbox-stage" id="lightbox-stage">
-      <img id="lightbox-img" class="lightbox-img" src="" alt="Vista ampliada">
+      <button type="button" class="lightbox-nav-arrow prev" id="lightbox-prev-btn" onclick="navigateLightbox(-1)" aria-label="Fotografía anterior">‹</button>
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Fotografía de obra ampliada">
+      <button type="button" class="lightbox-nav-arrow next" id="lightbox-next-btn" onclick="navigateLightbox(1)" aria-label="Fotografía siguiente">›</button>
     </div>
+
+    <div class="lightbox-thumb-strip" id="lightbox-thumbs" role="region" aria-label="Miniaturas del álbum"></div>
   </div>
 
-  <!-- VISOR MODAL DE VISTA PREVIA DE DOCUMENTOS PDF -->
-  <div class="modal-overlay" id="modal-pdf-preview" role="dialog" aria-modal="true">
+  <!-- VISOR MODAL DE DOCUMENTOS PDF -->
+  <div class="modal-overlay" id="modal-pdf-preview" role="dialog" aria-modal="true" aria-labelledby="pdf-preview-title">
     <div class="modal-box" style="max-width: 900px; height: 88vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <h3 class="modal-title" id="pdf-preview-title">Vista Previa del Documento</h3>
-        <button class="modal-close" onclick="closePdfPreview()">✕</button>
+        <button class="modal-close" onclick="closePdfPreview()" aria-label="Cerrar vista previa">✕</button>
       </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px;">
-        <a id="pdf-native-open-btn" href="#" target="_blank" rel="noopener" class="btn-action-primary" style="padding:6px 12px; font-size:12px; text-decoration:none;">↗ Abrir todas las páginas en pestaña completa</a>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:12px;">
+        <a id="pdf-native-open-btn" href="#" target="_blank" rel="noopener" class="btn-neu btn-neu-primary">↗ Abrir todas las páginas en pestaña completa</a>
       </div>
-      <object id="pdf-preview-frame" type="application/pdf" style="width:100%; flex:1; border:1px solid #D5DFD2; border-radius:12px; background:#fff;">
+      <object id="pdf-preview-frame" type="application/pdf" style="width:100%; flex:1; border-radius:16px; background:#fff;">
         <p style="padding:24px; text-align:center; font-size:13px; color:var(--text-body);">Pulsa el botón superior para abrir todas las páginas del documento en el lector nativo de tu dispositivo.</p>
       </object>
     </div>
   </div>
 
   <!-- MODAL: MODIFICAR PROYECTO, CLIENTE, AVANCE Y FINAL DE OBRA -->
-  <div class="modal-overlay" id="modal-edit-project" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="modal-edit-project" role="dialog" aria-modal="true" aria-labelledby="modal-proj-heading">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Modificar Obra, Cliente y Avance</h3>
-        <button class="modal-close" onclick="closeModal('modal-edit-project')">✕</button>
+        <h3 class="modal-title" id="modal-proj-heading">Modificar Obra, Cliente y Avance</h3>
+        <button class="modal-close" onclick="closeModal('modal-edit-project')" aria-label="Cerrar modal">✕</button>
       </div>
       <input type="text" id="hp-project" class="hp-field" tabindex="-1" autocomplete="off">
 
-      <div class="form-group">
-        <label for="edit-proj-name">Nombre del Proyecto / Obra *</label>
-        <input type="text" id="edit-proj-name" class="form-input" maxlength="140" placeholder="Ej.: Residencia Mónaco — Villa 04">
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="edit-proj-name">Nombre del Proyecto</label>
+        <input type="text" id="edit-proj-name" class="neu-input" maxlength="140">
       </div>
 
-      <div class="form-group">
-        <label for="edit-proj-client">Nombre del Cliente / Propietario *</label>
-        <input type="text" id="edit-proj-client" class="form-input" maxlength="120" placeholder="Ej.: Familia Echeverría">
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="edit-proj-client">Cliente / Propietario</label>
+        <input type="text" id="edit-proj-client" class="neu-input" maxlength="120">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="edit-proj-address">Ubicación / Dirección</label>
-        <input type="text" id="edit-proj-address" class="form-input" maxlength="180" placeholder="Ej.: Costa del Este, Lote 12">
+        <input type="text" id="edit-proj-address" class="neu-input" maxlength="180">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="edit-proj-progress">Avance de la Obra (%): <strong id="edit-proj-progress-val">0%</strong></label>
-        <input type="range" id="edit-proj-progress" min="0" max="100" step="0.5" style="width:100%; accent-color:var(--btn-olive);" oninput="document.getElementById('edit-proj-progress-val').innerText = this.value + '%'">
+        <input type="range" id="edit-proj-progress" min="0" max="100" step="0.5" style="width:100%; accent-color:var(--brand-emerald);" oninput="document.getElementById('edit-proj-progress-val').textContent = this.value + '%'">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="edit-proj-phase">Fase Actual</label>
-        <input type="text" id="edit-proj-phase" class="form-input" maxlength="100" placeholder="Ej.: Impermeabilización general">
+        <input type="text" id="edit-proj-phase" class="neu-input" maxlength="100">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="edit-proj-status">Estado del Semáforo</label>
-        <select id="edit-proj-status" class="form-select">
-          <option value="en_tiempo">En Tiempo (Verde)</option>
-          <option value="atencion">Atención Requerida (Amarillo)</option>
-          <option value="retraso">Retraso (Rojo)</option>
+        <select id="edit-proj-status" class="neu-select">
+          <option value="en_tiempo">En Tiempo</option>
+          <option value="atencion">Atención Requerida</option>
+          <option value="retraso">Retraso</option>
         </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:18px;">
         <label for="edit-proj-date">Fecha de Final de Obra</label>
-        <input type="date" id="edit-proj-date" class="form-input">
+        <input type="date" id="edit-proj-date" class="neu-input">
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-edit-project')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-save-project" onclick="saveProjectChanges()">Guardar Cambios</button>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-neu" onclick="closeModal('modal-edit-project')">Cancelar</button>
+        <button class="btn-neu btn-neu-primary" id="btn-save-project" onclick="saveProjectChanges()">Guardar Cambios</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: PUBLICAR O EDITAR INFORME DE OBRA -->
-  <div class="modal-overlay" id="modal-report" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="modal-report" role="dialog" aria-modal="true" aria-labelledby="modal-report-heading">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title" id="modal-report-heading">Publicar Informe de Obra</h3>
-        <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
+        <button class="modal-close" onclick="closeModal('modal-report')" aria-label="Cerrar modal">✕</button>
       </div>
       <input type="hidden" id="form-rep-editing-id" value="">
       <input type="text" id="hp-report" class="hp-field" tabindex="-1" autocomplete="off">
 
-      <div class="form-group">
-        <label for="form-rep-date">Fecha del Informe (El horario se asignará automáticamente con la hora actual) *</label>
-        <input type="date" id="form-rep-date" class="form-input" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-rep-date">Fecha del Informe</label>
+        <input type="date" id="form-rep-date" class="neu-input" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-rep-cat">Categoría Técnica *</label>
-        <input type="text" id="form-rep-cat" class="form-input" maxlength="80" placeholder="Ej.: Impermeabilización, Enchape, Estructuras..." required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-rep-cat">Categoría Técnica</label>
+        <input type="text" id="form-rep-cat" class="neu-input" maxlength="80" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-rep-title">Título del Informe *</label>
-        <input type="text" id="form-rep-title" class="form-input" maxlength="160" placeholder="Ej.: Avances de enchape e impermeabilización de piscina" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-rep-title">Título del Informe</label>
+        <input type="text" id="form-rep-title" class="neu-input" maxlength="160" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-rep-desc">Descripción Técnica *</label>
-        <textarea id="form-rep-desc" class="form-textarea" rows="4" maxlength="3000" placeholder="Escribe las observaciones detalladas..." required></textarea>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-rep-desc">Descripción Técnica</label>
+        <textarea id="form-rep-desc" class="neu-textarea" rows="4" maxlength="3000" required></textarea>
       </div>
 
-      <div class="form-group">
-        <label>Fotografías de Obra (Las imágenes actuales se conservan salvo que las retires con ✕)</label>
-        <div class="dropzone" id="img-dropzone" onclick="document.getElementById('rep-files').click()">
-          <div style="font-size:13px; font-weight:600;">📷 Arrastra nuevas fotografías aquí o haz clic para añadir</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Se organizarán por fecha en el Baúl de Galería</div>
+      <div class="form-group-neu" style="margin-bottom:18px;">
+        <label>Fotografías de Obra</label>
+        <div class="dropzone" id="img-dropzone" role="button" tabindex="0" onclick="document.getElementById('rep-files').click()" onkeydown="if(event.key==='Enter')document.getElementById('rep-files').click()">
+          <div style="font-size:13.5px; font-weight:700;">📷 Seleccionar o arrastrar fotografías</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">Las fotos existentes se conservan salvo que las elimines con ✕</div>
         </div>
         <input type="file" id="rep-files" multiple accept="image/*" style="display:none;" onchange="handleImageUpload(this.files)">
         <div class="preview-container" id="rep-img-previews"></div>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-report')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-submit-rep" onclick="submitDailyReport()">Guardar Informe</button>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-neu" onclick="closeModal('modal-report')">Cancelar</button>
+        <button class="btn-neu btn-neu-primary" id="btn-submit-rep" onclick="submitDailyReport()">Guardar Informe</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: SUBIR O EDITAR DOCUMENTO PDF -->
-  <div class="modal-overlay" id="modal-doc" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="modal-doc" role="dialog" aria-modal="true" aria-labelledby="modal-doc-heading">
     <div class="modal-box">
       <div class="modal-header">
         <h3 class="modal-title" id="modal-doc-heading">Subir Archivo PDF Oficial</h3>
-        <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>
+        <button class="modal-close" onclick="closeModal('modal-doc')" aria-label="Cerrar modal">✕</button>
       </div>
       <input type="hidden" id="form-doc-editing-id" value="">
       <input type="text" id="hp-doc" class="hp-field" tabindex="-1" autocomplete="off">
 
-      <div class="form-group">
-        <label for="form-doc-title">Título del Documento *</label>
-        <input type="text" id="form-doc-title" class="form-input" maxlength="150" placeholder="Ej.: Cronograma General de Obra" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-doc-title">Título del Documento</label>
+        <input type="text" id="form-doc-title" class="neu-input" maxlength="150" required>
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="form-doc-cat">Categoría</label>
-        <select id="form-doc-cat" class="form-select">
+        <select id="form-doc-cat" class="neu-select">
           <option value="Plano">Plano Técnico</option>
           <option value="Licencia">Licencia de Construcción</option>
           <option value="Acta">Acta / Minuta de Obra</option>
@@ -1884,103 +1936,102 @@
         </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="form-doc-ver">Versión</label>
-        <input type="text" id="form-doc-ver" class="form-input" maxlength="20" placeholder="v1.0" value="v1.0">
+        <input type="text" id="form-doc-ver" class="neu-input" maxlength="20" value="v1.0">
       </div>
 
-      <div class="form-group">
-        <label>Archivo PDF (Arrastrar o seleccionar desde tu dispositivo)</label>
-        <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('doc-file-input').click()">
-          <div style="font-size:13px; font-weight:600;" id="pdf-dropzone-label">📄 Arrastra tu archivo .PDF aquí o haz clic para subir</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Soporta vista previa multipágina y descarga directa en móvil y PC</div>
+      <div class="form-group-neu" style="margin-bottom:18px;">
+        <label>Archivo PDF</label>
+        <div class="dropzone" id="pdf-dropzone" role="button" tabindex="0" onclick="document.getElementById('doc-file-input').click()" onkeydown="if(event.key==='Enter')document.getElementById('doc-file-input').click()">
+          <div style="font-size:13.5px; font-weight:700;" id="pdf-dropzone-label">📄 Seleccionar o arrastrar archivo .PDF</div>
         </div>
         <input type="file" id="doc-file-input" accept="application/pdf,.pdf" style="display:none;" onchange="handlePdfFileSelect(this.files)">
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-doc')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-submit-doc" onclick="submitDocument()">Guardar Documento</button>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-neu" onclick="closeModal('modal-doc')">Cancelar</button>
+        <button class="btn-neu btn-neu-primary" id="btn-submit-doc" onclick="submitDocument()">Guardar Documento</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: CREAR O EDITAR USUARIO / CLIENTE (SOLO ADMIN) -->
-  <div class="modal-overlay" id="modal-user" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="modal-user" role="dialog" aria-modal="true" aria-labelledby="modal-user-heading">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title" id="modal-user-heading">Añadir Nuevo Usuario</h3>
-        <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+        <h3 class="modal-title" id="modal-user-heading">Añadir Usuario</h3>
+        <button class="modal-close" onclick="closeModal('modal-user')" aria-label="Cerrar modal">✕</button>
       </div>
       <input type="hidden" id="form-user-editing-id" value="">
       <input type="text" id="hp-user" class="hp-field" tabindex="-1" autocomplete="off">
 
-      <div class="form-group">
-        <label for="form-user-code">Usuario de Inicio de Sesión (Sin espacios, ej.: Cliente1, Cliente5) *</label>
-        <input type="text" id="form-user-code" class="form-input" maxlength="50" placeholder="Ej.: Cliente5" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-user-code">Usuario</label>
+        <input type="text" id="form-user-code" class="neu-input" maxlength="50" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-user-pass">Contraseña de Acceso *</label>
-        <input type="text" id="form-user-pass" class="form-input" maxlength="64" placeholder="Ej.: 1234" value="1234" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-user-pass">Contraseña</label>
+        <input type="text" id="form-user-pass" class="neu-input" maxlength="64" value="1234" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-user-email">Correo Electrónico del Cliente *</label>
-        <input type="email" id="form-user-email" class="form-input" maxlength="120" placeholder="cliente@correo.com" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-user-email">Correo</label>
+        <input type="email" id="form-user-email" class="neu-input" maxlength="120" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-user-client">Nombre del Cliente / Propietario *</label>
-        <input type="text" id="form-user-client" class="form-input" maxlength="120" placeholder="Ej.: Familia Bustillo" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-user-client">Cliente / Propietario</label>
+        <input type="text" id="form-user-client" class="neu-input" maxlength="120" required>
       </div>
 
-      <div class="form-group">
-        <label for="form-user-project">Nombre del Proyecto / Obra Asignada *</label>
-        <input type="text" id="form-user-project" class="form-input" maxlength="140" placeholder="Ej.: Proyecto Residencial Bocagrande" required>
+      <div class="form-group-neu" style="margin-bottom:14px;">
+        <label for="form-user-project">Proyecto Asignado</label>
+        <input type="text" id="form-user-project" class="neu-input" maxlength="140" required>
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:18px;">
         <label for="form-user-address">Ubicación / Dirección</label>
-        <input type="text" id="form-user-address" class="form-input" maxlength="180" placeholder="Ej.: Cartagena de Indias">
+        <input type="text" id="form-user-address" class="neu-input" maxlength="180">
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-user')">Cancelar</button>
-        <button class="btn-action-primary" id="btn-submit-user" onclick="saveUserAccount()">Guardar Usuario</button>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-neu" onclick="closeModal('modal-user')">Cancelar</button>
+        <button class="btn-neu btn-neu-primary" id="btn-submit-user" onclick="saveUserAccount()">Guardar Usuario</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: CONFIGURACIÓN DE CORREO AUTOMÁTICO (EMAILJS / WEBHOOK) -->
-  <div class="modal-overlay" id="modal-email-config" role="dialog" aria-modal="true">
+  <!-- MODAL: CONFIGURACIÓN DE CORREO AUTOMÁTICO -->
+  <div class="modal-overlay" id="modal-email-config" role="dialog" aria-modal="true" aria-labelledby="modal-email-heading">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Configuración de Envío de Correos (EmailJS)</h3>
-        <button class="modal-close" onclick="closeModal('modal-email-config')">✕</button>
+        <h3 class="modal-title" id="modal-email-heading">Configuración de Envío de Correos (EmailJS)</h3>
+        <button class="modal-close" onclick="closeModal('modal-email-config')" aria-label="Cerrar modal">✕</button>
       </div>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
-        Al publicar un informe o registrar en bitácora, el sistema despacha un correo con saludo horario al cliente y copia a Gina Bustillo (<strong>proyectos.ginabustillo@gmail.com</strong>) y Sixto Fernández (<strong>Dynatic.solution@gmail.com</strong>).
+      <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;">
+        Notificaciones automáticas dirigidas al cliente con copia a Gina Bustillo (<strong>proyectos.ginabustillo@gmail.com</strong>) y Sixto Fernández (<strong>Dynatic.solution@gmail.com</strong>).
       </p>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="cfg-ejs-service">EmailJS Service ID</label>
-        <input type="text" id="cfg-ejs-service" class="form-input" maxlength="80" placeholder="Ej.: service_diego">
+        <input type="text" id="cfg-ejs-service" class="neu-input" maxlength="80">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:14px;">
         <label for="cfg-ejs-template">EmailJS Template ID</label>
-        <input type="text" id="cfg-ejs-template" class="form-input" maxlength="80" placeholder="Ej.: template_bitacora">
+        <input type="text" id="cfg-ejs-template" class="neu-input" maxlength="80">
       </div>
 
-      <div class="form-group">
+      <div class="form-group-neu" style="margin-bottom:18px;">
         <label for="cfg-ejs-key">EmailJS Public Key</label>
-        <input type="text" id="cfg-ejs-key" class="form-input" maxlength="100" placeholder="Ej.: user_xxxxxxxxx">
+        <input type="text" id="cfg-ejs-key" class="neu-input" maxlength="100">
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-        <button class="btn-logout" style="color:var(--text-body); background:#EAEFE8;" onclick="closeModal('modal-email-config')">Cerrar</button>
-        <button class="btn-action-primary" onclick="saveEmailConfig()">Guardar Configuración</button>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-neu" onclick="closeModal('modal-email-config')">Cerrar</button>
+        <button class="btn-neu btn-neu-primary" onclick="saveEmailConfig()">Guardar Configuración</button>
       </div>
     </div>
   </div>
@@ -2013,7 +2064,6 @@
   </div>
 
   <script>
-    // Respaldo SVG del icono corporativo
     const CAT_FALLBACK_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#0B0D0A"/>
@@ -2028,10 +2078,11 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const ADMIN_CC_EMAILS = ["proyectos.ginabustillo@gmail.com", "Dynatic.solution@gmail.com"];
+    const PERSIST_KEY = "diego_persistent_auth_v1";
 
-    // Estado de sesión sincronizado en tiempo real con Supabase
-    let activeUser = sessionStorage.getItem('diego_session_user') || null;
-    let activeProjectId = sessionStorage.getItem('diego_session_project_id') || null;
+    // Estado de sesión persistente multiplataforma (Keep-Alive en localStorage)
+    let activeUser = null;
+    let activeProjectId = null;
     let currentModule = 'feed';
 
     let allProjects = [];
@@ -2046,40 +2097,60 @@
     let selectedPdfDataUrl = null;
     let currentPdfBlobUrl = null;
 
+    // Estado del Álbum Lightbox y Gestos Multitáctiles (Pinch-to-Zoom + Pan + Double Tap)
+    let lightboxGalleryList = [];
+    let lightboxCurrentIndex = 0;
     let currentZoom = 1;
     let panX = 0;
     let panY = 0;
     let isDraggingImg = false;
     let startDragX = 0;
     let startDragY = 0;
+    let initialPinchDist = 0;
+    let initialPinchZoom = 1;
+    let lastTouchTapTime = 0;
     let rafPending = false;
     let lockoutTimerInterval = null;
 
     // =========================================================================
-    // 1. GESTIÓN DE PRECARGA (LOADER DE 6 PATITAS — EJECUCIÓN ÚNICA)
+    // 3. CONTROLADOR DEL LOADER DE PATITAS SVG (AL ENTRAR Y TRAS INICIAR SESIÓN)
     // =========================================================================
-    function initPreloader() {
+    function playPawLoader(onComplete) {
       const preloader = document.getElementById('preloader');
-      if (!preloader) return;
+      if (!preloader) {
+        if (onComplete) onComplete();
+        return;
+      }
 
-      const dismissPreloader = () => {
-        if (preloader.classList.contains('loaded')) return;
+      document.body.classList.add('preloader-lock');
+      preloader.setAttribute('aria-hidden', 'false');
+      preloader.classList.remove('loaded', 'run-paws');
+
+      // Reiniciar ciclo de animación de las 6 patitas de forma determinista
+      void preloader.offsetWidth;
+      preloader.classList.add('run-paws');
+
+      let completed = false;
+      const finish = () => {
+        if (completed) return;
+        completed = true;
         preloader.classList.add('loaded');
         preloader.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('preloader-lock');
+        if (onComplete) onComplete();
       };
 
       const lastPaw = preloader.querySelector('.paw:nth-child(6)');
       if (lastPaw) {
         lastPaw.addEventListener('animationend', () => {
-          setTimeout(dismissPreloader, 180);
+          setTimeout(finish, 160);
         }, { once: true });
       }
-      setTimeout(dismissPreloader, 2100);
+      setTimeout(finish, 1850);
     }
 
     // =========================================================================
-    // 2. SEGURIDAD NATIVA: SANITIZACIÓN, HONEYPOTS Y FUERZA BRUTA
+    // 2. SEGURIDAD NATIVA, VISIBILIDAD DE CONTRASEÑA Y LÓGICA CONDICIONAL ADMIN
     // =========================================================================
     function escapeHtml(raw) {
       if (!raw) return '';
@@ -2115,6 +2186,39 @@
       }
     }
 
+    function togglePasswordVisibility(inputId, svgId) {
+      const input = document.getElementById(inputId);
+      const svg = document.getElementById(svgId);
+      if (!input || !svg) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        svg.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+      } else {
+        input.type = 'password';
+        svg.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+      }
+    }
+
+    // Ocultar y deshabilitar el campo Correo cuando el usuario escribe "Admin"
+    function handleUserRoleInput(val) {
+      const emailGroup = document.getElementById('login-email-group');
+      const emailInput = document.getElementById('login-email');
+      if (!emailGroup || !emailInput) return;
+
+      const isAdmin = val.trim().toLowerCase() === 'admin';
+      if (isAdmin) {
+        emailGroup.classList.add('hidden');
+        emailInput.disabled = true;
+        emailInput.required = false;
+        setFieldValidationState('login-email', 'login-email-error', '');
+      } else {
+        emailGroup.classList.remove('hidden');
+        emailInput.disabled = false;
+        emailInput.required = true;
+      }
+    }
+
     function showToast(message) {
       const toast = document.getElementById('toast-banner');
       if (!toast) return;
@@ -2125,7 +2229,6 @@
       }, 4200);
     }
 
-    // Protección contra Fuerza Bruta en sessionStorage (5 intentos -> 30s bloqueo)
     function checkBruteForceLockout() {
       const btn = document.getElementById('btn-login-submit');
       const lockoutUntil = parseInt(sessionStorage.getItem('diego_lockout_until') || '0', 10);
@@ -2135,9 +2238,9 @@
         const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
         if (btn) {
           btn.disabled = true;
-          btn.textContent = `Acceso bloqueado (${remainingSecs}s)`;
+          btn.textContent = `Bloqueado (${remainingSecs}s)`;
         }
-        setFieldValidationState('login-pass', 'login-pass-error', `Demasiados intentos fallidos. Espera ${remainingSecs} segundos.`);
+        setFieldValidationState('login-pass', 'login-pass-error', `Demasiados intentos. Espera ${remainingSecs} segundos.`);
         if (!lockoutTimerInterval) {
           lockoutTimerInterval = setInterval(checkBruteForceLockout, 1000);
         }
@@ -2151,7 +2254,7 @@
         sessionStorage.setItem('diego_login_attempts', '0');
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Ingresar al Portal de Obra';
+          btn.textContent = 'Ingresar al Portal';
         }
         setFieldValidationState('login-pass', 'login-pass-error', '');
       }
@@ -2167,7 +2270,7 @@
         checkBruteForceLockout();
       } else {
         const restantes = 5 - attempts;
-        setFieldValidationState('login-pass', 'login-pass-error', `Credenciales incorrectas. Intentos restantes antes de bloqueo: ${restantes}.`);
+        setFieldValidationState('login-pass', 'login-pass-error', `Credenciales incorrectas. Intentos restantes: ${restantes}.`);
       }
     }
 
@@ -2202,7 +2305,43 @@
     }
 
     // =========================================================================
-    // 4. NOTIFICACIONES AUTOMÁTICAS POR CORREO (SALUDO SEGÚN HORA LOCAL)
+    // PERSISTENCIA UNIVERSAL DE SESIÓN (KEEP-ALIVE MULTIPLATAFORMA)
+    // =========================================================================
+    function savePersistentSession(userObj) {
+      try {
+        const payload = JSON.stringify({
+          user: userObj.user,
+          projectId: userObj.projectId || null,
+          email: userObj.email || '',
+          passVerifier: btoa(unescape(encodeURIComponent(userObj.pass || '1234'))),
+          ts: Date.now()
+        });
+        localStorage.setItem(PERSIST_KEY, payload);
+        sessionStorage.setItem(PERSIST_KEY, payload);
+      } catch (e) {
+        console.warn('Error al guardar sesión persistente:', e);
+      }
+    }
+
+    function readPersistentSession() {
+      try {
+        const raw = localStorage.getItem(PERSIST_KEY) || sessionStorage.getItem(PERSIST_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function clearPersistentSession() {
+      try {
+        localStorage.removeItem(PERSIST_KEY);
+        sessionStorage.removeItem(PERSIST_KEY);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // NOTIFICACIONES AUTOMÁTICAS POR CORREO
     // =========================================================================
     function getLocalGreeting() {
       const hour = new Date().getHours();
@@ -2225,8 +2364,8 @@
           `• Resumen: ${summaryText}\n` +
           `• Detalle técnico: ${detailText}\n` +
           `• Fase actual: ${currentProject.current_phase || 'En ejecución'} (${Number(currentProject.actual_progress || 0).toFixed(1)}% de avance)\n\n` +
-          `Enlace directo para revisión y confirmación de lectura:\n${portalUrl}\n\n` +
-          `Atentamente,\nDirección de Obra — B+ Arquitectura Estudio (Gina Bustillo: proyectos.ginabustillo@gmail.com) & Dynatic (Sixto Fernández: Dynatic.solution@gmail.com)`;
+          `Enlace directo para revisión:\n${portalUrl}\n\n` +
+          `Atentamente,\nB+ Arquitectura Estudio (proyectos.ginabustillo@gmail.com) & Dynatic (Dynatic.solution@gmail.com)`;
 
         const serviceId = localStorage.getItem('diego_ejs_service') || '';
         const templateId = localStorage.getItem('diego_ejs_template') || '';
@@ -2250,8 +2389,7 @@
                 summary: summaryText,
                 details: detailText,
                 portal_url: portalUrl,
-                message: fullMessage,
-                contact_info: 'B+ Arquitectura Estudio (proyectos.ginabustillo@gmail.com) | Dynatic (Dynatic.solution@gmail.com)'
+                message: fullMessage
               }
             })
           });
@@ -2260,8 +2398,7 @@
           showToast(`✔ Publicado. Notificación preparada para: ${recipientList}`);
         }
       } catch (err) {
-        // Fallo silencioso garantizado para no interrumpir jamás el flujo de Supabase
-        console.warn('Aviso silencioso de notificación por correo:', err);
+        console.warn('Aviso silencioso de correo:', err);
       }
     }
 
@@ -2277,55 +2414,74 @@
       localStorage.setItem('diego_ejs_template', document.getElementById('cfg-ejs-template').value.trim());
       localStorage.setItem('diego_ejs_key', document.getElementById('cfg-ejs-key').value.trim());
       closeModal('modal-email-config');
-      showToast('Configuración de correo guardada correctamente.');
+      showToast('Configuración de correo guardada.');
     }
 
     // =========================================================================
-    // 6. SINCRONIZACIÓN INMEDIATA DE CONTRASEÑAS Y USUARIOS (PC Y CELULAR)
+    // ARRANQUE Y RESTAURACIÓN AUTOMÁTICA DE SESIÓN (KEEP-ALIVE)
     // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
-      initPreloader();
+      playPawLoader();
       checkBruteForceLockout();
       initLightboxEvents();
       initDragAndDropZones();
-      verifyLiveSessionOnBoot();
+      restorePersistentSessionOnBoot();
       setupRealtimeSubscriptions();
     });
 
-    async function verifyLiveSessionOnBoot() {
-      if (!activeUser) {
+    async function restorePersistentSessionOnBoot() {
+      const saved = readPersistentSession();
+      if (!saved || !saved.user) {
         showLoginView();
         return;
       }
 
-      // Consulta fresca a Supabase para validar que el usuario siga existiendo y sincronizar su estado
       const { data: projects, error } = await supabaseClient.from('projects').select('*');
       if (error) {
-        showLoginView();
-        return;
-      }
-
-      if (activeUser.toLowerCase() === 'admin') {
+        // Si hay corte momentáneo de red en móvil, restaurar vista con datos locales
+        activeUser = saved.user;
+        activeProjectId = saved.projectId;
         enterAuthenticatedView();
         return;
       }
 
-      const matched = (projects || []).find(p => p.id === activeProjectId || p.code.toLowerCase() === activeUser.toLowerCase());
-      if (!matched) {
-        forceSessionInvalidation('Tu cuenta fue actualizada. Inicia sesión nuevamente.');
+      const list = projects || [];
+      const savedPassPlain = decodeURIComponent(escape(atob(saved.passVerifier || '')));
+
+      if (saved.user.toLowerCase() === 'admin') {
+        const adminRow = list.find(p => p.code.toLowerCase() === 'admin');
+        const currentAdminPass = adminRow ? (adminRow.password || '1234') : '1234';
+        if (savedPassPlain !== currentAdminPass) {
+          forceSessionInvalidation('La contraseña de Administrador cambió. Inicia sesión nuevamente.');
+          return;
+        }
+        activeUser = 'Admin';
+        activeProjectId = adminRow ? adminRow.id : null;
+        enterAuthenticatedView();
+        return;
+      }
+
+      const matched = list.find(p => p.id === saved.projectId || p.code.toLowerCase() === saved.user.toLowerCase());
+      if (!matched || (matched.password || '1234') !== savedPassPlain) {
+        forceSessionInvalidation('Tus credenciales fueron actualizadas. Inicia sesión nuevamente.');
         return;
       }
 
       activeUser = matched.code;
       activeProjectId = matched.id;
-      sessionStorage.setItem('diego_session_user', activeUser);
-      sessionStorage.setItem('diego_session_project_id', activeProjectId);
+      savePersistentSession({
+        user: activeUser,
+        projectId: activeProjectId,
+        email: matched.client_email || saved.email,
+        pass: matched.password || '1234'
+      });
       enterAuthenticatedView();
     }
 
     function showLoginView() {
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('app-screen').style.display = 'none';
+      handleUserRoleInput(document.getElementById('login-user').value);
     }
 
     async function enterAuthenticatedView() {
@@ -2336,6 +2492,7 @@
       switchModule(currentModule || 'feed');
     }
 
+    // INICIO DE SESIÓN CON VALIDACIÓN CONDICIONAL ADMIN Y DISPARADOR DE PATITAS SVG
     async function handleLogin() {
       if (isHoneypotTriggered('hp-login')) return;
       if (checkBruteForceLockout()) return;
@@ -2343,6 +2500,7 @@
       const userRaw = document.getElementById('login-user').value.trim();
       const emailRaw = document.getElementById('login-email').value.trim();
       const passRaw = document.getElementById('login-pass').value.trim();
+      const isAdminLogin = userRaw.toLowerCase() === 'admin';
 
       setFieldValidationState('login-user', 'login-user-error', '');
       setFieldValidationState('login-email', 'login-email-error', '');
@@ -2350,38 +2508,36 @@
 
       let hasValidationError = false;
       if (!userRaw || userRaw.length > 50 || /\s/.test(userRaw)) {
-        setFieldValidationState('login-user', 'login-user-error', 'Ingresa un usuario válido sin espacios (máx. 50 caracteres).');
+        setFieldValidationState('login-user', 'login-user-error', 'Ingresa un usuario válido sin espacios.');
         hasValidationError = true;
       }
-      if (!isValidEmailFormat(emailRaw)) {
-        setFieldValidationState('login-email', 'login-email-error', 'Ingresa un correo electrónico válido (ej. nombre@dominio.com).');
+      if (!isAdminLogin && !isValidEmailFormat(emailRaw)) {
+        setFieldValidationState('login-email', 'login-email-error', 'Ingresa un correo electrónico válido.');
         hasValidationError = true;
       }
       if (!passRaw || passRaw.length > 64) {
-        setFieldValidationState('login-pass', 'login-pass-error', 'Ingresa tu contraseña de acceso.');
+        setFieldValidationState('login-pass', 'login-pass-error', 'Ingresa tu contraseña.');
         hasValidationError = true;
       }
       if (hasValidationError) return;
 
       const btn = document.getElementById('btn-login-submit');
       btn.disabled = true;
-      btn.textContent = 'Verificando en tiempo real...';
+      btn.textContent = 'Verificando...';
 
-      // Consulta fresca en tiempo real a Supabase (sin caché local de contraseñas)
       const { data: projects, error } = await supabaseClient.from('projects').select('*');
       btn.disabled = false;
-      btn.textContent = 'Ingresar al Portal de Obra';
+      btn.textContent = 'Ingresar al Portal';
 
       if (error) {
-        setFieldValidationState('login-pass', 'login-pass-error', 'Error de conexión con el servidor. Intenta de nuevo.');
+        setFieldValidationState('login-pass', 'login-pass-error', 'Error de conexión con el servidor.');
         return;
       }
 
       const list = projects || [];
 
-      // Verificar si existe fila de Admin en Supabase o usar credencial predeterminada sincronizada
-      const adminRow = list.find(p => p.code.toLowerCase() === 'admin');
-      if (userRaw.toLowerCase() === 'admin') {
+      if (isAdminLogin) {
+        const adminRow = list.find(p => p.code.toLowerCase() === 'admin');
         const expectedAdminPass = adminRow ? (adminRow.password || '1234') : '1234';
         if (passRaw !== expectedAdminPass) {
           recordFailedLoginAttempt();
@@ -2390,10 +2546,16 @@
         resetLoginAttempts();
         activeUser = 'Admin';
         activeProjectId = adminRow ? adminRow.id : null;
-        sessionStorage.setItem('diego_session_user', 'Admin');
-        sessionStorage.setItem('diego_session_email', emailRaw);
+        savePersistentSession({
+          user: 'Admin',
+          projectId: activeProjectId,
+          email: ADMIN_CC_EMAILS[0],
+          pass: passRaw
+        });
         document.getElementById('login-pass').value = '';
-        await enterAuthenticatedView();
+        playPawLoader(() => {
+          enterAuthenticatedView();
+        });
         return;
       }
 
@@ -2407,7 +2569,6 @@
 
       resetLoginAttempts();
 
-      // Si el cliente ingresó su correo electrónico, asociarlo y actualizarlo en Supabase
       if (emailRaw && emailRaw !== matchedAccount.client_email) {
         await supabaseClient.from('projects').update({ client_email: emailRaw }).eq('id', matchedAccount.id);
         matchedAccount.client_email = emailRaw;
@@ -2415,18 +2576,23 @@
 
       activeUser = matchedAccount.code;
       activeProjectId = matchedAccount.id;
-      sessionStorage.setItem('diego_session_user', activeUser);
-      sessionStorage.setItem('diego_session_project_id', activeProjectId);
-      sessionStorage.setItem('diego_session_email', emailRaw);
+      savePersistentSession({
+        user: activeUser,
+        projectId: activeProjectId,
+        email: emailRaw,
+        pass: passRaw
+      });
       document.getElementById('login-pass').value = '';
-      await enterAuthenticatedView();
+
+      playPawLoader(() => {
+        enterAuthenticatedView();
+      });
     }
 
     function forceSessionInvalidation(reasonMsg) {
       activeUser = null;
       activeProjectId = null;
-      sessionStorage.removeItem('diego_session_user');
-      sessionStorage.removeItem('diego_session_project_id');
+      clearPersistentSession();
       showLoginView();
       if (reasonMsg) {
         setFieldValidationState('login-pass', 'login-pass-error', reasonMsg);
@@ -2446,7 +2612,6 @@
       const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
       if (error) return;
 
-      // Filtrar eventual fila interna de Admin del listado de obras si existiera
       const rawList = data || [];
       allProjects = rawList.filter(p => p.code.toLowerCase() !== 'admin');
       const prevSelectedId = currentProject ? currentProject.id : null;
@@ -2479,8 +2644,6 @@
         currentProject = found;
         activeUser = found.code;
         activeProjectId = found.id;
-        sessionStorage.setItem('diego_session_user', activeUser);
-        sessionStorage.setItem('diego_session_project_id', activeProjectId);
         document.getElementById('user-display-tag').textContent = activeUser.toUpperCase();
       }
 
@@ -2496,7 +2659,6 @@
       loadActiveProjectData();
     }
 
-    // 5. AUTOSERVICIO DE PERFIL (CLIENTES Y ADMIN)
     function populateSelfProfileForm(rawList) {
       const codeInput = document.getElementById('prof-code');
       const emailInput = document.getElementById('prof-email');
@@ -2507,7 +2669,7 @@
         const adminRow = (rawList || []).find(p => p.code.toLowerCase() === 'admin');
         codeInput.value = 'Admin';
         codeInput.disabled = true;
-        emailInput.value = adminRow ? (adminRow.client_email || ADMIN_CC_EMAILS[0]) : (sessionStorage.getItem('diego_session_email') || ADMIN_CC_EMAILS[0]);
+        emailInput.value = adminRow ? (adminRow.client_email || ADMIN_CC_EMAILS[0]) : ADMIN_CC_EMAILS[0];
         passInput.value = adminRow ? (adminRow.password || '1234') : '1234';
       } else if (currentProject) {
         codeInput.disabled = false;
@@ -2530,22 +2692,22 @@
 
       let invalid = false;
       if (!newCode || newCode.length > 50) {
-        setFieldValidationState('prof-code', 'prof-code-error', 'Ingresa un nombre de usuario válido sin espacios.');
+        setFieldValidationState('prof-code', 'prof-code-error', 'Usuario inválido.');
         invalid = true;
       }
       if (!isValidEmailFormat(newEmail)) {
-        setFieldValidationState('prof-email', 'prof-email-error', 'Ingresa un correo electrónico válido.');
+        setFieldValidationState('prof-email', 'prof-email-error', 'Correo inválido.');
         invalid = true;
       }
       if (!newPass || newPass.length < 4 || newPass.length > 64) {
-        setFieldValidationState('prof-pass', 'prof-pass-error', 'La contraseña debe tener entre 4 y 64 caracteres.');
+        setFieldValidationState('prof-pass', 'prof-pass-error', 'Mínimo 4 caracteres.');
         invalid = true;
       }
       if (invalid) return;
 
       const btn = document.getElementById('btn-save-self-profile');
       btn.disabled = true;
-      btn.textContent = 'Sincronizando en Supabase...';
+      btn.textContent = 'Sincronizando...';
 
       if (activeUser === 'Admin') {
         const { data: existingAdmin } = await supabaseClient.from('projects').select('*').ilike('code', 'Admin').maybeSingle();
@@ -2566,16 +2728,17 @@
             current_phase: 'Dirección'
           }]);
         }
+        savePersistentSession({ user: 'Admin', projectId: activeProjectId, email: newEmail, pass: newPass });
         btn.disabled = false;
-        btn.textContent = 'Actualizar Mis Credenciales';
-        showToast('✔ Credenciales de Administrador sincronizadas en todos los dispositivos.');
+        btn.textContent = 'Guardar Credenciales';
+        showToast('✔ Credenciales actualizadas.');
         await loadProjects();
         return;
       }
 
       if (!currentProject) {
         btn.disabled = false;
-        btn.textContent = 'Actualizar Mis Credenciales';
+        btn.textContent = 'Guardar Credenciales';
         return;
       }
 
@@ -2589,22 +2752,20 @@
         .eq('id', currentProject.id);
 
       btn.disabled = false;
-      btn.textContent = 'Actualizar Mis Credenciales';
+      btn.textContent = 'Guardar Credenciales';
 
       if (error) {
-        setFieldValidationState('prof-code', 'prof-code-error', 'No se pudo actualizar: ' + error.message);
+        setFieldValidationState('prof-code', 'prof-code-error', 'Error: ' + error.message);
         return;
       }
 
       activeUser = newCode;
-      sessionStorage.setItem('diego_session_user', newCode);
-      sessionStorage.setItem('diego_session_email', newEmail);
+      savePersistentSession({ user: newCode, projectId: currentProject.id, email: newEmail, pass: newPass });
       document.getElementById('user-display-tag').textContent = newCode.toUpperCase();
-      showToast('✔ Tus credenciales se actualizaron y sincronizaron en tiempo real.');
+      showToast('✔ Tus credenciales se sincronizaron en todos tus dispositivos.');
       await loadProjects();
     }
 
-    // CABECERA EJECUTIVA
     function renderHeaderDashboard() {
       if (!currentProject) return;
 
@@ -2657,7 +2818,9 @@
       renderDocuments(currentDocs);
     }
 
-    // RENDERIZAR INFORMES
+    // =========================================================================
+    // 5. INFORMES DE OBRA CON ÁLBUM APILADO TIPO iPHONE
+    // =========================================================================
     function renderReports(items) {
       const feed = document.getElementById('feed-timeline');
       if (!items || items.length === 0) {
@@ -2688,36 +2851,49 @@
           ? `✔ Visto confirmado el ${new Date(rep.client_seen_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`
           : 'Pendiente de confirmación de lectura';
 
-        const disableSeenBtn = (activeUser !== 'Admin' && yaVisto) ? 'disabled title="Confirmación registrada. Solo el administrador puede modificar este estado."' : '';
+        const disableSeenBtn = (activeUser !== 'Admin' && yaVisto) ? 'disabled' : '';
 
         const adminActions = activeUser === 'Admin'
-          ? `<div style="display:flex; gap:6px;">
-              <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openEditReportModal('${escapeHtml(rep.id)}')">✎ Editar</button>
-              <button class="btn-logout" style="padding:4px 9px; font-size:11px;" onclick="deleteReport('${escapeHtml(rep.id)}')">🗑️ Eliminar</button>
+          ? `<div style="display:flex; gap:8px;">
+              <button class="btn-neu" style="padding:6px 12px; min-height:40px; font-size:12px;" onclick="openEditReportModal('${escapeHtml(rep.id)}')">✎ Editar</button>
+              <button class="btn-neu btn-neu-danger" style="padding:6px 12px; min-height:40px; font-size:12px;" onclick="deleteReport('${escapeHtml(rep.id)}')">🗑️ Eliminar</button>
              </div>`
           : '';
 
-        const safeCaption = `${tituloLimpio.replace(/'/g, "")} (${fechaFormateada})`;
-        const fotosHtml = (rep.report_images && rep.report_images.length > 0)
-          ? `<div class="photo-grid">
-              ${rep.report_images.map(img => `
-                <img src="${escapeHtml(img.image_url)}" loading="lazy" decoding="async" class="photo-thumb" alt="Evidencia de obra" onclick="openLightbox('${escapeHtml(img.image_url)}', '${safeCaption}')">
-              `).join('')}
-             </div>`
-          : '';
+        // Construcción del Cubo / Pila de Fotos estilo iOS
+        const imgs = Array.isArray(rep.report_images) ? rep.report_images : [];
+        let albumStackHtml = '';
+        if (imgs.length > 0) {
+          const total = imgs.length;
+          const badgeLabel = total === 1 ? '1 foto' : `+${total} fotos`;
+          const layer3 = imgs[2] ? `<div class="ios-stack-layer layer-3"><img src="${escapeHtml(imgs[2].image_url)}" loading="lazy" decoding="async" alt=""></div>` : '';
+          const layer2 = imgs[1] ? `<div class="ios-stack-layer layer-2"><img src="${escapeHtml(imgs[1].image_url)}" loading="lazy" decoding="async" alt=""></div>` : '';
+          const layer1 = `<div class="ios-stack-layer layer-1"><img src="${escapeHtml(imgs[0].image_url)}" loading="lazy" decoding="async" alt="Portada del álbum: ${tituloLimpio}"></div>`;
+
+          albumStackHtml = `
+            <div class="ios-album-stack-wrapper">
+              <button type="button" class="ios-album-stack" onclick="openReportAlbumLightbox('${escapeHtml(rep.id)}', 0)" aria-label="Abrir álbum de ${total} fotografías del informe ${tituloLimpio}">
+                ${layer3}
+                ${layer2}
+                ${layer1}
+                <span class="ios-stack-badge">📷 ${badgeLabel}</span>
+              </button>
+            </div>
+          `;
+        }
 
         const comments = Array.isArray(rep.comments) ? rep.comments : [];
         const commentsHtml = comments.map(c => `
-          <div style="font-size:12.5px; margin-top:5px; background:#fff; padding:6px 10px; border-radius:8px;">
+          <div class="comment-pill">
             <strong>${escapeHtml(c.author)}:</strong> ${formatOrthography(c.text)}
-            <span style="float:right; font-size:10.5px; color:#777;">${escapeHtml(c.date || '')}</span>
+            <span style="float:right; font-size:11px; color:var(--text-muted);">${escapeHtml(c.date || '')}</span>
           </div>
         `).join('');
 
         return `
-          <div class="report-card">
+          <article class="report-card">
             <div class="card-top">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span class="card-date">${fechaUnicaLabel}</span>
                 <span class="tag-category">${categoriaLimpia}</span>
               </div>
@@ -2726,26 +2902,42 @@
 
             <div class="report-title">${tituloLimpio}</div>
             <div class="report-desc">${descLimpia}</div>
-            ${fotosHtml}
+            ${albumStackHtml}
 
             <div class="interaction-bar">
-              <button class="btn-seen ${yaVisto ? 'active' : ''}" ${disableSeenBtn} onclick="toggleSeenStatus('${escapeHtml(rep.id)}')">
+              <button class="btn-neu ${yaVisto ? 'active' : ''}" ${disableSeenBtn} onclick="toggleSeenStatus('${escapeHtml(rep.id)}')">
                 ${yaVisto ? '✔ VISTO CONFIRMADO' : '👁️ MARCAR COMO VISTO'}
               </button>
-              <span style="font-size:11.5px; color:var(--text-body); font-weight:500;">${vistoTexto}</span>
+              <span style="font-size:12px; color:var(--text-body); font-weight:600;">${vistoTexto}</span>
             </div>
 
-            <div style="margin-top:12px; background:rgba(255,255,255,0.65); padding:10px 12px; border-radius:12px;">
-              <div style="font-size:12px; font-weight:700; color:var(--text-body);">💬 Comentarios (${comments.length}):</div>
-              ${commentsHtml || '<div style="font-size:11.5px; color:#777; margin-top:3px;">Sin comentarios todavía.</div>'}
-              <div style="display:flex; gap:6px; margin-top:8px;">
-                <input type="text" id="comm-input-${escapeHtml(rep.id)}" class="form-input" maxlength="500" style="padding:7px 11px; font-size:12.5px;" placeholder="Escribe un comentario...">
-                <button class="btn-action-primary" style="padding:7px 14px; font-size:12px;" onclick="addComment('${escapeHtml(rep.id)}')">Enviar</button>
+            <div class="comments-box-neu">
+              <div style="font-size:12.5px; font-weight:800; color:var(--text-title);">💬 Comentarios (${comments.length})</div>
+              ${commentsHtml || '<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Sin comentarios todavía.</div>'}
+              <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                <input type="text" id="comm-input-${escapeHtml(rep.id)}" class="neu-input" style="flex:1; min-width:180px;" maxlength="500" aria-label="Escribir un comentario">
+                <button class="btn-neu btn-neu-primary" onclick="addComment('${escapeHtml(rep.id)}')">Enviar</button>
               </div>
             </div>
-          </div>
+          </article>
         `;
       }).join('');
+    }
+
+    function openReportAlbumLightbox(reportId, startIndex = 0) {
+      const rep = currentReports.find(r => r.id === reportId);
+      if (!rep || !Array.isArray(rep.report_images) || rep.report_images.length === 0) return;
+
+      const dateObj = rep.report_date ? new Date(rep.report_date + 'T12:00:00') : new Date(rep.created_at);
+      const fechaFormateada = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+      const titleClean = cleanOrthographyRaw(rep.title || 'Informe');
+
+      const list = rep.report_images.map((img, idx) => ({
+        url: img.image_url,
+        caption: `${titleClean} (${fechaFormateada}) — Foto ${idx + 1}`
+      }));
+
+      openLightboxGallery(list, startIndex);
     }
 
     function filterReports() {
@@ -2807,7 +2999,7 @@
       loadActiveProjectData();
     }
 
-    // CREAR Y EDITAR INFORMES (CON PERSISTENCIA DE IMÁGENES Y DISPARADOR DE CORREO)
+    // CREAR Y EDITAR INFORMES (CON PERSISTENCIA DE IMÁGENES)
     function openCreateReportModal() {
       document.getElementById('modal-report-heading').textContent = 'Publicar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = '';
@@ -2844,16 +3036,16 @@
     function renderPreviews() {
       const wrap = document.getElementById('rep-img-previews');
       const existingHtml = existingReportImages.map(img => `
-        <div class="preview-wrap" title="Imagen guardada en el informe">
+        <div class="preview-wrap" title="Imagen guardada">
           <img src="${escapeHtml(img.url)}" alt="Previsualización existente">
-          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeExistingImg('${escapeHtml(img.id)}')">✕</button>
+          <button type="button" style="position:absolute;top:-6px;right:-6px;background:var(--status-danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-weight:bold;" onclick="removeExistingImg('${escapeHtml(img.id)}')" aria-label="Eliminar foto existente">✕</button>
         </div>
       `).join('');
 
       const newHtml = uploadedImagesBase64.map((src, i) => `
-        <div class="preview-wrap" title="Nueva imagen por añadir">
+        <div class="preview-wrap" title="Nueva imagen">
           <img src="${escapeHtml(src)}" alt="Previsualización nueva">
-          <button type="button" style="position:absolute;top:-4px;right:-4px;background:#B95C50;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;" onclick="removeImgPreview(${i})">✕</button>
+          <button type="button" style="position:absolute;top:-6px;right:-6px;background:var(--status-danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-weight:bold;" onclick="removeImgPreview(${i})" aria-label="Descartar foto nueva">✕</button>
         </div>
       `).join('');
 
@@ -2938,7 +3130,6 @@
             description: auditSummary
           }]);
 
-          // Disparar notificación automática por correo
           sendWorkNotificationEmail({
             actionLabel: `Nuevo Informe de Obra (${category})`,
             summaryText: `${title} — Fecha: ${report_date}`,
@@ -2964,10 +3155,15 @@
       loadActiveProjectData();
     }
 
-    // BAÚL DE GALERÍA POR FECHA
+    // =========================================================================
+    // 5. BAÚL DE GALERÍA GENERAL (CUADRÍCULA EXPANDIDA POR FECHAS)
+    // =========================================================================
+    let vaultFlatGallery = [];
+
     function renderGalleryVaultByDate(reports) {
       const container = document.getElementById('gallery-vault-container');
       const groupsByDate = {};
+      vaultFlatGallery = [];
 
       reports.forEach(rep => {
         if (!rep.report_images || rep.report_images.length === 0) return;
@@ -2981,6 +3177,7 @@
         if (!groupsByDate[dateKey]) {
           groupsByDate[dateKey] = {
             label: formatOrthography(formattedDate),
+            rawLabel: cleanOrthographyRaw(formattedDate),
             images: []
           };
         }
@@ -2988,9 +3185,9 @@
         rep.report_images.forEach(img => {
           groupsByDate[dateKey].images.push({
             url: img.image_url,
-            title: formatOrthography(rep.title),
-            category: formatOrthography(rep.category || 'General'),
-            dateLabel: formatOrthography(formattedDate)
+            title: cleanOrthographyRaw(rep.title),
+            category: cleanOrthographyRaw(rep.category || 'General'),
+            dateLabel: cleanOrthographyRaw(formattedDate)
           });
         });
       });
@@ -2998,9 +3195,20 @@
       const sortedKeys = Object.keys(groupsByDate).sort((a, b) => b.localeCompare(a));
 
       if (sortedKeys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:36px; color:var(--text-muted); background:var(--msg-inner-cream); border-radius:16px;">No hay fotografías registradas en el Baúl de Galería todavía.</div>`;
+        container.innerHTML = `<div style="text-align:center; padding:36px; color:var(--text-muted);">No hay fotografías registradas en el Baúl de Galería todavía.</div>`;
         return;
       }
+
+      // Construir lista plana indexada para permitir navegación continua en el Lightbox del Baúl
+      sortedKeys.forEach(key => {
+        groupsByDate[key].images.forEach(item => {
+          item.globalIndex = vaultFlatGallery.length;
+          vaultFlatGallery.push({
+            url: item.url,
+            caption: `${item.category} — ${item.dateLabel}`
+          });
+        });
+      });
 
       container.innerHTML = sortedKeys.map(key => {
         const group = groupsByDate[key];
@@ -3012,10 +3220,10 @@
             </div>
             <div class="photo-grid" style="margin-bottom:0;">
               ${group.images.map(item => `
-                <div style="position:relative;">
-                  <img src="${escapeHtml(item.url)}" loading="lazy" decoding="async" class="photo-thumb" alt="Fotografía de galería" onclick="openLightbox('${escapeHtml(item.url)}', '${item.category.replace(/'/g, "")} — ${group.label.replace(/'/g, "")}')">
-                  <span style="position:absolute; bottom:6px; left:6px; background:rgba(30,38,29,0.82); color:#fff; font-size:10px; padding:3px 8px; border-radius:6px; pointer-events:none;">${item.category}</span>
-                </div>
+                <button type="button" class="photo-thumb-btn" onclick="openVaultLightbox(${item.globalIndex})" aria-label="Ampliar fotografía de ${escapeHtml(item.category)}">
+                  <img src="${escapeHtml(item.url)}" loading="lazy" decoding="async" alt="${escapeHtml(item.category)}">
+                  <span style="position:absolute; bottom:10px; left:10px; background:rgba(30,38,29,0.84); color:#fff; font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:8px; pointer-events:none;">${escapeHtml(item.category)}</span>
+                </button>
               `).join('')}
             </div>
           </div>
@@ -3023,11 +3231,16 @@
       }).join('');
     }
 
-    // BITÁCORA DE PUBLICACIONES
+    function openVaultLightbox(index) {
+      if (!vaultFlatGallery || vaultFlatGallery.length === 0) return;
+      openLightboxGallery(vaultFlatGallery, index);
+    }
+
+    // BITÁCORA
     function renderAudit(entries) {
       const list = document.getElementById('audit-list');
       if (!entries || entries.length === 0) {
-        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted); background:var(--msg-inner-cream); padding:24px; border-radius:14px; text-align:center;">La bitácora registrará automáticamente cada vez que se publique un informe o documento PDF.</div>`;
+        list.innerHTML = `<div style="font-size:13px; color:var(--text-muted); padding:24px; text-align:center;">La bitácora registrará automáticamente cada vez que se publique un informe o documento PDF.</div>`;
         return;
       }
 
@@ -3045,7 +3258,7 @@
       }).join('');
     }
 
-    // CENTRO DOCUMENTAL: VISTA PREVIA MULTIPÁGINA Y DESCARGA NATIVA
+    // CENTRO DOCUMENTAL CON GESTIÓN DETERMINISTA DE BLOB URL
     function pdfDataUrlToBlobUrl(fileUrl) {
       if (!fileUrl) return '';
       if (!fileUrl.startsWith('data:')) return fileUrl;
@@ -3063,7 +3276,10 @@
       const doc = currentDocs.find(d => d.id === docId);
       if (!doc || !doc.file_url) return;
 
-      if (currentPdfBlobUrl) URL.revokeObjectURL(currentPdfBlobUrl);
+      if (currentPdfBlobUrl) {
+        URL.revokeObjectURL(currentPdfBlobUrl);
+        currentPdfBlobUrl = null;
+      }
       currentPdfBlobUrl = pdfDataUrlToBlobUrl(doc.file_url);
 
       const isMobile = window.innerWidth <= 820 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -3081,6 +3297,10 @@
     function closePdfPreview() {
       document.getElementById('modal-pdf-preview').classList.remove('open');
       document.getElementById('pdf-preview-frame').removeAttribute('data');
+      if (currentPdfBlobUrl) {
+        URL.revokeObjectURL(currentPdfBlobUrl);
+        currentPdfBlobUrl = null;
+      }
     }
 
     function downloadPdfDocument(docId, idx) {
@@ -3097,7 +3317,7 @@
       link.click();
       document.body.removeChild(link);
 
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 8000);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 6000);
     }
 
     function renderDocuments(docs) {
@@ -3109,8 +3329,8 @@
 
       tbody.innerHTML = docs.map((d, idx) => {
         const adminBtns = activeUser === 'Admin'
-          ? `<button class="btn-edit-project" style="display:inline-flex; padding:5px 9px; font-size:11px; margin-left:4px;" onclick="openEditDocModal('${escapeHtml(d.id)}')">✎ Editar</button>
-             <button class="btn-logout" style="padding:5px 9px; font-size:11px; margin-left:4px;" onclick="deleteDocument('${escapeHtml(d.id)}')">🗑️</button>`
+          ? `<button class="btn-neu" style="padding:6px 10px; min-height:38px; font-size:11.5px; margin-left:6px;" onclick="openEditDocModal('${escapeHtml(d.id)}')">✎ Editar</button>
+             <button class="btn-neu btn-neu-danger" style="padding:6px 10px; min-height:38px; font-size:11.5px; margin-left:6px;" onclick="deleteDocument('${escapeHtml(d.id)}')">🗑️</button>`
           : '';
 
         return `
@@ -3120,8 +3340,8 @@
             <td>${escapeHtml(d.version)}</td>
             <td>${new Date(d.uploaded_at).toLocaleDateString('es-ES')}</td>
             <td style="white-space:nowrap;">
-              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px; background:#3A5A40; margin-right:4px;" onclick="previewPdfDocument('${escapeHtml(d.id)}')">👁️ Vista Previa</button>
-              <button class="btn-action-primary" style="padding:5px 10px; font-size:11.5px;" onclick="downloadPdfDocument('${escapeHtml(d.id)}', ${idx})">⬇ Descargar</button>
+              <button class="btn-neu btn-neu-primary" style="padding:6px 12px; min-height:38px; font-size:11.5px; margin-right:6px;" onclick="previewPdfDocument('${escapeHtml(d.id)}')">👁️ Vista Previa</button>
+              <button class="btn-neu" style="padding:6px 12px; min-height:38px; font-size:11.5px;" onclick="downloadPdfDocument('${escapeHtml(d.id)}', ${idx})">⬇ Descargar</button>
               ${adminBtns}
             </td>
           </tr>
@@ -3136,7 +3356,7 @@
       document.getElementById('form-doc-cat').value = 'Plano';
       document.getElementById('form-doc-ver').value = 'v1.0';
       selectedPdfDataUrl = null;
-      document.getElementById('pdf-dropzone-label').textContent = '📄 Arrastra tu archivo .PDF aquí o haz clic para subir';
+      document.getElementById('pdf-dropzone-label').textContent = '📄 Seleccionar o arrastrar archivo .PDF';
       document.getElementById('modal-doc').classList.add('open');
     }
 
@@ -3151,7 +3371,7 @@
       document.getElementById('form-doc-cat').value = doc.category || 'Plano';
       document.getElementById('form-doc-ver').value = doc.version || 'v1.0';
       selectedPdfDataUrl = doc.file_url;
-      document.getElementById('pdf-dropzone-label').textContent = '✔ Archivo PDF actual conservado (o selecciona otro para reemplazarlo)';
+      document.getElementById('pdf-dropzone-label').textContent = '✔ Archivo PDF actual conservado';
       document.getElementById('modal-doc').classList.add('open');
     }
 
@@ -3217,7 +3437,7 @@
       loadActiveProjectData();
     }
 
-    // GESTIÓN TOTAL DE USUARIOS Y CORREOS (PANEL ADMIN)
+    // GESTIÓN TOTAL DE USUARIOS (ADMIN)
     function renderUsersTable(rawList) {
       const tbody = document.getElementById('users-table-body');
       if (!tbody) return;
@@ -3227,14 +3447,14 @@
       const adminEmail = adminRowData ? (adminRowData.client_email || ADMIN_CC_EMAILS[0]) : ADMIN_CC_EMAILS[0];
 
       const adminRow = `
-        <tr style="background:#F5F8F3;">
+        <tr>
           <td><strong>🔑 Admin</strong></td>
           <td><code>${escapeHtml(adminPass)}</code></td>
           <td>${escapeHtml(adminEmail)}</td>
-          <td>Dirección General (Gina Bustillo / Sixto Fernández)</td>
+          <td>Dirección General</td>
           <td>Todos los proyectos</td>
           <td>
-            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="switchModule('profile')">✎ Mi Perfil Admin</button>
+            <button class="btn-neu" style="padding:6px 10px; min-height:38px; font-size:11.5px;" onclick="switchModule('profile')">✎ Mi Perfil Admin</button>
           </td>
         </tr>
       `;
@@ -3247,8 +3467,8 @@
           <td>${escapeHtml(p.client_name)}</td>
           <td>${escapeHtml(p.name)}</td>
           <td style="white-space:nowrap;">
-            <button class="btn-edit-project" style="display:inline-flex; padding:4px 9px; font-size:11px;" onclick="openUserModal('${escapeHtml(p.id)}')">✎ Editar</button>
-            <button class="btn-logout" style="padding:4px 9px; font-size:11px; margin-left:4px;" onclick="deleteUserAccount('${escapeHtml(p.id)}', '${escapeHtml(p.code)}')">🗑️ Eliminar</button>
+            <button class="btn-neu" style="padding:6px 10px; min-height:38px; font-size:11.5px;" onclick="openUserModal('${escapeHtml(p.id)}')">✎ Editar</button>
+            <button class="btn-neu btn-neu-danger" style="padding:6px 10px; min-height:38px; font-size:11.5px; margin-left:6px;" onclick="deleteUserAccount('${escapeHtml(p.id)}', '${escapeHtml(p.code)}')">🗑️ Eliminar</button>
           </td>
         </tr>
       `).join('');
@@ -3261,7 +3481,7 @@
       if (projectId) {
         const proj = allProjects.find(p => p.id === projectId);
         if (!proj) return;
-        document.getElementById('modal-user-heading').textContent = 'Modificar Usuario, Correo y Proyecto';
+        document.getElementById('modal-user-heading').textContent = 'Modificar Usuario y Proyecto';
         document.getElementById('form-user-editing-id').value = proj.id;
         document.getElementById('form-user-code').value = proj.code || '';
         document.getElementById('form-user-pass').value = proj.password || '1234';
@@ -3270,7 +3490,7 @@
         document.getElementById('form-user-project').value = cleanOrthographyRaw(proj.name || '');
         document.getElementById('form-user-address').value = cleanOrthographyRaw(proj.address || '');
       } else {
-        document.getElementById('modal-user-heading').textContent = 'Añadir Nuevo Usuario';
+        document.getElementById('modal-user-heading').textContent = 'Añadir Usuario';
         document.getElementById('form-user-editing-id').value = '';
         document.getElementById('form-user-code').value = `Cliente${allProjects.length + 1}`;
         document.getElementById('form-user-pass').value = '1234';
@@ -3295,7 +3515,7 @@
       const address = cleanOrthographyRaw(document.getElementById('form-user-address').value.trim().slice(0, 180));
 
       if (!code || !client_name || !name || !isValidEmailFormat(client_email)) {
-        alert('Completa el usuario, un correo electrónico válido, el nombre del cliente y el nombre del proyecto.');
+        alert('Completa todos los campos requeridos con un correo válido.');
         return;
       }
 
@@ -3328,7 +3548,7 @@
       }
 
       closeModal('modal-user');
-      showToast('✔ Usuario y credenciales sincronizados en Supabase.');
+      showToast('✔ Usuario sincronizado en Supabase.');
       await loadProjects();
     }
 
@@ -3340,7 +3560,6 @@
       await loadProjects();
     }
 
-    // MODIFICAR OBRA Y AVANCE DESDE CABECERA
     function openEditProjectModal() {
       if (!currentProject || activeUser !== 'Admin') return;
 
@@ -3391,23 +3610,84 @@
       await loadProjects();
     }
 
-    // VISOR LIGHTBOX ACELERADO POR HARDWARE
-    function openLightbox(url, captionText) {
+    // =========================================================================
+    // 4 & 5. VISOR LIGHTBOX AVANZADO (NAVEGACIÓN, TIRA DE MINIATURAS Y PINCH-ZOOM)
+    // =========================================================================
+    function openLightboxGallery(itemsList, startIndex = 0) {
+      if (!Array.isArray(itemsList) || itemsList.length === 0) return;
+      lightboxGalleryList = itemsList;
+      lightboxCurrentIndex = Math.max(0, Math.min(startIndex, itemsList.length - 1));
+
+      renderLightboxThumbStrip();
+      updateLightboxSlide();
+
       const modal = document.getElementById('lightbox-modal');
-      const img = document.getElementById('lightbox-img');
-      document.getElementById('lightbox-caption').textContent = captionText || 'Evidencia Fotográfica';
-      img.src = url;
-      resetZoom();
       modal.classList.add('open');
+    }
+
+    function updateLightboxSlide() {
+      const item = lightboxGalleryList[lightboxCurrentIndex];
+      if (!item) return;
+
+      const img = document.getElementById('lightbox-img');
+      img.src = item.url;
+      document.getElementById('lightbox-caption').textContent = item.caption || 'Evidencia Fotográfica';
+      document.getElementById('lightbox-counter').textContent = `${lightboxCurrentIndex + 1} / ${lightboxGalleryList.length}`;
+
+      const showArrows = lightboxGalleryList.length > 1;
+      document.getElementById('lightbox-prev-btn').style.display = showArrows ? 'inline-flex' : 'none';
+      document.getElementById('lightbox-next-btn').style.display = showArrows ? 'inline-flex' : 'none';
+
+      document.querySelectorAll('.lightbox-thumb-item').forEach((btn, idx) => {
+        if (idx === lightboxCurrentIndex) {
+          btn.classList.add('active-thumb');
+          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          btn.classList.remove('active-thumb');
+        }
+      });
+
+      resetZoom();
+    }
+
+    function renderLightboxThumbStrip() {
+      const strip = document.getElementById('lightbox-thumbs');
+      if (!strip) return;
+
+      if (lightboxGalleryList.length <= 1) {
+        strip.style.display = 'none';
+        strip.innerHTML = '';
+        return;
+      }
+
+      strip.style.display = 'flex';
+      strip.innerHTML = lightboxGalleryList.map((item, idx) => `
+        <button type="button" class="lightbox-thumb-item ${idx === lightboxCurrentIndex ? 'active-thumb' : ''}" onclick="selectLightboxSlide(${idx})" aria-label="Ir a foto ${idx + 1}">
+          <img src="${escapeHtml(item.url)}" loading="lazy" decoding="async" alt="">
+        </button>
+      `).join('');
+    }
+
+    function navigateLightbox(step) {
+      if (lightboxGalleryList.length <= 1) return;
+      lightboxCurrentIndex = (lightboxCurrentIndex + step + lightboxGalleryList.length) % lightboxGalleryList.length;
+      updateLightboxSlide();
+    }
+
+    function selectLightboxSlide(index) {
+      if (index < 0 || index >= lightboxGalleryList.length) return;
+      lightboxCurrentIndex = index;
+      updateLightboxSlide();
     }
 
     function closeLightbox() {
       document.getElementById('lightbox-modal').classList.remove('open');
       document.getElementById('lightbox-img').src = '';
+      lightboxGalleryList = [];
     }
 
     function adjustZoom(delta) {
-      currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 5);
+      currentZoom = Math.min(Math.max(1, currentZoom + delta), 5);
       if (currentZoom === 1) { panX = 0; panY = 0; }
       scheduleLightboxTransform();
     }
@@ -3424,22 +3704,34 @@
       rafPending = true;
       requestAnimationFrame(() => {
         const img = document.getElementById('lightbox-img');
-        img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
-        document.getElementById('zoom-level-indicator').textContent = `${Math.round(currentZoom * 100)}%`;
+        if (img) {
+          img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
+        }
+        const ind = document.getElementById('zoom-level-indicator');
+        if (ind) {
+          ind.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
         rafPending = false;
       });
     }
 
+    function getEuclideanTouchDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.hypot(dx, dy);
+    }
+
     function initLightboxEvents() {
       const stage = document.getElementById('lightbox-stage');
+      if (!stage) return;
 
       stage.addEventListener('wheel', (e) => {
         e.preventDefault();
-        adjustZoom(e.deltaY < 0 ? 0.3 : -0.3);
+        adjustZoom(e.deltaY < 0 ? 0.35 : -0.35);
       }, { passive: false });
 
       stage.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'BUTTON') return;
+        if (e.target.closest('button')) return;
         isDraggingImg = true;
         startDragX = e.clientX - panX;
         startDragY = e.clientY - panY;
@@ -3454,8 +3746,27 @@
 
       window.addEventListener('mouseup', () => { isDraggingImg = false; });
 
+      // Gestos multitáctiles en móviles: Pinch-to-Zoom (2 dedos), Pan (1 dedo) y Double-Tap
       stage.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) {
+        if (e.target.closest('button')) return;
+
+        if (e.touches.length === 2) {
+          isDraggingImg = false;
+          initialPinchDist = getEuclideanTouchDistance(e.touches);
+          initialPinchZoom = currentZoom;
+        } else if (e.touches.length === 1) {
+          const now = Date.now();
+          if (now - lastTouchTapTime < 280) {
+            // Doble toque táctil alterna entre 1x y 2.5x
+            currentZoom = currentZoom > 1.2 ? 1 : 2.5;
+            panX = 0;
+            panY = 0;
+            scheduleLightboxTransform();
+            lastTouchTapTime = 0;
+            return;
+          }
+          lastTouchTapTime = now;
+
           isDraggingImg = true;
           startDragX = e.touches[0].clientX - panX;
           startDragY = e.touches[0].clientY - panY;
@@ -3463,13 +3774,29 @@
       }, { passive: true });
 
       stage.addEventListener('touchmove', (e) => {
-        if (!isDraggingImg || e.touches.length !== 1) return;
-        panX = e.touches[0].clientX - startDragX;
-        panY = e.touches[0].clientY - startDragY;
-        scheduleLightboxTransform();
-      }, { passive: true });
+        if (e.touches.length === 2 && initialPinchDist > 0) {
+          e.preventDefault();
+          const newDist = getEuclideanTouchDistance(e.touches);
+          const scaleFactor = newDist / initialPinchDist;
+          currentZoom = Math.min(Math.max(1, initialPinchZoom * scaleFactor), 5);
+          if (currentZoom === 1) { panX = 0; panY = 0; }
+          scheduleLightboxTransform();
+        } else if (e.touches.length === 1 && isDraggingImg && currentZoom > 1) {
+          e.preventDefault();
+          panX = e.touches[0].clientX - startDragX;
+          panY = e.touches[0].clientY - startDragY;
+          scheduleLightboxTransform();
+        }
+      }, { passive: false });
 
-      stage.addEventListener('touchend', () => { isDraggingImg = false; });
+      stage.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+          initialPinchDist = 0;
+        }
+        if (e.touches.length === 0) {
+          isDraggingImg = false;
+        }
+      });
     }
 
     // CARGA DE IMÁGENES Y ARCHIVOS PDF
@@ -3537,7 +3864,6 @@
       reader.readAsDataURL(file);
     }
 
-    // IMPRESIÓN EJECUTIVA
     function printExecutiveReport() {
       if (!currentProject) return;
 
@@ -3560,9 +3886,8 @@
       window.print();
     }
 
-    // SUSCRIPCIÓN REALTIME EN VIVO (SINCRONIZACIÓN ENTRE PC Y CELULAR)
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra_v5')
+      supabaseClient.channel('realtime_obra_v6')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
           if (activeUser) loadProjects();
         })
@@ -3578,7 +3903,6 @@
         .subscribe();
     }
 
-    // 7. NAVEGACIÓN Y VISIBILIDAD CONDICIONAL DEL CUADRO "AVANCE DE LA OBRA"
     function switchModule(mod) {
       currentModule = mod;
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -3587,7 +3911,7 @@
       document.getElementById(`nav-item-${mod}`)?.classList.add('active');
       document.getElementById(`sec-${mod}`)?.classList.add('active-module');
 
-      // Mostrar el bloque de Avance de la Obra EXCLUSIVAMENTE en Informes ('feed') y Bitácora ('audit')
+      // Visibilidad condicional estricta del cuadro "Avance de la Obra"
       const avanceCard = document.getElementById('dashboard-avance-card');
       if (avanceCard) {
         if (mod === 'feed' || mod === 'audit') {
@@ -3614,7 +3938,13 @@
       document.getElementById(id)?.classList.remove('open');
     }
 
+    // Soporte completo de teclado para accesibilidad WCAG 2.1 AA
     window.addEventListener('keydown', (e) => {
+      const lbOpen = document.getElementById('lightbox-modal')?.classList.contains('open');
+      if (lbOpen) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); navigateLightbox(-1); return; }
+        if (e.key === 'ArrowRight') { e.preventDefault(); navigateLightbox(1); return; }
+      }
       if (e.key === 'Escape') {
         closeLightbox();
         closePdfPreview();
