@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' data: blob:; frame-src 'self' blob: data:; object-src 'self' blob: data:; connect-src 'self' https://euagegivizyfweymdiaa.supabase.co wss://euagegivizyfweymdiaa.supabase.co https://api.emailjs.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' data: blob:; frame-src 'self' blob: data:; object-src 'self' blob: data:; connect-src 'self' https://euagegivizyfweymdiaa.supabase.co wss://euagegivizyfweymdiaa.supabase.co https://api.emailjs.com https://cdn.jsdelivr.net;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>DIEGO — Seguimiento de Obra Privada</title>
+  <title>DIEGO — Seguimiento de Obra Privada | B+ Arquitectura &amp; Dynatic</title>
 
   <link rel="icon" type="image/jpeg" href="gato.jpg">
   <link rel="apple-touch-icon" href="gato.jpg">
@@ -14,19 +14,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
     /* ==========================================================================
-       1. ADN NEUMÓRFICO ESTRICTO — SUPERFICIE CONTINUA MATE Y SOMBRAS DUALES
+       1. ADN NEUMÓRFICO + VIDRIO ESMERILADO ("SOFT GLASS") & VARIABLES DE TEMA
        ========================================================================== */
-    :root {
+    :root,
+    html[data-theme="light"] {
       --neu-surface: #E6EEE6;
       --neu-light: #FFFFFF;
       --neu-dark: #C2CDC2;
-      --neu-dark-deep: #A9B6A9;
+      --neu-dark-deep: #A8B5A8;
 
-      --neu-elevated: 8px 8px 16px var(--neu-dark), -8px -8px 16px var(--neu-light);
-      --neu-elevated-sm: 5px 5px 10px var(--neu-dark), -5px -5px 10px var(--neu-light);
+      --glass-card-bg: rgba(242, 247, 242, 0.66);
+      --glass-panel-bg: rgba(230, 238, 230, 0.72);
+      --sidebar-glass-bg: rgba(45, 62, 43, 0.82);
+
+      --neu-elevated: 8px 8px 18px var(--neu-dark), -8px -8px 18px var(--neu-light);
+      --neu-elevated-sm: 5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
       --neu-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
       --neu-inset-deep: inset 6px 6px 12px var(--neu-dark-deep), inset -6px -6px 12px var(--neu-light);
 
@@ -35,17 +41,55 @@
       --radius-md: 1.25rem;
 
       --brand-emerald: #3B6E4C;
-      --brand-moss: #485E45;
+      --brand-moss: #52734D;
       --accent-terracotta: #C88A6B;
 
       --text-title: #1E261E;
-      --text-body: #344034;
-      --text-muted: #576657;
+      --text-body: #334033;
+      --text-muted: #566656;
 
-      --status-ok: #2E6B42;
-      --status-warn: #94611B;
+      --status-ok: #3B6E4C;
+      --status-ok-bg: rgba(59, 110, 76, 0.14);
+      --status-warn: #C88A6B;
+      --status-warn-bg: rgba(200, 138, 107, 0.18);
       --status-danger: #A63A2E;
+      --status-danger-bg: rgba(166, 58, 46, 0.16);
       --focus-ring: #2E6B42;
+      --breeze-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.48) 50%, rgba(59,110,76,0.18) 100%);
+    }
+
+    /* 3. MODO OSCURO ("CIELO NOCTURNO ESTRELLADO") */
+    html[data-theme="dark"] {
+      --neu-surface: #18222E;
+      --neu-light: rgba(255, 255, 255, 0.05);
+      --neu-dark: rgba(0, 0, 0, 0.65);
+      --neu-dark-deep: rgba(0, 0, 0, 0.82);
+
+      --glass-card-bg: rgba(24, 34, 46, 0.78);
+      --glass-panel-bg: rgba(16, 24, 34, 0.76);
+      --sidebar-glass-bg: rgba(14, 22, 32, 0.84);
+
+      --neu-elevated: 8px 8px 18px var(--neu-dark), -6px -6px 14px var(--neu-light);
+      --neu-elevated-sm: 5px 5px 11px var(--neu-dark), -4px -4px 10px var(--neu-light);
+      --neu-inset: inset 4px 4px 9px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+      --neu-inset-deep: inset 6px 6px 13px var(--neu-dark-deep), inset -4px -4px 9px var(--neu-light);
+
+      --brand-emerald: #529468;
+      --brand-moss: #6BA87D;
+      --accent-terracotta: #D89A7B;
+
+      --text-title: #D6E4F0;
+      --text-body: #B8CBE0;
+      --text-muted: #8499B0;
+
+      --status-ok: #529468;
+      --status-ok-bg: rgba(82, 148, 104, 0.20);
+      --status-warn: #D89A7B;
+      --status-warn-bg: rgba(216, 154, 123, 0.22);
+      --status-danger: #D96558;
+      --status-danger-bg: rgba(217, 101, 88, 0.22);
+      --focus-ring: #6BA87D;
+      --breeze-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(168,210,255,0.16) 50%, rgba(82,148,104,0.22) 100%);
     }
 
     *, *::before, *::after {
@@ -68,7 +112,7 @@
       display: none !important;
     }
 
-    .card-date, #label-actual, .vault-date-count, .docs-table td, #lightbox-counter {
+    .card-date, #label-actual, .vault-date-count, .docs-table td, #lightbox-counter, .metric-num {
       font-variant-numeric: tabular-nums;
     }
 
@@ -81,6 +125,11 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--neu-surface);
       color: var(--text-title);
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    html[data-theme="dark"] body {
+      background: linear-gradient(135deg, #0B0F14 0%, #131B24 100%);
     }
 
     body {
@@ -89,14 +138,25 @@
       justify-content: center;
       align-items: center;
       padding: 16px;
+      position: relative;
     }
 
     body.preloader-lock {
       overflow: hidden;
     }
 
+    /* 3. CANVAS ATMOSFÉRICO NATIVO A 60 FPS */
+    #atmospheric-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     /* ==========================================================================
-       3. PANTALLA DE CARGA OMNIPRESENTE (LOADER PATITAS SVG)
+       1. PANTALLA DE CARGA REPARADA: PATITAS DE GATO CAMINANDO EN ZIG-ZAG
        ========================================================================== */
     #preloader {
       position: fixed;
@@ -109,7 +169,11 @@
       z-index: 9999;
       opacity: 1;
       visibility: visible;
-      transition: opacity 0.35s ease, visibility 0.35s ease;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    html[data-theme="dark"] #preloader {
+      background: #0F161E;
     }
 
     #preloader.loaded {
@@ -120,69 +184,155 @@
 
     .paw-trail {
       position: relative;
-      width: 280px;
-      height: 110px;
+      width: 320px;
+      height: 120px;
     }
 
     .paw {
       position: absolute;
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       opacity: 0;
-      fill: var(--brand-emerald);
-    }
-
-    #preloader.run-paws .paw {
-      animation: pawStep 0.48s ease-out 1 forwards;
+      transform: scale(0.5) translateY(6px);
+      will-change: transform, opacity;
     }
 
     .paw svg {
       width: 100%;
       height: 100%;
-      fill: inherit;
+      display: block;
     }
 
+    /* Huellas impares desplazadas arriba a +12° y pares abajo a -12° */
     .paw:nth-child(odd) {
       top: 14px;
-      transform: rotate(78deg) scale(0.65);
+      color: var(--brand-emerald);
+    }
+
+    .paw:nth-child(odd) svg {
+      fill: currentColor;
+      transform: rotate(78deg); /* 90° eje horizontal - 12° = +12° de inclinación superior */
     }
 
     .paw:nth-child(even) {
-      top: 54px;
-      fill: var(--brand-moss);
-      transform: rotate(98deg) scale(0.65);
+      top: 62px;
+      color: var(--brand-moss);
     }
 
-    .paw:nth-child(1) { left: 10px;  animation-delay: 0.05s; }
-    .paw:nth-child(2) { left: 54px;  animation-delay: 0.22s; }
-    .paw:nth-child(3) { left: 98px;  animation-delay: 0.39s; }
-    .paw:nth-child(4) { left: 142px; animation-delay: 0.56s; }
-    .paw:nth-child(5) { left: 186px; animation-delay: 0.73s; }
-    .paw:nth-child(6) { left: 230px; animation-delay: 0.90s; }
+    .paw:nth-child(even) svg {
+      fill: currentColor;
+      transform: rotate(102deg); /* 90° eje horizontal + 12° = -12° de inclinación inferior */
+    }
 
-    @keyframes pawStep {
-      0% { opacity: 0; transform: rotate(85deg) scale(0.5); }
-      60% { opacity: 1; transform: rotate(85deg) scale(1.06); }
-      100% { opacity: 0.94; transform: rotate(85deg) scale(1); }
+    .paw:nth-child(1) { left: 10px;  animation-delay: 0.00s; }
+    .paw:nth-child(2) { left: 60px;  animation-delay: 0.18s; }
+    .paw:nth-child(3) { left: 110px; animation-delay: 0.36s; }
+    .paw:nth-child(4) { left: 160px; animation-delay: 0.54s; }
+    .paw:nth-child(5) { left: 210px; animation-delay: 0.72s; }
+    .paw:nth-child(6) { left: 260px; animation-delay: 0.90s; }
+
+    #preloader.run-paws .paw {
+      animation: pawStepWalk 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes pawStepWalk {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(6px);
+      }
+      65% {
+        opacity: 1;
+        transform: scale(1.08) translateY(0px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.0) translateY(0px);
+      }
     }
 
     .preloader-label {
-      margin-top: 16px;
+      margin-top: 18px;
       font-size: 11.5px;
       font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--brand-moss);
+      color: var(--brand-emerald);
     }
 
     /* ==========================================================================
-       2. MÓDULO DE ACCESO NEUMÓRFICO Y ACCESIBILIDAD WCAG 2.1 AA
+       5. MICRO-INTERACCIONES: VENTISCA DE HOJAS Y TRAZADO SVG (PATH TRACE)
+       ========================================================================== */
+    .breeze-card,
+    .nav-item,
+    .btn-neu {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .breeze-card::after,
+    .nav-item::after,
+    .btn-neu::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -110%;
+      width: 90%;
+      height: 100%;
+      background: var(--breeze-gradient);
+      transform: translateX(0) skewX(-20deg);
+      opacity: 0;
+      pointer-events: none;
+      transition: none;
+    }
+
+    .breeze-card:hover::after,
+    .breeze-card:active::after,
+    .nav-item:hover::after,
+    .nav-item:focus-visible::after,
+    .btn-neu:hover::after,
+    .btn-neu:focus-visible::after {
+      transform: translateX(250%) skewX(-20deg);
+      opacity: 1;
+      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+    }
+
+    /* Redibujado lineal de iconos SVG */
+    .nav-item svg path,
+    .nav-item svg rect,
+    .nav-item svg line,
+    .nav-item svg polyline,
+    .nav-item svg circle {
+      stroke-dasharray: 120;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .nav-item:hover svg path,
+    .nav-item:hover svg rect,
+    .nav-item:hover svg line,
+    .nav-item:hover svg polyline,
+    .nav-item:hover svg circle,
+    .nav-item:focus-visible svg path {
+      animation: svgPathTrace 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes svgPathTrace {
+      0% { stroke-dashoffset: 120; opacity: 0.4; }
+      100% { stroke-dashoffset: 0; opacity: 1; }
+    }
+
+    /* ==========================================================================
+       MÓDULO DE ACCESO: NEUMORFISMO + SOFT GLASS
        ========================================================================== */
     .login-wrapper {
+      position: relative;
+      z-index: 5;
       width: 100%;
       max-width: 420px;
       margin: 0 auto;
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: var(--radius-xl);
       box-shadow: var(--neu-elevated);
       padding: 36px 28px;
@@ -389,59 +539,137 @@
     }
 
     /* ==========================================================================
-       ESTRUCTURA PRINCIPAL MULTITENANT (SUPERFICIE CONTINUA NEUMÓRFICA)
+       2. BARRA LATERAL ESTÁTICA E INMUTABLE (SOLUCIÓN DE DESBORDAMIENTO)
        ========================================================================== */
     .app-window {
+      position: relative;
+      z-index: 5;
       width: 100%;
-      max-width: 1320px;
-      min-height: 88vh;
+      max-width: 1360px;
+      min-height: calc(100vh - 32px);
       margin: 0 auto;
-      background: var(--neu-surface);
+      background: var(--glass-panel-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: var(--radius-xl);
       box-shadow: var(--neu-elevated);
       display: none;
-      overflow: hidden;
-      position: relative;
+      align-items: flex-start;
       touch-action: pan-x pan-y pinch-zoom;
     }
 
     .sidebar {
-      width: 280px;
-      background: var(--neu-surface);
-      color: var(--text-title);
+      position: sticky;
+      top: 16px;
+      width: 285px;
+      height: calc(100vh - 32px);
+      max-height: calc(100vh - 32px);
+      align-self: flex-start;
+      flex-shrink: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      background: var(--sidebar-glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      color: #EDF3ED;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 26px 18px 18px 18px;
-      position: relative;
-      flex-shrink: 0;
+      padding: 24px 18px 18px 18px;
+      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
       z-index: 40;
-      box-shadow: 6px 0 14px var(--neu-dark);
+      box-shadow: inset -2px 0 8px rgba(255, 255, 255, 0.14), 10px 0 24px rgba(15, 22, 15, 0.22);
+    }
+
+    .sidebar::-webkit-scrollbar {
+      display: none;
     }
 
     .brand-section {
       padding: 14px 16px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       border-radius: var(--radius-md);
-      box-shadow: var(--neu-inset);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.28), inset -2px -2px 6px rgba(255, 255, 255, 0.08);
     }
 
     .brand-title {
       font-size: 24px;
       font-weight: 700;
       letter-spacing: 4px;
-      color: var(--brand-emerald);
+      color: #FFFFFF;
       line-height: 1;
     }
 
     .brand-subtitle {
       font-size: 8.5px;
       letter-spacing: 1.1px;
-      color: var(--text-muted);
+      color: #C4D4C4;
       margin-top: 6px;
       text-transform: uppercase;
       line-height: 1.35;
       font-weight: 600;
+    }
+
+    .sidebar-profile-btn {
+      width: 100%;
+      min-height: 58px;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.10);
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25), -2px -2px 8px rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .sidebar-profile-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .sidebar-profile-btn:active {
+      box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.35), inset -2px -2px 6px rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-profile-btn:focus-visible {
+      outline: 2px solid #FFFFFF;
+    }
+
+    .sidebar-profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1C211B;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar-profile-meta {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-profile-name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+    }
+
+    .sidebar-profile-hint {
+      font-size: 10.5px;
+      color: #C8DAC8;
+      font-weight: 500;
     }
 
     .nav-list {
@@ -458,15 +686,20 @@
       min-height: 48px;
       display: flex;
       align-items: center;
-      gap: 13px;
-      padding: 12px 16px;
+      gap: 12px;
+      padding: 12px 15px;
       border-radius: var(--radius-md);
       font-size: 13.5px;
       font-weight: 600;
-      color: var(--text-body);
-      background: var(--neu-surface);
-      box-shadow: var(--neu-elevated-sm);
+      color: rgba(238, 245, 238, 0.88);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.22), -2px -2px 6px rgba(255, 255, 255, 0.06);
       cursor: pointer;
+    }
+
+    .nav-item:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.11);
+      color: #FFFFFF;
     }
 
     .nav-item svg {
@@ -479,8 +712,9 @@
     }
 
     .nav-item.active {
-      box-shadow: var(--neu-inset);
-      color: var(--brand-emerald);
+      background: rgba(0, 0, 0, 0.22);
+      box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.38), inset -2px -2px 6px rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
       font-weight: 800;
     }
 
@@ -495,14 +729,27 @@
       border-radius: 4px;
     }
 
+    .badge-beta {
+      margin-left: auto;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(200, 138, 107, 0.28);
+      color: #FFD8C4;
+    }
+
     .sidebar-footer {
       position: relative;
-      margin-top: 24px;
+      margin-top: 20px;
       padding: 14px;
       border-radius: var(--radius-md);
-      box-shadow: var(--neu-inset);
+      background: rgba(0, 0, 0, 0.16);
+      box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3), inset -2px -2px 6px rgba(255, 255, 255, 0.05);
       z-index: 2;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .credits-block {
@@ -510,7 +757,7 @@
       z-index: 3;
       font-size: 10.5px;
       line-height: 1.45;
-      color: var(--text-body);
+      color: rgba(235, 242, 235, 0.9);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -518,18 +765,18 @@
 
     .credits-services {
       font-size: 9.5px;
-      color: var(--text-muted);
+      color: #BDD0BD;
       line-height: 1.5;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .credits-authors {
-      padding-top: 6px;
+      padding-top: 4px;
       font-size: 10.5px;
     }
 
     .credits-authors strong {
-      color: var(--brand-emerald);
+      color: #FFFFFF;
       display: block;
       font-weight: 700;
     }
@@ -540,7 +787,7 @@
       right: -14px;
       width: 150px;
       height: 165px;
-      opacity: 0.22;
+      opacity: 0.20;
       pointer-events: none;
       z-index: 1;
     }
@@ -561,35 +808,47 @@
       flex-shrink: 0;
     }
 
-    .mobile-menu-btn:active {
-      box-shadow: var(--neu-inset);
-    }
-
     .drawer-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(30, 38, 30, 0.45);
+      background: rgba(12, 18, 12, 0.52);
+      backdrop-filter: blur(4px);
       z-index: 35;
     }
 
     .drawer-backdrop.open { display: block; }
 
-    /* ÁREA PRINCIPAL */
+    /* ==========================================================================
+       6. ÁREA PRINCIPAL CON SCROLL FLUIDO E INERCIA INTELIGENTE
+       ========================================================================== */
     .main-viewport {
       flex: 1;
       width: 100%;
       max-width: 100%;
+      height: calc(100vh - 32px);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
+      scroll-behavior: smooth;
       padding: 24px 28px;
       touch-action: pan-x pan-y pinch-zoom;
     }
 
+    .main-viewport.fast-scroll {
+      scroll-behavior: auto !important;
+    }
+
+    .timeline, .audit-timeline {
+      scroll-behavior: smooth;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
     .top-header {
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: var(--radius-lg);
       box-shadow: var(--neu-elevated-sm);
       padding: 12px 18px;
@@ -599,6 +858,7 @@
       margin-bottom: 24px;
       gap: 12px;
       flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
     .project-selector-wrap {
@@ -616,8 +876,26 @@
       flex-wrap: wrap;
     }
 
+    .profile-trigger-pill {
+      min-height: 48px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: var(--text-title);
+    }
+
+    .profile-trigger-pill:active {
+      box-shadow: var(--neu-inset);
+    }
+
     .user-meta-name {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -625,23 +903,24 @@
     }
 
     .avatar-img {
-      width: 42px;
-      height: 42px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
-      padding: 3px;
-      background: var(--neu-surface);
-      box-shadow: var(--neu-elevated-sm);
+      background: #1C211B;
       flex-shrink: 0;
     }
 
-    /* CABECERA EJECUTIVA */
+    /* 8. CABECERA EJECUTIVA ("AVANCE DE LA OBRA") */
     .dashboard-header-card {
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: var(--radius-xl);
       box-shadow: var(--neu-elevated);
       padding: 24px;
       margin-bottom: 26px;
+      flex-shrink: 0;
     }
 
     .project-main-meta {
@@ -721,6 +1000,7 @@
       height: 100%;
       background: var(--brand-emerald);
       border-radius: 10px;
+      transition: width 0.35s ease;
     }
 
     .milestone-strip {
@@ -764,7 +1044,9 @@
     }
 
     .report-card {
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: var(--radius-xl);
       box-shadow: var(--neu-elevated);
       padding: 22px 24px;
@@ -819,7 +1101,269 @@
     }
 
     /* ==========================================================================
-       5. CONTENEDOR TIPO ÁLBUM EN PILA ESTILO iPHONE (INFORMES DE OBRA)
+       4. SWITCH NEUMÓRFICO ESTILO iOS EN PERFIL DE USUARIO (ACCESIBILIDAD)
+       ========================================================================== */
+    .accessibility-box {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .ios-theme-switch {
+      position: relative;
+      width: 68px;
+      height: 38px;
+      border: none;
+      border-radius: 999px;
+      background: #C8D6C5;
+      box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.22), inset -3px -3px 7px rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      transition: background-color 0.35s ease;
+    }
+
+    html[data-theme="dark"] .ios-theme-switch {
+      background: #1E2942;
+      box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.75), inset -2px -2px 6px rgba(255, 255, 255, 0.08);
+    }
+
+    .ios-switch-glyph {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      z-index: 1;
+      user-select: none;
+    }
+
+    .ios-switch-knob {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--neu-surface);
+      box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(255, 255, 255, 0.6);
+      z-index: 2;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html[data-theme="dark"] .ios-switch-knob {
+      transform: translateX(30px);
+      background: #2B3B54;
+    }
+
+    /* ==========================================================================
+       7. MÓDULO CRONOGRAMA E HITOS AUTOMATIZADO (INSPIRADO EN CELOXIS TIMELINE)
+       ========================================================================== */
+    .schedule-dual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .schedule-kpi-card {
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .kpi-eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--brand-emerald);
+    }
+
+    .kpi-headline {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-title);
+    }
+
+    .kpi-submeta {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .schedule-status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      box-shadow: var(--neu-inset);
+    }
+
+    .schedule-status-pill.a_tiempo {
+      color: var(--status-ok);
+      background: var(--status-ok-bg);
+    }
+
+    .schedule-status-pill.en_riesgo {
+      color: var(--status-warn);
+      background: var(--status-warn-bg);
+    }
+
+    .schedule-status-pill.atrasado {
+      color: var(--status-danger);
+      background: var(--status-danger-bg);
+    }
+
+    /* CELOXIS TIMELINE INTERACTIVO CON MARCADOR "HOY" */
+    .celoxis-timeline-box {
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--neu-elevated);
+      padding: 22px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .celoxis-canvas-track {
+      position: relative;
+      min-width: 680px;
+      padding: 34px 12px 14px 12px;
+      border-radius: var(--radius-lg);
+      background: var(--neu-surface);
+      box-shadow: var(--neu-inset);
+    }
+
+    .celoxis-today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2.5px;
+      background: var(--brand-emerald);
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .celoxis-today-tag {
+      position: absolute;
+      top: 6px;
+      transform: translateX(-50%);
+      background: var(--brand-emerald);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .celoxis-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(130, 145, 130, 0.14);
+    }
+
+    .celoxis-row-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-title);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 8px;
+    }
+
+    .celoxis-bar-lane {
+      position: relative;
+      height: 28px;
+      width: 100%;
+    }
+
+    .celoxis-task-bar {
+      position: absolute;
+      top: 3px;
+      height: 22px;
+      border-radius: 8px;
+      background: var(--neu-surface);
+      box-shadow: var(--neu-elevated-sm);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #FFFFFF;
+      z-index: 5;
+    }
+
+    /* Ruta crítica con contorno neumórfico prominente */
+    .celoxis-task-bar.critical-path {
+      outline: 2.5px solid var(--status-danger);
+      box-shadow: 0 0 0 3px rgba(166, 58, 46, 0.22), var(--neu-elevated-sm);
+    }
+
+    .celoxis-bar-fill {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.9;
+    }
+
+    .celoxis-bar-fill.a_tiempo { background: #3B6E4C; }
+    .celoxis-bar-fill.en_riesgo { background: #C88A6B; }
+    .celoxis-bar-fill.atrasado { background: #A63A2E; }
+
+    /* Hito Clave como Diamante Estilizado (◆) */
+    .celoxis-milestone-diamond {
+      position: absolute;
+      top: 2px;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-terracotta);
+      white-space: nowrap;
+      z-index: 8;
+    }
+
+    .diamond-glyph {
+      display: inline-block;
+      font-size: 18px;
+      line-height: 1;
+      color: var(--accent-terracotta);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    }
+
+    /* ==========================================================================
+       9. CONTENEDOR TIPO ÁLBUM EN PILA ESTILO iPHONE vs CUADRÍCULA
        ========================================================================== */
     .ios-album-stack-wrapper {
       margin: 12px 0 20px 6px;
@@ -884,7 +1428,7 @@
       bottom: 12px;
       right: 12px;
       z-index: 4;
-      background: rgba(30, 38, 30, 0.84);
+      background: rgba(20, 28, 20, 0.86);
       color: #FFFFFF;
       font-size: 12px;
       font-weight: 800;
@@ -893,7 +1437,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* CUADRÍCULA EXPANDIDA PARA EL BAÚL DE GALERÍA GENERAL */
     .photo-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -952,9 +1495,10 @@
       border-radius: var(--radius-md);
     }
 
-    /* BAÚL DE GALERÍA Y BITÁCORA */
     .vault-date-group {
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       box-shadow: var(--neu-elevated);
       border-radius: var(--radius-xl);
       padding: 20px 22px;
@@ -994,7 +1538,9 @@
     }
 
     .audit-entry {
-      background: var(--neu-surface);
+      background: var(--glass-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       box-shadow: var(--neu-elevated-sm);
       border-radius: var(--radius-lg);
       padding: 16px 20px;
@@ -1016,7 +1562,6 @@
       color: var(--text-title);
     }
 
-    /* TABLAS NEUMÓRFICAS */
     .table-responsive {
       width: 100%;
       overflow-x: auto;
@@ -1029,7 +1574,7 @@
     .docs-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 540px;
+      min-width: 580px;
     }
 
     .docs-table th, .docs-table td {
@@ -1043,21 +1588,11 @@
       color: var(--brand-emerald);
     }
 
-    .profile-card {
-      max-width: 540px;
-      background: var(--neu-surface);
-      border-radius: var(--radius-xl);
-      padding: 28px;
-      box-shadow: var(--neu-elevated);
-    }
-
-    /* ==========================================================================
-       4 & 5. VISOR LIGHTBOX MULTITÁCTIL CON FLECHAS GRANDES Y TIRA DE MINIATURAS
-       ========================================================================== */
+    /* VISOR LIGHTBOX UNIVERSAL */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(18, 23, 18, 0.96);
+      background: rgba(12, 16, 14, 0.96);
       display: none;
       flex-direction: column;
       justify-content: space-between;
@@ -1077,7 +1612,7 @@
       z-index: 960;
       gap: 10px;
       flex-wrap: wrap;
-      background: rgba(18, 23, 18, 0.75);
+      background: rgba(12, 16, 14, 0.78);
     }
 
     .lightbox-caption {
@@ -1174,17 +1709,13 @@
       background: var(--brand-emerald);
     }
 
-    .lightbox-nav-arrow:focus-visible {
-      outline: 3px solid #FFFFFF;
-    }
-
     .lightbox-nav-arrow.prev { left: 16px; }
     .lightbox-nav-arrow.next { right: 16px; }
 
     .lightbox-thumb-strip {
       width: 100%;
       min-height: 84px;
-      background: rgba(18, 23, 18, 0.88);
+      background: rgba(12, 16, 14, 0.88);
       padding: 10px 18px;
       display: flex;
       align-items: center;
@@ -1195,6 +1726,7 @@
     }
 
     .lightbox-thumb-item {
+      position: relative;
       width: 58px;
       height: 58px;
       border-radius: 12px;
@@ -1220,11 +1752,25 @@
       display: block;
     }
 
-    /* MODALES NEUMÓRFICOS */
+    .thumb-num-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 6px;
+    }
+
+    /* MODALES */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(24, 30, 24, 0.62);
+      background: rgba(12, 18, 14, 0.62);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1240,9 +1786,10 @@
       background: var(--neu-surface);
       border-radius: var(--radius-xl);
       padding: 26px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
       max-height: 90vh;
       overflow-y: auto;
+      color: var(--text-title);
     }
 
     .modal-header {
@@ -1317,7 +1864,7 @@
 
     @media print {
       body { background: #FFFFFF; padding: 0; color: #000; }
-      #preloader, .app-window, .sidebar, .top-header, .btn-neu, .interaction-bar, .mobile-menu-btn {
+      #atmospheric-canvas, #preloader, .app-window, .sidebar, .top-header, .btn-neu, .interaction-bar, .mobile-menu-btn {
         display: none !important;
       }
       #print-report-template { display: block !important; }
@@ -1337,13 +1884,19 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 275px;
+        width: 280px;
         height: 100vh;
+        max-height: 100vh;
+        border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
         display: none;
       }
       .sidebar.open { display: flex; }
       .mobile-menu-btn { display: inline-flex; }
-      .main-viewport { padding: 14px; }
+      .main-viewport {
+        padding: 14px;
+        height: auto;
+        min-height: calc(100vh - 20px);
+      }
       .project-title { font-size: 21px; }
       .report-card { padding: 18px; }
       .lightbox-nav-arrow { width: 48px; height: 48px; font-size: 22px; }
@@ -1356,9 +1909,14 @@
 <body class="preloader-lock">
 
   <!-- ========================================================================
-       1 & 3. SPRITE Y PANTALLA DE PRECARGA (LOADER DE 6 PATITAS EN VERDE)
+       3. CANVAS NATIVO DE FONDOS ATMOSFÉRICOS (LIGHT MESH vs STARRY NIGHT)
        ======================================================================== -->
-  <svg style="display:none;" aria-hidden="true">
+  <canvas id="atmospheric-canvas" aria-hidden="true"></canvas>
+
+  <!-- ========================================================================
+       1. SPRITE Y PANTALLA DE CARGA (6 PATITAS CAMINANDO EN ZIG-ZAG)
+       ======================================================================== -->
+  <svg id="svg-sprite" style="display:none;" aria-hidden="true">
     <symbol id="paw" viewBox="0 0 249 209.32">
       <ellipse cx="27.917" cy="106.333" stroke-width="0" rx="27.917" ry="35.833"/>
       <ellipse cx="84.75" cy="47.749" stroke-width="0" rx="34.75" ry="47.751"/>
@@ -1368,7 +1926,7 @@
     </symbol>
   </svg>
 
-  <div id="preloader" class="run-paws" role="status" aria-live="polite" aria-label="Cargando plataforma DIEGO">
+  <div id="preloader" role="status" aria-live="polite" aria-label="Cargando plataforma DIEGO">
     <div class="paw-trail">
       <div class="paw"><svg><use href="#paw"/></svg></div>
       <div class="paw"><svg><use href="#paw"/></svg></div>
@@ -1377,11 +1935,11 @@
       <div class="paw"><svg><use href="#paw"/></svg></div>
       <div class="paw"><svg><use href="#paw"/></svg></div>
     </div>
-    <div class="preloader-label">DIEGO • B+ Arquitectura</div>
+    <div class="preloader-label">DIEGO • B+ Arquitectura &amp; Dynatic</div>
   </div>
 
   <!-- ========================================================================
-       2. MÓDULO DE ACCESO NEUMÓRFICO (SIN PLACEHOLDERS FICTICIOS + OJO SVG)
+       MÓDULO DE ACCESO NEUMÓRFICO (LÓGICA CONDICIONAL ADMIN + VISIBILIDAD OJO)
        ======================================================================== -->
   <div class="login-wrapper" id="login-screen" role="region" aria-labelledby="login-heading">
     <div>
@@ -1395,7 +1953,6 @@
     <form class="login-form" id="login-form-el" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on" novalidate>
       <input type="text" id="hp-login" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <!-- Usuario -->
       <div class="form-group-neu">
         <label for="login-user">
           <span>Usuario</span>
@@ -1418,7 +1975,6 @@
         <span id="login-user-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <!-- Correo (Ocultado automáticamente si Usuario === Admin) -->
       <div class="form-group-neu" id="login-email-group">
         <label for="login-email">
           <span>Correo</span>
@@ -1436,11 +1992,10 @@
           aria-invalid="false"
           aria-describedby="login-email-help login-email-error"
         >
-        <span id="login-email-help" class="field-help">Correo para alertas de informes y bitácora.</span>
+        <span id="login-email-help" class="field-help">Correo para notificaciones de informes y bitácora.</span>
         <span id="login-email-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <!-- Contraseña con alternador de visibilidad SVG -->
       <div class="form-group-neu">
         <label for="login-pass">
           <span>Contraseña</span>
@@ -1475,7 +2030,7 @@
         <span id="login-pass-error" class="field-error" role="alert" aria-live="polite"></span>
       </div>
 
-      <button type="submit" id="btn-login-submit" class="btn-neu btn-neu-primary" style="width:100%; margin-top:6px;">Ingresar al Portal</button>
+      <button type="submit" id="btn-login-submit" class="btn-neu btn-neu-primary" style="width:100%; margin-top:6px;">Iniciar Sesión</button>
     </form>
   </div>
 
@@ -1485,13 +2040,21 @@
   <div class="app-window" id="app-screen">
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA LATERAL NEUMÓRFICA -->
+    <!-- 2. BARRA LATERAL ESTÁTICA E INMUTABLE EN VIDRIO ESMERILADO VERDE OLIVA -->
     <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
       <div>
         <div class="brand-section">
           <div class="brand-title">DIEGO</div>
           <div class="brand-subtitle">Daily Intelligent Electronic Graphic Organizer</div>
         </div>
+
+        <button type="button" class="sidebar-profile-btn breeze-card" id="sidebar-profile-trigger" onclick="handleUnifiedProfileClick()" aria-label="Abrir configuración de perfil o gestión de usuarios">
+          <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="sidebar-profile-avatar" alt="Avatar del usuario activo">
+          <div class="sidebar-profile-meta">
+            <span class="sidebar-profile-name" id="sidebar-user-name">USUARIO</span>
+            <span class="sidebar-profile-hint" id="sidebar-user-role-hint">Configuración y Accesibilidad</span>
+          </div>
+        </button>
 
         <ul class="nav-list">
           <li class="nav-item active" id="nav-item-feed" role="button" tabindex="0" onclick="switchModule('feed')" onkeydown="if(event.key==='Enter')switchModule('feed')">
@@ -1527,22 +2090,16 @@
             <span>Documentos</span>
           </li>
 
-          <li class="nav-item" id="nav-item-profile" role="button" tabindex="0" onclick="switchModule('profile')" onkeydown="if(event.key==='Enter')switchModule('profile')">
+          <!-- 7. PESTAÑA EXCLUSIVA ADMIN: CRONOGRAMA E HITOS [BETA] -->
+          <li class="nav-item" id="nav-item-schedule" style="display:none;" role="button" tabindex="0" onclick="switchModule('schedule')" onkeydown="if(event.key==='Enter')switchModule('schedule')">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
-            <span>Mi Perfil</span>
-          </li>
-
-          <li class="nav-item" id="nav-item-users" style="display:none;" role="button" tabindex="0" onclick="switchModule('users')" onkeydown="if(event.key==='Enter')switchModule('users')">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span>Usuarios (Admin)</span>
+            <span>Cronograma e Hitos</span>
+            <span class="badge-beta">[BETA]</span>
           </li>
         </ul>
       </div>
@@ -1557,12 +2114,12 @@
           <div class="credits-authors">
             <strong>B+ Arquitectura Estudio</strong>
             Gina Bustillo
-            <strong style="margin-top:5px;">Dynatic</strong>
+            <strong style="margin-top:5px;">Dynatic Solutions SAS</strong>
             Sixto Fernández
           </div>
         </div>
 
-        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#3B6E4C" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="plant-svg" viewBox="0 0 220 260" fill="none" stroke="#DCE5D8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M 12 260 C 22 205, 48 145, 95 65" stroke-width="1.6"/>
           <path d="M 18 260 C 12 210, 15 155, 25 95" stroke-width="1.2"/>
           <path d="M 62 120 C 68 78, 92 42, 114 14 C 106 54, 88 92, 62 120 Z" stroke-width="1.3"/>
@@ -1573,8 +2130,8 @@
       </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="main-viewport">
+    <!-- CONTENIDO PRINCIPAL CON INERCIA INTELIGENTE -->
+    <main class="main-viewport" id="main-viewport">
 
       <!-- BARRA SUPERIOR DE TAREAS -->
       <header class="top-header">
@@ -1588,14 +2145,16 @@
 
         <div class="user-pill">
           <button class="btn-neu" onclick="printExecutiveReport()" aria-label="Exportar reporte ejecutivo en PDF">🖨️ Exportar PDF</button>
-          <span class="user-meta-name" id="user-display-tag">USUARIO</span>
-          <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Avatar de usuario">
+          <button type="button" class="profile-trigger-pill breeze-card" onclick="openSelfAccountModal()" aria-label="Abrir configuración de cuenta y modo oscuro">
+            <span class="user-meta-name" id="user-display-tag">USUARIO</span>
+            <img src="gato.jpg" onerror="this.src=CAT_FALLBACK_URI" class="avatar-img" alt="Avatar de perfil">
+          </button>
           <button class="btn-neu btn-neu-danger" onclick="handleLogout()" aria-label="Cerrar sesión">Salir</button>
         </div>
       </header>
 
-      <!-- CUADRO DE AVANCE DE LA OBRA (VISIBLE SOLO EN INFORMES Y BITÁCORA) -->
-      <div class="dashboard-header-card" id="dashboard-avance-card">
+      <!-- 8. CUADRO DE AVANCE DE LA OBRA (VISIBLE EXCLUSIVAMENTE EN INFORMES Y BITÁCORA) -->
+      <div class="dashboard-header-card breeze-card" id="dashboard-avance-card">
         <div class="project-main-meta">
           <div>
             <h2 class="project-title" id="dash-project-name">Sincronizando proyecto...</h2>
@@ -1682,67 +2241,118 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 5: MI PERFIL -->
-      <section class="module-section" id="sec-profile" aria-label="Mi Perfil">
-        <div style="margin-bottom:18px;">
-          <h3 style="font-size:18px; font-weight:800;">Mi Perfil y Credenciales</h3>
-          <p style="font-size:13px; color:var(--text-muted);">Actualiza tu usuario, correo y contraseña personal. Sincronización inmediata en todos tus dispositivos.</p>
+      <!-- 7. SECCIÓN 5: CRONOGRAMA E HITOS AUTOMATIZADO (INSPIRADO EN CELOXIS TIMELINE) -->
+      <section class="module-section" id="sec-schedule" aria-label="Cronograma e Hitos">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="font-size:18px; font-weight:800;">Cronograma e Hitos <span style="font-size:12px; color:var(--brand-emerald);">[BETA]</span></h3>
+            <p style="font-size:13px; color:var(--text-muted);">Compatible con estructura de obra civil de Dynatic Solutions SAS: <strong>ID</strong>, <strong>Actividad</strong>, <strong>Duración</strong>, <strong>Fecha Inicio</strong>, <strong>Fecha Fin</strong>, <strong>Predecesora</strong>, y <strong>Ruta Crítica</strong>.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-neu" onclick="loadBaruPoolSampleSchedule()">🏊 Cargar Ejemplo Piscina Barú</button>
+            <button class="btn-neu" onclick="downloadSampleScheduleCsv()">⬇ Plantilla (.CSV)</button>
+            <button class="btn-neu btn-neu-primary" onclick="syncScheduleToHeader()">↻ Sincronizar con Cabecera</button>
+          </div>
         </div>
 
-        <div class="profile-card">
-          <form onsubmit="event.preventDefault(); saveSelfProfile();" novalidate>
-            <input type="text" id="hp-profile" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-            <div class="form-group-neu" style="margin-bottom:16px;">
-              <label for="prof-code">
-                <span>Usuario</span>
-                <span class="req-star" aria-hidden="true">*</span>
-              </label>
-              <input type="text" id="prof-code" class="neu-input" maxlength="50" required aria-required="true" aria-invalid="false" aria-describedby="prof-code-error">
-              <span id="prof-code-error" class="field-error" role="alert" aria-live="polite"></span>
+        <!-- TARJETAS EJECUTIVAS DE DOBLE AVANCE -->
+        <div class="schedule-dual-grid">
+          <!-- Tarjeta 1: Hito Próximo en Calendario (con festivos de Colombia) -->
+          <div class="schedule-kpi-card breeze-card">
+            <div>
+              <div class="kpi-eyebrow">Tarjeta 1 • Hito Próximo en Calendario (Colombia)</div>
+              <div class="kpi-headline" id="sched-next-title" style="margin-top:6px;">Sin hitos cargados</div>
+              <div class="kpi-submeta" id="sched-next-days" style="margin-top:4px;">Importa un archivo Excel o CSV para calcular días hábiles</div>
             </div>
-
-            <div class="form-group-neu" style="margin-bottom:16px;">
-              <label for="prof-email">
-                <span>Correo</span>
-                <span class="req-star" aria-hidden="true">*</span>
-              </label>
-              <input type="email" id="prof-email" class="neu-input" maxlength="120" required aria-required="true" aria-invalid="false" aria-describedby="prof-email-error">
-              <span id="prof-email-error" class="field-error" role="alert" aria-live="polite"></span>
-            </div>
-
-            <div class="form-group-neu" style="margin-bottom:20px;">
-              <label for="prof-pass">
-                <span>Contraseña</span>
-                <span class="req-star" aria-hidden="true">*</span>
-              </label>
-              <div class="password-input-wrap">
-                <input type="password" id="prof-pass" class="neu-input" maxlength="64" required aria-required="true" aria-invalid="false" aria-describedby="prof-pass-error">
-                <button type="button" class="btn-eye-toggle" aria-label="Mostrar u ocultar contraseña" onclick="togglePasswordVisibility('prof-pass', 'eye-icon-prof')">
-                  <svg id="eye-icon-prof" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
+            <div>
+              <div class="progress-meta-text">
+                <span>Progreso del Hito / Actividad</span>
+                <span class="metric-num" id="sched-next-pct">0%</span>
               </div>
-              <span id="prof-pass-error" class="field-error" role="alert" aria-live="polite"></span>
+              <div class="bar-shell">
+                <div class="bar-fill-actual" id="sched-next-bar" style="width:0%;"></div>
+              </div>
             </div>
+          </div>
 
-            <button type="submit" id="btn-save-self-profile" class="btn-neu btn-neu-primary" style="width:100%;">Guardar Credenciales</button>
-          </form>
+          <!-- Tarjeta 2: Avance Total Ponderado de la Obra -->
+          <div class="schedule-kpi-card breeze-card">
+            <div>
+              <div class="kpi-eyebrow">Tarjeta 2 • Avance Total de la Obra</div>
+              <div class="kpi-headline" id="sched-total-headline" style="margin-top:6px;">0.0% Completado</div>
+              <div class="kpi-submeta" id="sched-total-summary" style="margin-top:4px;">Promedio ponderado por duración de actividades</div>
+            </div>
+            <div>
+              <div class="progress-meta-text">
+                <span>Avance Global Ponderado</span>
+                <span class="metric-num" id="sched-total-pct">0%</span>
+              </div>
+              <div class="bar-shell">
+                <div class="bar-fill-actual" id="sched-total-bar" style="width:0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ZONA DE IMPORTACIÓN EXCEL / CSV -->
+        <div class="dropzone breeze-card" id="schedule-dropzone" role="button" tabindex="0" style="margin-bottom:22px;" onclick="document.getElementById('schedule-file-input').click()" onkeydown="if(event.key==='Enter')document.getElementById('schedule-file-input').click()">
+          <div style="font-size:14px; font-weight:800; color:var(--brand-emerald);" id="schedule-drop-label">📊 Arrastra aquí tu archivo Excel (.xlsx, .xls) o .CSV, o pulsa para seleccionarlo</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Columnas soportadas: ID | Actividad | Duración | Fecha Inicio | Fecha Fin | Predecesora | Ruta Crítica | % Avance</div>
+        </div>
+        <input type="file" id="schedule-file-input" accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none;" onchange="handleScheduleFileSelect(this.files)">
+
+        <!-- DIAGRAMA DE CRONOLOGÍA ESTILO CELOXIS CON MARCADOR "HOY" Y DIAMANTES ◆ -->
+        <div class="celoxis-timeline-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <strong style="font-size:14px;">Línea de Tiempo Visual (Celoxis Timeline View)</strong>
+            <div style="display:flex; gap:14px; font-size:11.5px; font-weight:700; flex-wrap:wrap;">
+              <span style="color:#3B6E4C;">● A tiempo</span>
+              <span style="color:#C88A6B;">● En riesgo (&le;5d y &lt;75%)</span>
+              <span style="color:#A63A2E;">● Atrasado / Ruta Crítica</span>
+              <span style="color:var(--accent-terracotta);">◆ Hito Clave</span>
+            </div>
+          </div>
+          <div class="celoxis-canvas-track" id="celoxis-timeline-track">
+            <div style="text-align:center; color:var(--text-muted); font-size:13px; padding:18px;">Importa un cronograma o pulsa "Cargar Ejemplo Piscina Barú" para visualizar la línea de tiempo con el marcador HOY.</div>
+          </div>
+        </div>
+
+        <!-- TABLA DETALLADA DE ACTIVIDADES, RUTA CRÍTICA Y PREDECESORAS -->
+        <div class="table-responsive">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Actividad / Hito</th>
+                <th>Duración</th>
+                <th>Inicio — Fin</th>
+                <th>Predecesora</th>
+                <th>Ruta Crítica</th>
+                <th>% Real</th>
+                <th>Estado</th>
+                <th>Ajuste</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-table-body">
+              <tr>
+                <td colspan="9" style="text-align:center; color:var(--text-muted); padding:26px;">No se ha importado ningún cronograma para esta obra todavía.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- SECCIÓN 6: GESTIÓN DE USUARIOS (SOLO ADMIN) -->
-      <section class="module-section" id="sec-users" aria-label="Gestión de Usuarios">
+      <!-- SECCIÓN 6: PANEL INTEGRAL DE GESTIÓN DE USUARIOS Y OBRAS (ADMIN) -->
+      <section class="module-section" id="sec-users" aria-label="Gestión de Usuarios y Obras">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
           <div>
             <h3 style="font-size:18px; font-weight:800;">Gestión de Usuarios y Obras (Admin)</h3>
-            <p style="font-size:13px; color:var(--text-muted);">Control global de cuentas de clientes, contraseñas y servicio de notificaciones.</p>
+            <p style="font-size:13px; color:var(--text-muted);">Panel central de control: crea nuevos clientes/obras, edita contraseñas maestras, actualiza correos de notificación y audita accesos.</p>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-neu" onclick="openSelfAccountModal()">🌓 Accesibilidad y Mi Cuenta</button>
             <button class="btn-neu" onclick="openEmailConfigModal()">✉️ Configurar Correo</button>
-            <button class="btn-neu btn-neu-primary" onclick="openUserModal()">+ Añadir Usuario</button>
+            <button class="btn-neu btn-neu-primary" onclick="openUserModal()">+ Añadir Cliente / Obra</button>
           </div>
         </div>
 
@@ -1770,7 +2380,7 @@
   <div id="toast-banner" class="toast-banner" role="status" aria-live="polite"></div>
 
   <!-- ========================================================================
-       4 & 5. VISOR LIGHTBOX CON FLECHAS LATERALES, MINIATURAS, CONTADOR Y PINCH-ZOOM
+       9. VISOR LIGHTBOX CON FLECHAS LATERALES, MINIATURAS NUMERADAS Y PINCH-ZOOM
        ======================================================================== -->
   <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visor de álbum fotográfico">
     <div class="lightbox-toolbar">
@@ -1790,7 +2400,7 @@
       <button type="button" class="lightbox-nav-arrow next" id="lightbox-next-btn" onclick="navigateLightbox(1)" aria-label="Fotografía siguiente">›</button>
     </div>
 
-    <div class="lightbox-thumb-strip" id="lightbox-thumbs" role="region" aria-label="Miniaturas del álbum"></div>
+    <div class="lightbox-thumb-strip" id="lightbox-thumbs" role="region" aria-label="Miniaturas numeradas del álbum"></div>
   </div>
 
   <!-- VISOR MODAL DE DOCUMENTOS PDF -->
@@ -1806,6 +2416,83 @@
       <object id="pdf-preview-frame" type="application/pdf" style="width:100%; flex:1; border-radius:16px; background:#fff;">
         <p style="padding:24px; text-align:center; font-size:13px; color:var(--text-body);">Pulsa el botón superior para abrir todas las páginas del documento en el lector nativo de tu dispositivo.</p>
       </object>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       4. MODAL DE PERFIL Y ACCESIBILIDAD (CON SWITCH NEUMÓRFICO MODO OSCURO)
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-self-profile" role="dialog" aria-modal="true" aria-labelledby="modal-self-profile-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-self-profile-title">Configuración de Mi Cuenta</h3>
+        <button class="modal-close" onclick="closeModal('modal-self-profile')" aria-label="Cerrar modal">✕</button>
+      </div>
+
+      <!-- SECCIÓN DE ACCESIBILIDAD Y CONMUTADOR DE MODO OSCURO ESTILO iOS -->
+      <div class="accessibility-box">
+        <div>
+          <div style="font-size:13.5px; font-weight:800; color:var(--text-title);">Accesibilidad • Apariencia Visual</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="theme-status-label">Modo Claro Institucional activo</div>
+        </div>
+        <button
+          type="button"
+          class="ios-theme-switch"
+          id="ios-theme-switch-btn"
+          role="switch"
+          aria-checked="false"
+          aria-label="Alternar entre Modo Claro y Modo Oscuro Cielo Nocturno"
+          onclick="toggleThemeMode()"
+        >
+          <span class="ios-switch-glyph" aria-hidden="true">☀️</span>
+          <span class="ios-switch-glyph" aria-hidden="true">🌙</span>
+          <span class="ios-switch-knob"></span>
+        </button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); saveSelfProfile();" novalidate>
+        <input type="text" id="hp-profile" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="form-group-neu" style="margin-bottom:14px;">
+          <label for="prof-code">
+            <span>Usuario</span>
+            <span class="req-star" aria-hidden="true">*</span>
+          </label>
+          <input type="text" id="prof-code" class="neu-input" maxlength="50" required aria-required="true" aria-invalid="false" aria-describedby="prof-code-error">
+          <span id="prof-code-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group-neu" style="margin-bottom:14px;">
+          <label for="prof-email">
+            <span>Correo</span>
+            <span class="req-star" aria-hidden="true">*</span>
+          </label>
+          <input type="email" id="prof-email" class="neu-input" maxlength="120" required aria-required="true" aria-invalid="false" aria-describedby="prof-email-error">
+          <span id="prof-email-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group-neu" style="margin-bottom:18px;">
+          <label for="prof-pass">
+            <span>Contraseña</span>
+            <span class="req-star" aria-hidden="true">*</span>
+          </label>
+          <div class="password-input-wrap">
+            <input type="password" id="prof-pass" class="neu-input" maxlength="64" required aria-required="true" aria-invalid="false" aria-describedby="prof-pass-error">
+            <button type="button" class="btn-eye-toggle" aria-label="Mostrar u ocultar contraseña" onclick="togglePasswordVisibility('prof-pass', 'eye-icon-prof')">
+              <svg id="eye-icon-prof" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <span id="prof-pass-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-neu" onclick="closeModal('modal-self-profile')">Cancelar</button>
+          <button type="submit" id="btn-save-self-profile" class="btn-neu btn-neu-primary">Guardar Cambios</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -2011,7 +2698,7 @@
         <button class="modal-close" onclick="closeModal('modal-email-config')" aria-label="Cerrar modal">✕</button>
       </div>
       <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;">
-        Notificaciones automáticas dirigidas al cliente con copia a Gina Bustillo (<strong>proyectos.ginabustillo@gmail.com</strong>) y Sixto Fernández (<strong>Dynatic.solution@gmail.com</strong>).
+        Notificaciones automáticas enviadas al cliente con copia a Gina Bustillo (<strong>proyectos.ginabustillo@gmail.com</strong>) y Sixto Fernández (<strong>Dynatic.solution@gmail.com</strong>), incluyendo enlace oficial a <strong>https://otxis.github.io/WEB/</strong>.
       </p>
 
       <div class="form-group-neu" style="margin-bottom:14px;">
@@ -2041,7 +2728,7 @@
     <div style="border-bottom:2px solid #333; padding-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <h1 style="font-size:24px; margin:0;">DIEGO — REPORTE EJECUTIVO DE OBRA</h1>
-        <p style="font-size:12px; color:#555; margin:4px 0 0;">B+ Arquitectura Estudio (Gina Bustillo) • Dynatic (Sixto Fernández)</p>
+        <p style="font-size:12px; color:#555; margin:4px 0 0;">B+ Arquitectura Estudio (Gina Bustillo) • Dynatic Solutions SAS (Sixto Fernández)</p>
       </div>
       <div style="text-align:right;">
         <p style="font-size:12px; margin:0;" id="print-date"></p>
@@ -2073,22 +2760,34 @@
       </svg>
     `);
 
+    // Ecosistema Oficial y Credenciales Globales
+    const OFFICIAL_REPO_URL = "https://github.com/otxis/WEB";
+    const OFFICIAL_PROD_URL = "https://otxis.github.io/WEB/";
     const SUPABASE_URL = "https://euagegivizyfweymdiaa.supabase.co";
     const SUPABASE_ANON = "sb_publishable__O5ZZXX9L8Vp4JmAIT6vdQ_pUvVxaa5";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const ADMIN_CC_EMAILS = ["proyectos.ginabustillo@gmail.com", "Dynatic.solution@gmail.com"];
-    const PERSIST_KEY = "diego_persistent_auth_v1";
+    const PERSIST_KEY = "diego_persistent_auth_v3";
+    const THEME_STORAGE_KEY = "diego_theme";
 
-    // Estado de sesión persistente multiplataforma (Keep-Alive en localStorage)
+    // Festivos Oficiales de Colombia (2026-2027) para cálculo exacto de días hábiles en obra civil
+    const COLOMBIA_HOLIDAYS = new Set([
+      "2026-01-01","2026-01-12","2026-03-23","2026-04-02","2026-04-03","2026-05-01","2026-05-18",
+      "2026-06-08","2026-06-15","2026-06-29","2026-07-20","2026-08-07","2026-08-17","2026-10-12",
+      "2026-11-02","2026-11-16","2026-12-08","2026-12-25","2027-01-01","2027-01-11"
+    ]);
+
     let activeUser = null;
     let activeProjectId = null;
     let currentModule = 'feed';
 
     let allProjects = [];
+    let rawProjectsList = [];
     let currentProject = null;
     let currentReports = [];
     let currentDocs = [];
+    let currentScheduleMilestones = [];
 
     let existingReportImages = [];
     let removedImageIds = [];
@@ -2097,7 +2796,6 @@
     let selectedPdfDataUrl = null;
     let currentPdfBlobUrl = null;
 
-    // Estado del Álbum Lightbox y Gestos Multitáctiles (Pinch-to-Zoom + Pan + Double Tap)
     let lightboxGalleryList = [];
     let lightboxCurrentIndex = 0;
     let currentZoom = 1;
@@ -2113,7 +2811,7 @@
     let lockoutTimerInterval = null;
 
     // =========================================================================
-    // 3. CONTROLADOR DEL LOADER DE PATITAS SVG (AL ENTRAR Y TRAS INICIAR SESIÓN)
+    // 1. ANIMACIÓN DE PATITAS DE GATO CAMINANDO (SIN SALTO ESTÁTICO)
     // =========================================================================
     function playPawLoader(onComplete) {
       const preloader = document.getElementById('preloader');
@@ -2126,31 +2824,192 @@
       preloader.setAttribute('aria-hidden', 'false');
       preloader.classList.remove('loaded', 'run-paws');
 
-      // Reiniciar ciclo de animación de las 6 patitas de forma determinista
-      void preloader.offsetWidth;
-      preloader.classList.add('run-paws');
+      const paws = preloader.querySelectorAll('.paw');
+      paws.forEach(p => {
+        p.style.animation = 'none';
+        p.style.opacity = '0';
+        p.style.transform = 'scale(0.5) translateY(6px)';
+      });
 
-      let completed = false;
-      const finish = () => {
-        if (completed) return;
-        completed = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          paws.forEach(p => { p.style.animation = ''; });
+          preloader.classList.add('run-paws');
+        });
+      });
+
+      let finished = false;
+      const completeLoader = () => {
+        if (finished) return;
+        finished = true;
         preloader.classList.add('loaded');
         preloader.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('preloader-lock');
         if (onComplete) onComplete();
       };
 
-      const lastPaw = preloader.querySelector('.paw:nth-child(6)');
-      if (lastPaw) {
-        lastPaw.addEventListener('animationend', () => {
-          setTimeout(finish, 160);
+      const sixthPaw = preloader.querySelector('.paw:nth-child(6)');
+      if (sixthPaw) {
+        sixthPaw.addEventListener('animationend', () => {
+          setTimeout(completeLoader, 180);
         }, { once: true });
       }
-      setTimeout(finish, 1850);
+      setTimeout(completeLoader, 1650);
     }
 
     // =========================================================================
-    // 2. SEGURIDAD NATIVA, VISIBILIDAD DE CONTRASEÑA Y LÓGICA CONDICIONAL ADMIN
+    // 3 & 4. MOTOR DE FONDOS DINÁMICOS ATMOSFÉRICOS (60 FPS) Y SWITCH iOS
+    // =========================================================================
+    let canvasParticles = [];
+    let canvasOrbs = [];
+
+    function initThemePreference() {
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+      applyThemeMode(savedTheme);
+    }
+
+    function applyThemeMode(theme) {
+      const isDark = theme === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+
+      const switchBtn = document.getElementById('ios-theme-switch-btn');
+      const statusLabel = document.getElementById('theme-status-label');
+      if (switchBtn) {
+        switchBtn.setAttribute('aria-checked', isDark ? 'true' : 'false');
+      }
+      if (statusLabel) {
+        statusLabel.textContent = isDark
+          ? 'Modo Oscuro "Cielo Nocturno Estrellado" activo'
+          : 'Modo Claro Institucional activo';
+      }
+    }
+
+    function toggleThemeMode() {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      applyThemeMode(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function initAtmosphericCanvas() {
+      const canvas = document.getElementById('atmospheric-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas, { passive: true });
+
+      // Micropartículas estelares para Modo Oscuro
+      canvasParticles = Array.from({ length: 75 }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: Math.random() * 1.6 + 0.4,
+        vx: (Math.random() - 0.2) * 0.18,
+        vy: (Math.random() - 0.5) * 0.08,
+        alpha: Math.random() * 0.75 + 0.2,
+        phase: Math.random() * Math.PI * 2
+      }));
+
+      // Esferas orgánicas suaves para Modo Claro y Nebulosas en Modo Oscuro
+      canvasOrbs = [
+        { x: 0.2, y: 0.25, r: 280, vx: 0.00018, vy: 0.00012 },
+        { x: 0.78, y: 0.65, r: 340, vx: -0.00015, vy: 0.00016 },
+        { x: 0.5, y: 0.82, r: 260, vx: 0.00012, vy: -0.00014 }
+      ];
+
+      const renderFrame = () => {
+        const w = canvas.width;
+        const h = canvas.height;
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        ctx.clearRect(0, 0, w, h);
+
+        canvasOrbs.forEach((orb, idx) => {
+          orb.x += orb.vx;
+          orb.y += orb.vy;
+          if (orb.x < 0.05 || orb.x > 0.95) orb.vx *= -1;
+          if (orb.y < 0.05 || orb.y > 0.95) orb.vy *= -1;
+
+          const gx = orb.x * w;
+          const gy = orb.y * h;
+          const grad = ctx.createRadialGradient(gx, gy, 10, gx, gy, orb.r);
+
+          if (isDark) {
+            grad.addColorStop(0, idx % 2 === 0 ? 'rgba(56, 98, 148, 0.11)' : 'rgba(59, 110, 76, 0.08)');
+            grad.addColorStop(1, 'rgba(11, 15, 20, 0)');
+          } else {
+            grad.addColorStop(0, idx % 2 === 0 ? 'rgba(82, 148, 104, 0.08)' : 'rgba(200, 138, 107, 0.05)');
+            grad.addColorStop(1, 'rgba(230, 238, 230, 0)');
+          }
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(gx, gy, orb.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        if (isDark) {
+          canvasParticles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.phase += 0.025;
+            if (p.x < 0) p.x = w;
+            if (p.x > w) p.x = 0;
+            if (p.y < 0) p.y = h;
+            if (p.y > h) p.y = 0;
+
+            const twinkle = 0.35 + 0.65 * Math.abs(Math.sin(p.phase));
+            ctx.fillStyle = `rgba(214, 228, 240, ${(p.alpha * twinkle).toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        requestAnimationFrame(renderFrame);
+      };
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    // =========================================================================
+    // 6. SCROLL FLUIDO CON INERCIA INTELIGENTE
+    // =========================================================================
+    function initSmartScrollInertia() {
+      const viewport = document.getElementById('main-viewport');
+      if (!viewport) return;
+
+      let lastScrollTop = 0;
+      let lastScrollTime = performance.now();
+      let inertiaTimeout = null;
+
+      viewport.addEventListener('scroll', () => {
+        const now = performance.now();
+        const dt = Math.max(1, now - lastScrollTime);
+        const dy = Math.abs(viewport.scrollTop - lastScrollTop);
+        const velocity = dy / dt; // px/ms
+
+        lastScrollTop = viewport.scrollTop;
+        lastScrollTime = now;
+
+        // Si el usuario ejecuta un desplazamiento rápido, desactivar amortiguación intermedia
+        if (velocity > 2.2) {
+          viewport.classList.add('fast-scroll');
+        } else {
+          viewport.classList.remove('fast-scroll');
+        }
+
+        clearTimeout(inertiaTimeout);
+        inertiaTimeout = setTimeout(() => {
+          viewport.classList.remove('fast-scroll');
+        }, 180);
+      }, { passive: true });
+    }
+
+    // =========================================================================
+    // SEGURIDAD NATIVA, SANITIZACIÓN Y CONTROL DE ENTRADAS
     // =========================================================================
     function escapeHtml(raw) {
       if (!raw) return '';
@@ -2200,7 +3059,6 @@
       }
     }
 
-    // Ocultar y deshabilitar el campo Correo cuando el usuario escribe "Admin"
     function handleUserRoleInput(val) {
       const emailGroup = document.getElementById('login-email-group');
       const emailInput = document.getElementById('login-email');
@@ -2254,7 +3112,7 @@
         sessionStorage.setItem('diego_login_attempts', '0');
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Ingresar al Portal';
+          btn.textContent = 'Iniciar Sesión';
         }
         setFieldValidationState('login-pass', 'login-pass-error', '');
       }
@@ -2305,7 +3163,7 @@
     }
 
     // =========================================================================
-    // PERSISTENCIA UNIVERSAL DE SESIÓN (KEEP-ALIVE MULTIPLATAFORMA)
+    // PERSISTENCIA MULTIPLATAFORMA Y UNIFICACIÓN DE PERFIL / GESTIÓN RBAC
     // =========================================================================
     function savePersistentSession(userObj) {
       try {
@@ -2318,9 +3176,7 @@
         });
         localStorage.setItem(PERSIST_KEY, payload);
         sessionStorage.setItem(PERSIST_KEY, payload);
-      } catch (e) {
-        console.warn('Error al guardar sesión persistente:', e);
-      }
+      } catch (e) {}
     }
 
     function readPersistentSession() {
@@ -2340,8 +3196,21 @@
       } catch (e) {}
     }
 
+    function handleUnifiedProfileClick() {
+      if (activeUser === 'Admin') {
+        switchModule('users');
+      } else {
+        openSelfAccountModal();
+      }
+    }
+
+    function openSelfAccountModal() {
+      populateSelfProfileForm(rawProjectsList);
+      document.getElementById('modal-self-profile').classList.add('open');
+    }
+
     // =========================================================================
-    // NOTIFICACIONES AUTOMÁTICAS POR CORREO
+    // 10. AUTOMATIZACIÓN DE NOTIFICACIONES POR CORREO (CON URL OFICIAL)
     // =========================================================================
     function getLocalGreeting() {
       const hour = new Date().getHours();
@@ -2356,16 +3225,15 @@
 
         const greeting = getLocalGreeting();
         const clientEmail = (currentProject.client_email || '').trim();
-        const portalUrl = window.location.href;
         const recipientList = [clientEmail, ...ADMIN_CC_EMAILS].filter(Boolean).join(', ');
 
         const fullMessage = `${greeting}, ${currentProject.client_name || currentProject.code}:\n\n` +
           `Se ha registrado una nueva actualización en el proyecto "${currentProject.name}" (${actionLabel}):\n\n` +
           `• Resumen: ${summaryText}\n` +
-          `• Detalle técnico: ${detailText}\n` +
+          `• Extracto de bitácora: ${detailText}\n` +
           `• Fase actual: ${currentProject.current_phase || 'En ejecución'} (${Number(currentProject.actual_progress || 0).toFixed(1)}% de avance)\n\n` +
-          `Enlace directo para revisión:\n${portalUrl}\n\n` +
-          `Atentamente,\nB+ Arquitectura Estudio (proyectos.ginabustillo@gmail.com) & Dynatic (Dynatic.solution@gmail.com)`;
+          `Enlace directo a la plataforma para validación:\n${OFFICIAL_PROD_URL}\n\n` +
+          `Atentamente,\nB+ Arquitectura Estudio (proyectos.ginabustillo@gmail.com) & Dynatic Solutions SAS (Dynatic.solution@gmail.com)`;
 
         const serviceId = localStorage.getItem('diego_ejs_service') || '';
         const templateId = localStorage.getItem('diego_ejs_template') || '';
@@ -2388,18 +3256,17 @@
                 action_type: actionLabel,
                 summary: summaryText,
                 details: detailText,
-                portal_url: portalUrl,
+                portal_url: OFFICIAL_PROD_URL,
+                repo_url: OFFICIAL_REPO_URL,
                 message: fullMessage
               }
             })
           });
           showToast(`✉️ Notificación enviada a ${recipientList}`);
         } else {
-          showToast(`✔ Publicado. Notificación preparada para: ${recipientList}`);
+          showToast(`✔ Publicado. Notificación lista para: ${recipientList}`);
         }
-      } catch (err) {
-        console.warn('Aviso silencioso de correo:', err);
-      }
+      } catch (err) {}
     }
 
     function openEmailConfigModal() {
@@ -2418,10 +3285,13 @@
     }
 
     // =========================================================================
-    // ARRANQUE Y RESTAURACIÓN AUTOMÁTICA DE SESIÓN (KEEP-ALIVE)
+    // ARRANQUE Y RESTAURACIÓN AUTOMÁTICA DE SESIÓN
     // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
+      initThemePreference();
+      initAtmosphericCanvas();
       playPawLoader();
+      initSmartScrollInertia();
       checkBruteForceLockout();
       initLightboxEvents();
       initDragAndDropZones();
@@ -2438,7 +3308,6 @@
 
       const { data: projects, error } = await supabaseClient.from('projects').select('*');
       if (error) {
-        // Si hay corte momentáneo de red en móvil, restaurar vista con datos locales
         activeUser = saved.user;
         activeProjectId = saved.projectId;
         enterAuthenticatedView();
@@ -2488,11 +3357,15 @@
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display = 'flex';
       document.getElementById('user-display-tag').textContent = activeUser.toUpperCase();
+      document.getElementById('sidebar-user-name').textContent = activeUser.toUpperCase();
+      document.getElementById('sidebar-user-role-hint').textContent = activeUser === 'Admin'
+        ? 'Gestión de Usuarios y Obras'
+        : 'Configuración y Accesibilidad';
+
       await loadProjects();
       switchModule(currentModule || 'feed');
     }
 
-    // INICIO DE SESIÓN CON VALIDACIÓN CONDICIONAL ADMIN Y DISPARADOR DE PATITAS SVG
     async function handleLogin() {
       if (isHoneypotTriggered('hp-login')) return;
       if (checkBruteForceLockout()) return;
@@ -2527,7 +3400,7 @@
 
       const { data: projects, error } = await supabaseClient.from('projects').select('*');
       btn.disabled = false;
-      btn.textContent = 'Ingresar al Portal';
+      btn.textContent = 'Iniciar Sesión';
 
       if (error) {
         setFieldValidationState('login-pass', 'login-pass-error', 'Error de conexión con el servidor.');
@@ -2606,14 +3479,14 @@
     }
 
     // =========================================================================
-    // CARGA MULTITENANT DE PROYECTOS Y PERFIL DE AUTOSERVICIO
+    // CARGA MULTITENANT DE PROYECTOS Y PERFIL
     // =========================================================================
     async function loadProjects() {
       const { data, error } = await supabaseClient.from('projects').select('*').order('code', { ascending: true });
       if (error) return;
 
-      const rawList = data || [];
-      allProjects = rawList.filter(p => p.code.toLowerCase() !== 'admin');
+      rawProjectsList = data || [];
+      allProjects = rawProjectsList.filter(p => p.code.toLowerCase() !== 'admin');
       const prevSelectedId = currentProject ? currentProject.id : null;
 
       if (activeUser === 'Admin') {
@@ -2621,20 +3494,20 @@
         document.getElementById('btn-create-report').style.display = 'inline-flex';
         document.getElementById('btn-add-doc').style.display = 'inline-flex';
         document.getElementById('btn-edit-project').style.display = 'inline-flex';
-        document.getElementById('nav-item-users').style.display = 'flex';
+        document.getElementById('nav-item-schedule').style.display = 'flex';
 
         const dropdown = document.getElementById('active-project-dropdown');
         dropdown.innerHTML = allProjects.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${escapeHtml(p.code)} — ${escapeHtml(p.client_name)})</option>`).join('');
 
         currentProject = allProjects.find(p => p.id === prevSelectedId) || allProjects[0] || null;
         if (currentProject) dropdown.value = currentProject.id;
-        renderUsersTable(rawList);
+        renderUsersTable(rawProjectsList);
       } else {
         document.getElementById('admin-project-selector').style.display = 'none';
         document.getElementById('btn-create-report').style.display = 'none';
         document.getElementById('btn-add-doc').style.display = 'none';
         document.getElementById('btn-edit-project').style.display = 'none';
-        document.getElementById('nav-item-users').style.display = 'none';
+        document.getElementById('nav-item-schedule').style.display = 'none';
 
         const found = allProjects.find(p => p.id === activeProjectId || p.code.toLowerCase() === activeUser.toLowerCase());
         if (!found) {
@@ -2645,9 +3518,10 @@
         activeUser = found.code;
         activeProjectId = found.id;
         document.getElementById('user-display-tag').textContent = activeUser.toUpperCase();
+        document.getElementById('sidebar-user-name').textContent = activeUser.toUpperCase();
       }
 
-      populateSelfProfileForm(rawList);
+      populateSelfProfileForm(rawProjectsList);
       renderHeaderDashboard();
       await loadActiveProjectData();
     }
@@ -2730,15 +3604,16 @@
         }
         savePersistentSession({ user: 'Admin', projectId: activeProjectId, email: newEmail, pass: newPass });
         btn.disabled = false;
-        btn.textContent = 'Guardar Credenciales';
-        showToast('✔ Credenciales actualizadas.');
+        btn.textContent = 'Guardar Cambios';
+        closeModal('modal-self-profile');
+        showToast('✔ Credenciales de Administrador actualizadas.');
         await loadProjects();
         return;
       }
 
       if (!currentProject) {
         btn.disabled = false;
-        btn.textContent = 'Guardar Credenciales';
+        btn.textContent = 'Guardar Cambios';
         return;
       }
 
@@ -2752,7 +3627,7 @@
         .eq('id', currentProject.id);
 
       btn.disabled = false;
-      btn.textContent = 'Guardar Credenciales';
+      btn.textContent = 'Guardar Cambios';
 
       if (error) {
         setFieldValidationState('prof-code', 'prof-code-error', 'Error: ' + error.message);
@@ -2762,6 +3637,8 @@
       activeUser = newCode;
       savePersistentSession({ user: newCode, projectId: currentProject.id, email: newEmail, pass: newPass });
       document.getElementById('user-display-tag').textContent = newCode.toUpperCase();
+      document.getElementById('sidebar-user-name').textContent = newCode.toUpperCase();
+      closeModal('modal-self-profile');
       showToast('✔ Tus credenciales se sincronizaron en todos tus dispositivos.');
       await loadProjects();
     }
@@ -2816,10 +3693,450 @@
       renderGalleryVaultByDate(currentReports);
       renderAudit(auditsRes.data || []);
       renderDocuments(currentDocs);
+      await loadProjectScheduleMilestones();
     }
 
     // =========================================================================
-    // 5. INFORMES DE OBRA CON ÁLBUM APILADO TIPO iPHONE
+    // 7. MÓDULO CRONOGRAMA E HITOS AUTOMATIZADO (CELOXIS TIMELINE + COLOMBIA)
+    // =========================================================================
+    function getScheduleStorageKey() {
+      return currentProject ? `diego_celoxis_schedule_${currentProject.id}` : 'diego_celoxis_default';
+    }
+
+    // Cálculo de días hábiles en Colombia excluyendo domingos y festivos nacionales
+    function calculateColombianWorkingDays(fromDateStr, toDateStr) {
+      const start = new Date(fromDateStr + 'T00:00:00');
+      const end = new Date(toDateStr + 'T00:00:00');
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+
+      const invert = end < start;
+      const cur = new Date(invert ? end : start);
+      const target = new Date(invert ? start : end);
+      let workingDays = 0;
+
+      while (cur < target) {
+        cur.setDate(cur.getDate() + 1);
+        const dayOfWeek = cur.getDay(); // 0 = Domingo
+        const iso = cur.toISOString().split('T')[0];
+        if (dayOfWeek !== 0 && !COLOMBIA_HOLIDAYS.has(iso)) {
+          workingDays++;
+        }
+      }
+      return invert ? -workingDays : workingDays;
+    }
+
+    async function loadProjectScheduleMilestones() {
+      if (!currentProject) return;
+      currentScheduleMilestones = [];
+
+      try {
+        const cached = localStorage.getItem(getScheduleStorageKey());
+        if (cached) {
+          currentScheduleMilestones = JSON.parse(cached) || [];
+        }
+      } catch (e) {
+        currentScheduleMilestones = [];
+      }
+
+      renderScheduleModule();
+    }
+
+    async function persistScheduleMilestones(milestones) {
+      currentScheduleMilestones = milestones;
+      try {
+        localStorage.setItem(getScheduleStorageKey(), JSON.stringify(milestones));
+      } catch (e) {}
+    }
+
+    function normalizeDateString(rawVal) {
+      if (!rawVal) return new Date().toISOString().split('T')[0];
+      if (typeof rawVal === 'number') {
+        const utcDays = Math.floor(rawVal - 25569);
+        const dateObj = new Date(utcDays * 86400 * 1000);
+        if (!isNaN(dateObj.getTime())) return dateObj.toISOString().split('T')[0];
+      }
+      const str = String(rawVal).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+      const dmy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+      }
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) return parsed.toISOString().split('T')[0];
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function parseRawScheduleRows(rowsArray) {
+      if (!Array.isArray(rowsArray) || rowsArray.length === 0) return [];
+      const result = [];
+
+      rowsArray.forEach((row, idx) => {
+        if (!row || typeof row !== 'object') return;
+        const keys = Object.keys(row);
+        const findCol = (patterns) => {
+          const foundKey = keys.find(k => patterns.some(p => k.toLowerCase().includes(p)));
+          return foundKey ? row[foundKey] : undefined;
+        };
+
+        const rawId = findCol(['id', 'cod', 'item', 'nro']) ?? (idx + 1);
+        const rawTask = findCol(['actividad', 'hito', 'tarea', 'nombre', 'task', 'fase']) ?? row[keys[1]] ?? row[keys[0]];
+        const rawDur = findCol(['duracion', 'duración', 'dias', 'días', 'dur']) ?? '';
+        const rawStart = findCol(['inicio', 'start', 'desde', 'comienzo']) ?? '';
+        const rawEnd = findCol(['fin', 'end', 'entrega', 'limite', 'hasta']) ?? '';
+        const rawPred = findCol(['predecesora', 'pred', 'dep']) ?? '-';
+        const rawCrit = findCol(['critica', 'crítica', 'ruta', 'holgura']) ?? '';
+        const rawPct = findCol(['porcentaje', 'esperado', 'avance', 'progreso', '%', 'pct', 'real']) ?? 0;
+
+        const taskName = cleanOrthographyRaw(String(rawTask || '').trim());
+        if (!taskName || taskName.toLowerCase() === 'actividad' || taskName.toLowerCase() === 'hito / tarea') return;
+
+        const startDate = normalizeDateString(rawStart || rawEnd);
+        const endDate = normalizeDateString(rawEnd || rawStart);
+
+        let durNum = parseInt(String(rawDur).replace(/[^0-9]/g, ''), 10);
+        if (isNaN(durNum)) {
+          durNum = Math.max(0, Math.round((new Date(endDate) - new Date(startDate)) / 86400000));
+        }
+
+        let pctNum = parseFloat(String(rawPct ?? '0').replace('%', '').replace(',', '.').trim());
+        if (isNaN(pctNum)) pctNum = 0;
+        if (pctNum > 0 && pctNum <= 1 && String(rawPct).indexOf('%') === -1) pctNum *= 100;
+        pctNum = Math.min(100, Math.max(0, Number(pctNum.toFixed(1))));
+
+        const critStr = String(rawCrit).toLowerCase().trim();
+        const isCritical = critStr === 'si' || critStr === 'sí' || critStr === 'true' || critStr === '1' || critStr === '0' || critStr.includes('crit');
+        const isMilestone = durNum === 0 || String(rawId).toUpperCase().startsWith('M') || taskName.toLowerCase().includes('acta') || taskName.toLowerCase().includes('entrega');
+
+        result.push({
+          uid: `act_${Date.now()}_${idx}`,
+          codeId: String(rawId || idx + 1).trim(),
+          task: taskName.slice(0, 140),
+          duration: durNum,
+          startDate,
+          endDate,
+          predecessor: String(rawPred || '-').trim(),
+          isCritical,
+          isMilestone,
+          expectedPct: pctNum
+        });
+      });
+
+      return result;
+    }
+
+    function parseCsvFallback(csvText) {
+      const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+      if (lines.length < 2) return [];
+      const sep = lines[0].includes(';') ? ';' : ',';
+      const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(sep).map(c => c.trim().replace(/^"|"$/g, ''));
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h || `col_${idx}`] = cols[idx] || ''; });
+        rows.push(obj);
+      }
+      return parseRawScheduleRows(rows);
+    }
+
+    function handleScheduleFileSelect(files) {
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      const label = document.getElementById('schedule-drop-label');
+      label.textContent = `⏳ Analizando cronograma de obra: ${file.name}...`;
+
+      const isCsv = file.name.toLowerCase().endsWith('.csv');
+      const reader = new FileReader();
+
+      reader.onload = async (e) => {
+        try {
+          let parsedMilestones = [];
+          if (!isCsv && window.XLSX) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = window.XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.SheetNames[0];
+            const jsonRows = window.XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: '' });
+            parsedMilestones = parseRawScheduleRows(jsonRows);
+          } else {
+            const textContent = typeof e.target.result === 'string'
+              ? e.target.result
+              : new TextDecoder('utf-8').decode(e.target.result);
+            parsedMilestones = parseCsvFallback(textContent);
+          }
+
+          if (parsedMilestones.length === 0) {
+            label.textContent = '⚠️ No se detectaron filas válidas. Verifica las columnas del archivo.';
+            return;
+          }
+
+          await persistScheduleMilestones(parsedMilestones);
+          label.textContent = `✔ Cronograma activo: ${file.name} (${parsedMilestones.length} actividades/hitos)`;
+          renderScheduleModule();
+          showToast(`✔ ${parsedMilestones.length} actividades y ruta crítica procesadas.`);
+        } catch (err) {
+          label.textContent = '⚠️ Error al procesar el archivo. Asegúrate de usar un formato .xlsx o .csv válido.';
+        }
+      };
+
+      if (isCsv) {
+        reader.readAsText(file, 'UTF-8');
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function evaluateMilestoneStatus(ms) {
+      const todayIso = new Date().toISOString().split('T')[0];
+      const today = new Date(todayIso + 'T00:00:00');
+      const end = new Date((ms.endDate || todayIso) + 'T00:00:00');
+      const start = new Date((ms.startDate || ms.endDate || todayIso) + 'T00:00:00');
+
+      const diffCalendarDays = Math.ceil((end.getTime() - today.getTime()) / 86400000);
+      const workingDaysLeft = calculateColombianWorkingDays(todayIso, ms.endDate || todayIso);
+      const pct = Number(ms.expectedPct || 0);
+
+      let timeElapsedRatio = 0;
+      const totalSpan = end.getTime() - start.getTime();
+      if (totalSpan > 0) {
+        timeElapsedRatio = Math.min(100, Math.max(0, ((today.getTime() - start.getTime()) / totalSpan) * 100));
+      }
+
+      // Reglas estrictas Celoxis:
+      // 1. Atrasado: Fecha fin rebasada sin alcanzar el 100%
+      if (diffCalendarDays < 0 && pct < 100) {
+        return { code: 'atrasado', label: 'Atrasado', diffCalendarDays, workingDaysLeft };
+      }
+      // 2. En riesgo: Faltan 5 días o menos y progreso < 75%
+      if (diffCalendarDays >= 0 && diffCalendarDays <= 5 && pct < 75) {
+        return { code: 'en_riesgo', label: 'En riesgo', diffCalendarDays, workingDaysLeft };
+      }
+      // 3. A tiempo: Avance real cubre la fecha actual
+      if (pct >= timeElapsedRatio || pct >= 75 || diffCalendarDays > 5) {
+        return { code: 'a_tiempo', label: 'A tiempo', diffCalendarDays, workingDaysLeft };
+      }
+      return { code: 'en_riesgo', label: 'En riesgo', diffCalendarDays, workingDaysLeft };
+    }
+
+    function renderScheduleModule() {
+      const tbody = document.getElementById('schedule-table-body');
+      const track = document.getElementById('celoxis-timeline-track');
+      const nextTitle = document.getElementById('sched-next-title');
+      const nextDays = document.getElementById('sched-next-days');
+      const nextPct = document.getElementById('sched-next-pct');
+      const nextBar = document.getElementById('sched-next-bar');
+      const totalHeadline = document.getElementById('sched-total-headline');
+      const totalSummary = document.getElementById('sched-total-summary');
+      const totalPct = document.getElementById('sched-total-pct');
+      const totalBar = document.getElementById('sched-total-bar');
+
+      if (!tbody || !track) return;
+
+      if (!currentScheduleMilestones || currentScheduleMilestones.length === 0) {
+        nextTitle.textContent = 'Sin hitos registrados';
+        nextDays.textContent = 'Importa un Excel o carga el ejemplo Piscina Barú';
+        nextPct.textContent = '0%';
+        nextBar.style.width = '0%';
+        totalHeadline.textContent = '0.0% Completado';
+        totalSummary.textContent = '0 actividades activas';
+        totalPct.textContent = '0%';
+        totalBar.style.width = '0%';
+        track.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:13px; padding:18px;">Importa un cronograma o pulsa "Cargar Ejemplo Piscina Barú" para visualizar la línea de tiempo con el marcador HOY.</div>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:26px;">No se ha importado ningún cronograma para esta obra todavía.</td></tr>`;
+        return;
+      }
+
+      const sorted = [...currentScheduleMilestones].sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''));
+
+      // Tarjeta 1: Hito Próximo en Calendario (con días hábiles de Colombia)
+      const byEnd = [...currentScheduleMilestones].sort((a, b) => (a.endDate || '').localeCompare(b.endDate || ''));
+      const upcoming = byEnd.find(m => Number(m.expectedPct) < 100) || byEnd[byEnd.length - 1];
+      const upEval = evaluateMilestoneStatus(upcoming);
+
+      nextTitle.textContent = `${upcoming.codeId}: ${upcoming.task}`;
+      nextDays.textContent = upEval.workingDaysLeft < 0
+        ? `Venció hace ${Math.abs(upEval.workingDaysLeft)} día(s) hábiles en Colombia (${upcoming.endDate}) • ${upEval.label}`
+        : `${upEval.workingDaysLeft} día(s) hábiles restantes en Colombia (Entrega: ${upcoming.endDate}) • ${upEval.label}`;
+      nextPct.textContent = `${upcoming.expectedPct.toFixed(1)}%`;
+      nextBar.style.width = `${Math.min(100, upcoming.expectedPct)}%`;
+
+      // Tarjeta 2: Avance Total Ponderado por duración
+      let weightedSum = 0;
+      let totalWeight = 0;
+      sorted.forEach(item => {
+        const w = Math.max(1, Number(item.duration || 1));
+        weightedSum += Number(item.expectedPct || 0) * w;
+        totalWeight += w;
+      });
+      const weightedAvg = totalWeight > 0 ? (weightedSum / totalWeight) : 0;
+      const critCount = sorted.filter(m => m.isCritical).length;
+
+      totalHeadline.textContent = `${weightedAvg.toFixed(1)}% Avance Global`;
+      totalSummary.textContent = `${sorted.length} actividades (${critCount} en Ruta Crítica)`;
+      totalPct.textContent = `${weightedAvg.toFixed(1)}%`;
+      totalBar.style.width = `${Math.min(100, weightedAvg)}%`;
+
+      // Renderizado del Diagrama Celoxis Timeline con Línea Vertical "HOY"
+      const minTime = Math.min(...sorted.map(m => new Date(m.startDate + 'T00:00:00').getTime()));
+      const maxTime = Math.max(...sorted.map(m => new Date(m.endDate + 'T23:59:59').getTime()));
+      const totalSpanMs = Math.max(86400000 * 5, maxTime - minTime);
+      const nowMs = Date.now();
+      const todayPct = Math.min(98, Math.max(2, ((nowMs - minTime) / totalSpanMs) * 100));
+      const todayLabelStr = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+
+      const rowsTimelineHtml = sorted.map(ms => {
+        const st = evaluateMilestoneStatus(ms);
+        const sMs = new Date(ms.startDate + 'T00:00:00').getTime();
+        const eMs = new Date(ms.endDate + 'T23:59:59').getTime();
+        const leftPct = Math.min(96, Math.max(0, ((sMs - minTime) / totalSpanMs) * 100));
+        const widthPct = Math.min(100 - leftPct, Math.max(4, ((eMs - sMs) / totalSpanMs) * 100));
+
+        if (ms.isMilestone) {
+          return `
+            <div class="celoxis-row">
+              <div class="celoxis-row-label" title="${escapeHtml(ms.task)}"><strong>◆ ${escapeHtml(ms.codeId)}:</strong> ${escapeHtml(ms.task)}</div>
+              <div class="celoxis-bar-lane">
+                <div class="celoxis-milestone-diamond" style="left:${leftPct}%;">
+                  <span class="diamond-glyph">◆</span>
+                  <span>${escapeHtml(ms.codeId)}: ${escapeHtml(ms.task)} — ${escapeHtml(ms.endDate)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="celoxis-row">
+            <div class="celoxis-row-label" title="${escapeHtml(ms.task)}">${escapeHtml(ms.codeId)}. ${escapeHtml(ms.task)}</div>
+            <div class="celoxis-bar-lane">
+              <div class="celoxis-task-bar ${ms.isCritical ? 'critical-path' : ''}" style="left:${leftPct}%; width:${widthPct}%;" title="Ruta Crítica: ${ms.isCritical ? 'SÍ (Holgura 0d)' : 'No'}">
+                <div class="celoxis-bar-fill ${st.code}" style="width:${Math.max(12, ms.expectedPct)}%;"></div>
+                <span>${ms.expectedPct.toFixed(0)}%</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      track.innerHTML = `
+        <div class="celoxis-today-line" style="left: calc(220px + (100% - 220px) * ${todayPct / 100});">
+          <span class="celoxis-today-tag">HOY • ${todayLabelStr}</span>
+        </div>
+        ${rowsTimelineHtml}
+      `;
+
+      // Tabla detallada
+      tbody.innerHTML = sorted.map(ms => {
+        const st = evaluateMilestoneStatus(ms);
+        return `
+          <tr>
+            <td><strong>${escapeHtml(ms.codeId)}</strong></td>
+            <td>${ms.isMilestone ? '◆ ' : ''}<strong>${escapeHtml(ms.task)}</strong></td>
+            <td>${ms.duration}d</td>
+            <td>${escapeHtml(ms.startDate)} → ${escapeHtml(ms.endDate)}</td>
+            <td><code>${escapeHtml(ms.predecessor)}</code></td>
+            <td>${ms.isCritical ? '<span class="schedule-status-pill atrasado">Crítica (0d)</span>' : '<span style="font-size:11.5px; color:var(--text-muted);">Holgura libre</span>'}</td>
+            <td><strong>${ms.expectedPct.toFixed(1)}%</strong></td>
+            <td><span class="schedule-status-pill ${st.code}">${st.label}</span></td>
+            <td>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value="${ms.expectedPct}"
+                style="width:95px; accent-color:var(--brand-emerald); cursor:pointer;"
+                aria-label="Ajustar avance de ${escapeHtml(ms.task)}"
+                onchange="updateSingleMilestonePct('${escapeHtml(ms.uid)}', this.value)"
+              >
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function updateSingleMilestonePct(uid, newVal) {
+      const target = currentScheduleMilestones.find(m => m.uid === uid);
+      if (!target) return;
+      target.expectedPct = Math.min(100, Math.max(0, parseFloat(newVal || 0)));
+      await persistScheduleMilestones(currentScheduleMilestones);
+      renderScheduleModule();
+    }
+
+    // Cargar ejemplo real de Dynatic Solutions SAS ("Adecuación Piscina Barú - Cambio de Enchape")
+    async function loadBaruPoolSampleSchedule() {
+      const sampleBaru = [
+        { uid: 'b1', codeId: 'A1', task: 'Demolición y retiro de enchape antiguo en Piscina Barú', duration: 6, startDate: '2026-10-18', endDate: '2026-10-25', predecessor: '-', isCritical: true, isMilestone: false, expectedPct: 100 },
+        { uid: 'b2', codeId: 'A2', task: 'Repello estructural e impermeabilización bicomponente Sika', duration: 8, startDate: '2026-10-26', endDate: '2026-11-04', predecessor: 'A1', isCritical: true, isMilestone: false, expectedPct: 68 },
+        { uid: 'b3', codeId: 'A3', task: 'Pruebas hidrostáticas de estanqueidad y redes hidráulicas', duration: 4, startDate: '2026-11-05', endDate: '2026-11-10', predecessor: 'A2', isCritical: false, isMilestone: false, expectedPct: 25 },
+        { uid: 'b4', codeId: 'A4', task: 'Instalación de nuevo enchape vítreo y boquilla epóxica', duration: 15, startDate: '2026-11-11', endDate: '2026-11-30', predecessor: 'A3', isCritical: true, isMilestone: false, expectedPct: 0 },
+        { uid: 'b5', codeId: 'A5', task: 'Adecuación de borde atérmico e iluminación subacuática LED', duration: 5, startDate: '2026-12-01', endDate: '2026-12-06', predecessor: 'A4', isCritical: true, isMilestone: false, expectedPct: 0 },
+        { uid: 'b6', codeId: 'M1', task: 'Acta de entrega de obra — Adecuación Piscina Barú', duration: 0, startDate: '2026-12-07', endDate: '2026-12-07', predecessor: 'A5', isCritical: true, isMilestone: true, expectedPct: 0 }
+      ];
+      await persistScheduleMilestones(sampleBaru);
+      renderScheduleModule();
+      showToast('✔ Cronograma "Adecuación Piscina Barú - Cambio de Enchape" cargado.');
+    }
+
+    async function syncScheduleToHeader() {
+      if (!currentProject || !currentScheduleMilestones || currentScheduleMilestones.length === 0) {
+        showToast('Importa primero un cronograma o carga el ejemplo Piscina Barú.');
+        return;
+      }
+
+      const sorted = [...currentScheduleMilestones].sort((a, b) => (a.endDate || '').localeCompare(b.endDate || ''));
+      const upcoming = sorted.find(m => Number(m.expectedPct) < 100) || sorted[sorted.length - 1];
+      const finalMilestone = sorted[sorted.length - 1];
+
+      let weightedSum = 0;
+      let totalWeight = 0;
+      sorted.forEach(item => {
+        const w = Math.max(1, Number(item.duration || 1));
+        weightedSum += Number(item.expectedPct || 0) * w;
+        totalWeight += w;
+      });
+      const weightedAvg = Number((totalWeight > 0 ? (weightedSum / totalWeight) : 0).toFixed(1));
+
+      const hasDelayed = sorted.some(m => evaluateMilestoneStatus(m).code === 'atrasado');
+      const hasRisk = sorted.some(m => evaluateMilestoneStatus(m).code === 'en_riesgo');
+      const newStatus = hasDelayed ? 'retraso' : (hasRisk ? 'atencion' : 'en_tiempo');
+
+      await supabaseClient
+        .from('projects')
+        .update({
+          actual_progress: weightedAvg,
+          current_phase: upcoming.task,
+          next_milestone_date: finalMilestone.endDate || null,
+          status: newStatus
+        })
+        .eq('id', currentProject.id);
+
+      showToast(`✔ Cabecera sincronizada: ${weightedAvg}% de avance global.`);
+      await loadProjects();
+    }
+
+    function downloadSampleScheduleCsv() {
+      const sampleContent = [
+        'ID,Actividad,Duración,Fecha Inicio,Fecha Fin,Predecesora,Ruta Crítica,Porcentaje Esperado',
+        'A1,Demolición y retiro de enchape antiguo Piscina Barú,6,2026-10-18,2026-10-25,-,SI,100',
+        'A2,Repello e impermeabilización bicomponente,8,2026-10-26,2026-11-04,A1,SI,68',
+        'A3,Pruebas hidrostáticas y tuberías de retorno,4,2026-11-05,2026-11-10,A2,NO,25',
+        'A4,Instalación de nuevo enchape y boquilla epóxica,15,2026-11-11,2026-11-30,A3,SI,0',
+        'M1,Acta de entrega de obra — 07-dic-2026,0,2026-12-07,2026-12-07,A4,SI,0'
+      ].join('\n');
+
+      const blob = new Blob([sampleContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cronograma_piscina_baru_dynatic.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+
+    // =========================================================================
+    // 9. INFORMES DE OBRA CON ÁLBUM APILADO TIPO iPHONE
     // =========================================================================
     function renderReports(items) {
       const feed = document.getElementById('feed-timeline');
@@ -2860,7 +4177,6 @@
              </div>`
           : '';
 
-        // Construcción del Cubo / Pila de Fotos estilo iOS
         const imgs = Array.isArray(rep.report_images) ? rep.report_images : [];
         let albumStackHtml = '';
         if (imgs.length > 0) {
@@ -2891,7 +4207,7 @@
         `).join('');
 
         return `
-          <article class="report-card">
+          <article class="report-card breeze-card">
             <div class="card-top">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span class="card-date">${fechaUnicaLabel}</span>
@@ -2999,7 +4315,6 @@
       loadActiveProjectData();
     }
 
-    // CREAR Y EDITAR INFORMES (CON PERSISTENCIA DE IMÁGENES)
     function openCreateReportModal() {
       document.getElementById('modal-report-heading').textContent = 'Publicar Informe de Obra';
       document.getElementById('form-rep-editing-id').value = '';
@@ -3156,7 +4471,7 @@
     }
 
     // =========================================================================
-    // 5. BAÚL DE GALERÍA GENERAL (CUADRÍCULA EXPANDIDA POR FECHAS)
+    // 9. BAÚL DE GALERÍA GENERAL (CUADRÍCULA EXPANDIDA POR FECHAS)
     // =========================================================================
     let vaultFlatGallery = [];
 
@@ -3199,7 +4514,6 @@
         return;
       }
 
-      // Construir lista plana indexada para permitir navegación continua en el Lightbox del Baúl
       sortedKeys.forEach(key => {
         groupsByDate[key].images.forEach(item => {
           item.globalIndex = vaultFlatGallery.length;
@@ -3213,7 +4527,7 @@
       container.innerHTML = sortedKeys.map(key => {
         const group = groupsByDate[key];
         return `
-          <div class="vault-date-group">
+          <div class="vault-date-group breeze-card">
             <div class="vault-date-header">
               <div class="vault-date-title">📅 ${group.label}</div>
               <span class="vault-date-count">${group.images.length} ${group.images.length === 1 ? 'fotografía' : 'fotografías'}</span>
@@ -3247,7 +4561,7 @@
       list.innerHTML = entries.map(ent => {
         const badgeText = ent.action_type === 'nuevo_informe' ? '📋 INFORME PUBLICADO' : '📄 DOCUMENTO PUBLICADO';
         return `
-          <div class="audit-entry">
+          <div class="audit-entry breeze-card">
             <div class="audit-meta">
               <span><strong>${badgeText}</strong> • Por ${escapeHtml(ent.author_name)}</span>
               <span>${new Date(ent.log_date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</span>
@@ -3258,7 +4572,7 @@
       }).join('');
     }
 
-    // CENTRO DOCUMENTAL CON GESTIÓN DETERMINISTA DE BLOB URL
+    // CENTRO DOCUMENTAL CON BLOB URL
     function pdfDataUrlToBlobUrl(fileUrl) {
       if (!fileUrl) return '';
       if (!fileUrl.startsWith('data:')) return fileUrl;
@@ -3454,7 +4768,7 @@
           <td>Dirección General</td>
           <td>Todos los proyectos</td>
           <td>
-            <button class="btn-neu" style="padding:6px 10px; min-height:38px; font-size:11.5px;" onclick="switchModule('profile')">✎ Mi Perfil Admin</button>
+            <button class="btn-neu" style="padding:6px 10px; min-height:38px; font-size:11.5px;" onclick="openSelfAccountModal()">✎ Editar Clave / Tema</button>
           </td>
         </tr>
       `;
@@ -3611,7 +4925,7 @@
     }
 
     // =========================================================================
-    // 4 & 5. VISOR LIGHTBOX AVANZADO (NAVEGACIÓN, TIRA DE MINIATURAS Y PINCH-ZOOM)
+    // 9. VISOR LIGHTBOX UNIVERSAL (MINIATURAS NUMERADAS + PINCH-ZOOM)
     // =========================================================================
     function openLightboxGallery(itemsList, startIndex = 0) {
       if (!Array.isArray(itemsList) || itemsList.length === 0) return;
@@ -3664,6 +4978,7 @@
       strip.innerHTML = lightboxGalleryList.map((item, idx) => `
         <button type="button" class="lightbox-thumb-item ${idx === lightboxCurrentIndex ? 'active-thumb' : ''}" onclick="selectLightboxSlide(${idx})" aria-label="Ir a foto ${idx + 1}">
           <img src="${escapeHtml(item.url)}" loading="lazy" decoding="async" alt="">
+          <span class="thumb-num-badge">${idx + 1}</span>
         </button>
       `).join('');
     }
@@ -3746,7 +5061,6 @@
 
       window.addEventListener('mouseup', () => { isDraggingImg = false; });
 
-      // Gestos multitáctiles en móviles: Pinch-to-Zoom (2 dedos), Pan (1 dedo) y Double-Tap
       stage.addEventListener('touchstart', (e) => {
         if (e.target.closest('button')) return;
 
@@ -3757,7 +5071,6 @@
         } else if (e.touches.length === 1) {
           const now = Date.now();
           if (now - lastTouchTapTime < 280) {
-            // Doble toque táctil alterna entre 1x y 2.5x
             currentZoom = currentZoom > 1.2 ? 1 : 2.5;
             panX = 0;
             panY = 0;
@@ -3799,21 +5112,34 @@
       });
     }
 
-    // CARGA DE IMÁGENES Y ARCHIVOS PDF
+    // CARGA DE IMÁGENES, PDFs Y EXCEL/CSV POR DRAG & DROP
     function initDragAndDropZones() {
       const imgZone = document.getElementById('img-dropzone');
-      imgZone.addEventListener('dragover', (e) => e.preventDefault());
-      imgZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        handleImageUpload(e.dataTransfer.files);
-      });
+      if (imgZone) {
+        imgZone.addEventListener('dragover', (e) => e.preventDefault());
+        imgZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          handleImageUpload(e.dataTransfer.files);
+        });
+      }
 
       const pdfZone = document.getElementById('pdf-dropzone');
-      pdfZone.addEventListener('dragover', (e) => e.preventDefault());
-      pdfZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        handlePdfFileSelect(e.dataTransfer.files);
-      });
+      if (pdfZone) {
+        pdfZone.addEventListener('dragover', (e) => e.preventDefault());
+        pdfZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          handlePdfFileSelect(e.dataTransfer.files);
+        });
+      }
+
+      const schedZone = document.getElementById('schedule-dropzone');
+      if (schedZone) {
+        schedZone.addEventListener('dragover', (e) => e.preventDefault());
+        schedZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          handleScheduleFileSelect(e.dataTransfer.files);
+        });
+      }
     }
 
     function handleImageUpload(files) {
@@ -3887,7 +5213,7 @@
     }
 
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('realtime_obra_v6')
+      supabaseClient.channel('realtime_obra_v8')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
           if (activeUser) loadProjects();
         })
@@ -3903,7 +5229,11 @@
         .subscribe();
     }
 
+    // 8. VISIBILIDAD CONDICIONAL ESTRICTA DEL CUADRO "AVANCE DE LA OBRA"
     function switchModule(mod) {
+      if (mod === 'schedule' && activeUser !== 'Admin') {
+        mod = 'feed';
+      }
       currentModule = mod;
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.module-section').forEach(sec => sec.classList.remove('active-module'));
@@ -3911,7 +5241,6 @@
       document.getElementById(`nav-item-${mod}`)?.classList.add('active');
       document.getElementById(`sec-${mod}`)?.classList.add('active-module');
 
-      // Visibilidad condicional estricta del cuadro "Avance de la Obra"
       const avanceCard = document.getElementById('dashboard-avance-card');
       if (avanceCard) {
         if (mod === 'feed' || mod === 'audit') {
@@ -3938,7 +5267,6 @@
       document.getElementById(id)?.classList.remove('open');
     }
 
-    // Soporte completo de teclado para accesibilidad WCAG 2.1 AA
     window.addEventListener('keydown', (e) => {
       const lbOpen = document.getElementById('lightbox-modal')?.classList.contains('open');
       if (lbOpen) {
